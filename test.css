@@ -114,7 +114,29 @@ input:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
+/* 修复：确保按钮溢出隐藏，否则圆圈会撑开外面 */
+.btn {
+    position: relative; /* 必须设置，让圆圈相对于按钮定位 */
+    overflow: hidden;    /* 必须设置，隐藏超出按钮范围的圆圈部分 */
+}
 
+/* 涟漪圆圈的样式 */
+span.ripple {
+    position: absolute; /* 绝对定位，不影响按钮文字布局 */
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple-animation 600ms linear;
+    background-color: rgba(255, 255, 255, 0.4); /* 半透明白色 */
+    pointer-events: none; /* 让点击穿透圆圈，不干扰连点 */
+}
+
+/* 扩散动画 */
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
 /* 辅助类 */
 .text-muted { color: var(--text-muted); font-size: 0.9rem; }
 .flex { display: flex; gap: 1rem; align-items: center; }
