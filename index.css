@@ -1,0 +1,177 @@
+:root {
+  --nav-height: 60px;
+  --primary-color: #4A90E2;
+  --nav-bg: #2c3e50;
+  --hover-bg: #34495e;
+  --text-white: #ffffff;
+  --dropdown-bg: #ffffff;
+}
+
+/* 1. 基础重置：消除所有默认间隙 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+  url(maxresdefault.jpg);
+  background-attachment: fixed;
+  background-size: cover;
+  color: white;
+  padding-top: var(--nav-height); /* 给内容留出导航栏高度 */
+}
+
+/* 2. 导航主容器：使用 Flexbox */
+.navbar {
+  background-color: var(--nav-bg);
+  height: var(--nav-height);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between; /* 左右两端对齐 */
+  height: 100%;
+  padding: 0 20px;
+}
+
+/* 3. 统一导航项样式 */
+.nav-links {
+  display: flex;
+  height: 100%;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center; /* 垂直居中核心：Flex 自带对齐 */
+  padding: 0 20px;
+  color: var(--text-white);
+  text-decoration: none;
+  font-size: 15px;
+  height: 100%; /* 填满导航栏高度 */
+  transition: background 0.2s;
+  border-right: 1px solid 
+}
+
+.nav-item:hover {
+  background-color: var(--hover-bg);
+}
+
+/* 4. 下拉菜单核心逻辑 */
+.dropdown {
+  position: relative;
+  height: 100%;
+}
+
+.dropdown-content {
+  display: none; /* 默认隐藏 */
+  position: absolute;
+  top: var(--nav-height); /* 紧贴导航栏底部 */
+  left: 0;
+  background-color: var(--dropdown-bg);
+  min-width: 180px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  border-radius: 0 0 4px 4px;
+  overflow: hidden; /* 圆角修剪 */
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 12px 20px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-content a:hover {
+  background-color: #f8f9fa;
+  color: var(--primary-color);
+}
+
+/* 5. 触发显示 */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: var(--hover-bg);
+}
+
+/* 激活状态 */
+.active {
+  background-color: var(--primary-color) !important;
+  border-right: none;
+}
+
+h1 {
+  text-align: center;
+  font-family: 'Cinzel', serif;
+}
+.introduce {
+  background-color: rgba(255, 255, 255, 0.3);
+  max-width: 60%;
+  margin: 100 auto;
+  text-align: center;
+  padding: 40;
+  backdrop-filter: blur(4px);
+  border-radius: 15px;
+  font-size: 30px;
+  border: 2px solid white;
+}
+.poem {
+  background-color: rgba(255, 255, 255, 0.3);
+  max-width: 60%;
+  margin: auto;
+  backdrop-filter: blur(4px);
+  border-radius: 15px;
+  border: 2px solid white;
+  font-family: 'Crimson Text', 'Lora', serif;
+  font-size: 20px;
+}
+.poem p {
+  text-align: center;
+  padding: 40;
+}
+.header {
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 100 auto;
+  backdrop-filter: blur(4px);
+  border-bottom: 2px solid white;
+  border-top: 2px solid white;
+  font-family: 'Crimson Text', 'Lora', serif;
+  font-size: 30px;
+}
+.intro-text {
+  max-width: 60%;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 100 auto;
+  padding: 40;
+  backdrop-filter: blur(4px);
+  border-radius: 15px;
+  font-size: 30px;
+  border: 2px solid white;
+}
+.notes-text {
+  background-color: rgba(255, 255, 255, 0.3);
+  max-width: 60%;
+  margin: 100 auto;
+  padding: 40;
+  backdrop-filter: blur(4px);
+  border-radius: 15px;
+  font-size: 20px;
+  border: 2px solid white;
+}
+.notes a {
+  color: white;
+  text-decoration: underline;
+}
