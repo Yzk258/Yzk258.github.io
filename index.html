@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>111</title>
+    <title>nihao</title>
     <link rel="stylesheet" href="index.css">
 </head>
 
@@ -19,21 +19,50 @@
           <a href="#service3">其他</a>
         </div>
       </div>
-      <a href="#home" class="nav-item">projects</a>
-      <a href="#news" class="nav-item">note</a>
+      <a href="#home" class="nav-item" onclick="location.href='details/projects.html';">projects</a>
+      <a href="#news" class="nav-item" onclick="location.href='details/notes.md';">note</a>
     </div>
 
-    <div class="nav-right">
+    <div class="nav-right" onclick="location.href='details/aboutme.html';">
       <a href="#about" class="nav-item active">关于我</a>
     </div>
   </div>
 </nav>
   
 <body>
-  <h1 style="padding:50;">Winter Project: "PIW"——The Personal Information Web</h1>
+  <div class="main">
+
+  <div class="biaoti">
+    <h1 style="  text-align: center;font-size: 80;
+    font-family: 'Cinzel', serif;padding:50;">Winter Project: "PIW"<br>——The Personal Information Web</h1>
+  </div>
+  
+  <hr class="glow-line">
 
   <p class="introduce">寒假项目之个人学习资料信息库web，目的在于提升自己的web开发能力，补全自己没有个人网站的空缺与遗憾，同时也是对于自己兴趣爱好的追逐。开工，奥里给！</p>
-  <div class="poem">
+  
+  <hr class="glow-line">
+  
+  <div class="aboutme" onclick="location.href='details/aboutme.html';">
+    <div class="aboutme-header">
+      <div class="header-container">
+        <img src="details/maxresdefault.jpg" alt="头像" class="header-image">
+      </div>
+      <h1 style="margin: auto;">关于我</h1>
+    </div>
+    <div class="aboutme-content">
+      <p>
+        目前是大二在读理工🚹，废宅一个，人菜瘾大，喜欢糟蹋各种技术，尤其是编程相关的东西。平时喜欢打游戏（单机游戏为主，从背景和开头的台词也能看出来是一枚老头环发烧友❌）、刷视频、听音乐。
+      </p>
+      <div>
+
+
+      </div>
+    </div>
+
+  </div>
+  
+  <div class="poem" onclick="location.href='https://baike.baidu.com/item/%E8%89%BE%E5%B0%94%E7%99%BB%E6%B3%95%E7%8E%AF/57233820';">
     <p>The fallen leaves tell a story.<br>落叶捎来讯息：</p>
     <p>The great Elden Ring was shattered. In our home, across the fog, the Lands Between.
         <br>在雾的彼端，我们的故乡“交界地”，那伟大的艾尔登法环已经破碎。</p>
@@ -46,6 +75,8 @@
     <p>And one other. Whom grace would again bless. A Tarnished of no renown. Cross the fog, to the Lands Between, to stand before the Elden Ring. And become the Elden Lord.
         <br>……那失去的赐福又再一次， 回到默默无名的褪色者身上。 朝雾的彼端前进，抵达交界地，觐见艾尔登法环，成为艾尔登之王吧!</p>
   </div>
+  
+  <hr class="glow-line">
 
   <div class="introduction" id="introduction">
     <p class="header" style="text-align: center;">
@@ -55,19 +86,71 @@
       1123123123123123131
     </p>
   </div>
+
+  <div class="split-container">
+    <div class="split-box left">
+      <h3>左侧标题</h3>
+      <p>这里写你的左侧内容，比如中文翻译或者技术参数。</p>
+    </div>
+
+    <div class="split-box right">
+      <h3>右侧标题</h3>
+      <p>这里写你的右侧内容，比如英文原文或者项目演示。</p>
+    </div>
+  </div>
+  <hr class="glow-line">
+
   <div class="notes" id="notes">
     <p class="header" style="text-align: center;">
       日志：
     </p>
-    <p class="notes-text">
-      <a class="notes" href="text.md" target="_blank">web更新日志</a>
-    </p>
+    <div class="notes-text">
+      <ul>
+        <li>26/1/25-更新内容：
+          <ul class="fancy-list">
+            <li>正式立项！！！我相信这个项目不会烂尾；</li>
+            <li>目前的打算是建立自己的web，其中涵盖有自己往日的学习资料，同时也会有自己的一些日常分享；</li>
+            <li>为了便于其他人参考与访问，目前还打算移入github的个人项目库之中。</li>
+          </ul>
+        </li>
+
+        <li>26/1/26-更新内容：
+          <ul class="fancy-list">
+            <li>添加背景；</li>
+            <li>添加导航栏；</li>
+            <li>大致分划了内容分区；</li>
+            <li>添加了“关于我”的浮窗以及雪花的动画效果。</li>
+          </ul>
+        </li>
+
+      </ul>
+    </div>
   </div>
+
+  <hr class="glow-line">
+
+
   <div class="projects" id="projects">
     <p class="header" style="text-align: center;">
       一些项目库：
     </p>
+
+    <div class="split-container">
+    <div class="split-box left">
+      <h3>左侧标题</h3>
+      <p>这里写你的左侧内容，比如中文翻译或者技术参数。</p>
+    </div>
+
+    <div class="split-box right">
+      <h3>右侧标题</h3>
+      <p>这里写你的右侧内容，比如英文原文或者项目演示。</p>
+    </div>
   </div>
+  </div>
+
+  <hr class="glow-line">
+
+
   <div class="service3" id="service3">
     <p class="header" style="text-align: center;">
       其他：
@@ -75,13 +158,20 @@
   </div>
   
   
+  <div class="grid-container">
+  <div class="box tall">我是长盒子（占两行）</div>
+  <div class="box">我是普通盒子</div>
+  <div class="box">我是普通盒子</div>
+  <div class="box tall">我是另一个长盒子</div>
+  <div class="box">我是普通盒子</div>
+  </div>
   
   
   
   
-  
-  
-<script src="test.js"></script>
+  </div>
+<script src="index.js"></script>
+
 </body>
 
 

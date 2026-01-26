@@ -5,6 +5,7 @@
   --hover-bg: #34495e;
   --text-white: #ffffff;
   --dropdown-bg: #ffffff;
+  --blur: 5px;
 }
 
 /* 1. 基础重置：消除所有默认间隙 */
@@ -14,15 +15,7 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-  url(maxresdefault.jpg);
-  background-attachment: fixed;
-  background-size: cover;
-  color: white;
-  padding-top: var(--nav-height); /* 给内容留出导航栏高度 */
-}
+
 
 /* 2. 导航主容器：使用 Flexbox */
 .navbar {
@@ -113,13 +106,30 @@ body {
   border-right: none;
 }
 
-h1 {
-  text-align: center;
-  font-family: 'Cinzel', serif;
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+  url(details/maxresdefault.jpg);
+  background-attachment: fixed;
+  background-size: cover;
+  color: white;
+  padding-top: var(--nav-height); /* 给内容留出导航栏高度 */
+}
+.main {
+  width: 60%;
+  margin: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.glow-line {
+    border: none;
+    height: 1px;
+    /* 渐变色：中间亮，两头淡入透明，适合暗色背景 */
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.5), transparent);
+    margin: 40px 0;
 }
 .introduce {
   background-color: rgba(255, 255, 255, 0.3);
-  max-width: 60%;
+  max-width: 80%;
   margin: 100 auto;
   text-align: center;
   padding: 40;
@@ -128,15 +138,74 @@ h1 {
   font-size: 30px;
   border: 2px solid white;
 }
-.poem {
+.aboutme {
+  transition: all 0.3s ease; /* 关键：让变化在0.3秒内平滑发生 */
   background-color: rgba(255, 255, 255, 0.3);
   max-width: 60%;
+  position: fixed;
+  padding: 20;
+  top: 200;
+  right: 20;
+  width: 400px;
+  overflow: hidden;
+  display: fixed;
+  backdrop-filter: blur(4px);
+  border-radius: 15px;
+  font-size: 20px;
+  border: 2px solid white;
+  z-index: 1001;
+  cursor: pointer;
+}
+.aboutme:hover {
+  transform: translateX(-10px) translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+}
+.aboutme-header {
+  display: flex;
+  align-items: center;
+  padding: 20;
+  gap: 300;
+}
+.header-container {
   margin: auto;
+  overflow: hidden;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+.header-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.poem {
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease; /* 关键：让变化在0.3秒内平滑发生 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 初始的小阴影 */
+  cursor: pointer;           /* 提示用户这是可以互动的 */
+  max-width: 100%;
+  margin: 100 auto;
   backdrop-filter: blur(4px);
   border-radius: 15px;
   border: 2px solid white;
   font-family: 'Crimson Text', 'Lora', serif;
   font-size: 20px;
+}
+
+/* 2. 悬停状态：触发抬起和阴影加深 */
+.poem:hover {
+    /* 向上移动 10 像素 */
+  transform: translateY(-10px); 
+    
+    /* 阴影变得更模糊、更长，模拟距离地面变远的效果 */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    
+    /* 可选：让背景变亮一点点 */
+  background: rgba(255, 255, 255, 0.2);
 }
 .poem p {
   text-align: center;
@@ -151,6 +220,7 @@ h1 {
   font-family: 'Crimson Text', 'Lora', serif;
   font-size: 30px;
 }
+
 .intro-text {
   max-width: 60%;
   background-color: rgba(255, 255, 255, 0.3);
@@ -161,6 +231,7 @@ h1 {
   font-size: 30px;
   border: 2px solid white;
 }
+
 .notes-text {
   background-color: rgba(255, 255, 255, 0.3);
   max-width: 60%;
@@ -171,7 +242,103 @@ h1 {
   font-size: 20px;
   border: 2px solid white;
 }
-.notes a {
+
+
+.split-container {
+  display: flex;          /* 开启弹性布局 */
+  justify-content: space-between; /* 两端对齐 */
+  gap: 40px;              /* 左右两块之间的间距 */
+  max-width: 90%;      /* 限制最大宽度 */
+  margin: 40px auto;      /* 居中并留出上下间距 */
+  padding: 0 20px;
+}
+
+.split-box {
+  flex: 1;                /* 核心：两边各占 50% 的空间 */
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.15); /* 半透明背景 */
+  backdrop-filter: blur(4px);           /* 磨砂效果 */
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.grid-container {
+  display: grid;
+  /* 定义 3 列，每列等宽 */
+  grid-template-columns: repeat(3, 1fr); 
+  /* 定义行高，比如每行 200px */
+  grid-auto-rows: 200px; 
+  gap: 20px;
+}
+
+.box {
+  transition: all 0.3s ease; /* 关键：让变化在0.3秒内平滑发生 */
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(var(--blur));
+  border: 1px solid white;
+  border-radius: 15px;
+  padding: 20px;
+}
+/* 2. 悬停状态：触发抬起和阴影加深 */
+.box:hover {
+    /* 向上移动 10 像素 */
+  transform: translateY(-10px); 
+    
+    /* 阴影变得更模糊、更长，模拟距离地面变远的效果 */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    
+    /* 可选：让背景变亮一点点 */
+  background: rgba(255, 255, 255, 0.2);
+}
+/* 关键：让带 .tall 类的盒子纵向跨越 2 个网格 */
+.tall {
+  grid-row: span 2; 
+  /* 如果你还想让它横向跨越，可以加 grid-column: span 2; */
+}
+/* 针对移动端的适配：屏幕太窄时变成上下排列 */
+@media (max-width: 768px) {
+  .split-container {
+    flex-direction: column; 
+  }
+}
+
+.fancy-list {
+  list-style: none;      /* 去掉默认的小圆点 */
+  counter-reset: my-counter; /* 初始化计数器 */
+  padding: 0;
+}
+
+.fancy-list li {
+  counter-increment: my-counter; /* 每次遇到 li，数字加 1 */
+  position: relative;
+  padding: 15px 15px 15px 50px; /* 为左侧数字留出空间 */
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: transform 0.2s;
+}
+
+/* 设计数字标号的外观 */
+.fancy-list li::before {
+  content: counter(my-counter); /* 显示数字 */
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  
+  /* 数字的形状和颜色 */
+  width: 28px;
+  height: 28px;
+  background: var(--nav-bg);
   color: white;
-  text-decoration: underline;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.fancy-list li:hover {
+  transform: translateX(10px); /* 悬停时向右微滑 */
+  background: rgba(255, 255, 255, 0.2);
 }
