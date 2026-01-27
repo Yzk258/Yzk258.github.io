@@ -30,16 +30,48 @@
 </nav>
   
 <body>
-  <div class="main">
+  <div class="top" id="top">
+    <div class="top-image">
+      <div class="top-image-container">
+        <img src="details/maxresdefault.jpg" alt="头像" class="header-image">
+      </div>
+      <div class="top-name">
+        <h1 style="text-align: center;">YZK</h1>
+      </div>
+      
 
-  <div class="biaoti">
-    <h1 style="  text-align: center;font-size: 80;
-    font-family: 'Cinzel', serif;padding:50;">Winter Project: "PIW"<br>——The Personal Information Web</h1>
+    </div>
+    <div class="top-text">
+      <p>早上中午晚上好！老大！</p>
+      <p>Welcome to YZK's Personal Information Web!</p>
+
+
+
+    </div>
   </div>
-  
-  <hr class="glow-line">
 
-  <p class="introduce">寒假项目之个人学习资料信息库web，目的在于提升自己的web开发能力，补全自己没有个人网站的空缺与遗憾，同时也是对于自己兴趣爱好的追逐。开工，奥里给！</p>
+
+  <div class="main-background">
+  <div class="main">
+  <aside class="sidebar-menu">
+  <nav>
+    <ul>
+      <li><a href="#introduce" class="menu-item active">简介</a></li>
+      <li><a href="#poem" class="menu-item">法环序言</a></li>
+      <li><a href="#introduction" class="menu-item">网站介绍</a></li>
+      <li><a href="#notes" class="menu-item">日志更新</a></li>
+      <li><a href="#projects" class="menu-item">项目展示</a></li>
+      <li><a href="#service3" class="menu-item">其他</a></li>
+    </ul>
+  </nav>
+  </aside>
+  <div class="biaoti">
+    <h1 style="  text-align: center;font-size: 40;
+    font-family: 'Cinzel', serif;padding:50;">Winter Project: "PIW"<br>——The Personal Information Web</h1>
+    <p class="introduce" id="introduce">寒假项目之个人学习资料信息库web，目的在于提升自己的web开发能力，补全自己没有个人网站的空缺与遗憾，同时也是对于自己兴趣爱好的追逐。开工，奥里给！</p>
+  
+</div>
+  
   
   <hr class="glow-line">
   
@@ -48,7 +80,7 @@
       <div class="header-container">
         <img src="details/maxresdefault.jpg" alt="头像" class="header-image">
       </div>
-      <h1 style="margin: auto;">关于我</h1>
+      <h2 style="margin: auto;">关于我</h2>
     </div>
     <div class="aboutme-content">
       <p>
@@ -61,8 +93,8 @@
     </div>
 
   </div>
-  
-  <div class="poem" onclick="location.href='https://baike.baidu.com/item/%E8%89%BE%E5%B0%94%E7%99%BB%E6%B3%95%E7%8E%AF/57233820';">
+  <h1 class="xuyan" >---法环序言---</h1>
+  <div class="poem" id="poem" onclick="location.href='https://baike.baidu.com/item/%E8%89%BE%E5%B0%94%E7%99%BB%E6%B3%95%E7%8E%AF/57233820';">
     <p>The fallen leaves tell a story.<br>落叶捎来讯息：</p>
     <p>The great Elden Ring was shattered. In our home, across the fog, the Lands Between.
         <br>在雾的彼端，我们的故乡“交界地”，那伟大的艾尔登法环已经破碎。</p>
@@ -83,7 +115,8 @@
       网站介绍：
     </p>
     <p class="intro-text">
-      1123123123123123131
+      这是一个用于存放个人学习资料与项目的web，旨在提升个人的web开发能力，同时也作为个人学习资料的一个归档与分享平台。
+      未来可能会持续更新内容，添加更多有趣和实用的功能，敬请期待！
     </p>
   </div>
 
@@ -104,6 +137,7 @@
     <p class="header" style="text-align: center;">
       日志：
     </p>
+
     <div class="notes-text">
       <ul>
         <li>26/1/25-更新内容：
@@ -123,8 +157,12 @@
           </ul>
         </li>
 
+        <li><a href="details/notes.md">...</a>
+
+        </li>
       </ul>
     </div>
+
   </div>
 
   <hr class="glow-line">
@@ -146,6 +184,13 @@
       <p>这里写你的右侧内容，比如英文原文或者项目演示。</p>
     </div>
   </div>
+  <div class="grid-container">
+  <div class="box tall">说点什么好呢？</div>
+  <div class="box fat">我也不知道。</div>
+  <div class="box">随便说一点吧！</div>
+  <div class="box tall">我是一个高高的盒子。</div>
+  <div class="box">我是一个普通的盒子。</div>
+  </div>
   </div>
 
   <hr class="glow-line">
@@ -159,17 +204,39 @@
   
   
   <div class="grid-container">
-  <div class="box tall">我是长盒子（占两行）</div>
+  <div class="box big">我是大盒子</div>
+  <div class="box tall">我是高盒子</div>
+  <div class="box fat">我是胖盒子</div>
   <div class="box">我是普通盒子</div>
-  <div class="box">我是普通盒子</div>
-  <div class="box tall">我是另一个长盒子</div>
-  <div class="box">我是普通盒子</div>
+  <div class="box tall">我是另一个高盒子</div>
   </div>
   
-  
-  
-  
+  <hr class="glow-line" style="margin-bottom: 0px;">
+
+  <div class="footer">
+    <div class="footer-left">
+    <p>© 2026 YZK. All rights reserved.</p>
+    <p>联系我：yzk24@mails.tsinghua.edu.cn</p>
+    </div>
+    <div class="footer-right">
+    <a href="#top">Top</a>
+    </div>
   </div>
+
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
 <script src="index.js"></script>
 
 </body>
@@ -180,5 +247,3 @@
 
 
 </html>
-
-
