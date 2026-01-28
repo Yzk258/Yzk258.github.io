@@ -19,17 +19,38 @@
           <a href="#service3">其他</a>
         </div>
       </div>
-      <a href="#home" class="nav-item" onclick="location.href='details/projects.html';">projects</a>
-      <a href="#news" class="nav-item" onclick="location.href='details/notes.md';">note</a>
+      <a class="nav-item" onclick="location.href='details/projects.html';">一些项目库</a>
+      <a class="nav-item" onclick="location.href='details/notes.md';">更新日志</a>
+      <a class="nav-item" onclick="location.href='details/study.html';">学习资料库</a>
     </div>
+    <div class="search-box" style="margin: auto;">
+      <input type="text" id="searchInput" placeholder="请输入搜索内容..." onkeydown="if(event.keyCode==13) searchAll()">
+      <button onclick="searchAll()">搜索</button>
+    </div>
+
+<script>
+function searchAll() {
+  const query = document.getElementById('searchInput').value;
+  if (query) {
+    // 这里以百度为例，也可以换成 google.com/search?q=
+    window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(query)}`, '_blank');
+  }
+}
+</script>
+
+
+
+
 
     <div class="nav-right" onclick="location.href='details/aboutme.html';">
       <a href="#about" class="nav-item active">关于我</a>
     </div>
   </div>
 </nav>
-  
+
 <body>
+  <div id="star-container"></div>
+  <div class="top-wrapper">
   <div class="top" id="top">
     <div class="top-image">
       <div class="top-image-container">
@@ -42,17 +63,25 @@
 
     </div>
     <div class="top-text">
-      <p>早上中午晚上好！老大！</p>
+      <p class="type">早上中午晚上好！老大！</p>
       <p>Welcome to YZK's Personal Information Web!</p>
 
 
 
     </div>
   </div>
+  </div>
 
 
   <div class="main-background">
+  <div class="overlay">
+
   <div class="main">
+
+
+
+
+
   <aside class="sidebar-menu">
   <nav>
     <ul>
@@ -91,8 +120,16 @@
 
       </div>
     </div>
-
   </div>
+
+  <div class="biaoqingbao">
+    <div class="biaoqingbao-container">
+      <img src="details/feixiao.gif" alt="表情包" class="biaoqingbao-image">
+
+    </div>
+  </div>
+
+
   <h1 class="xuyan" >---法环序言---</h1>
   <div class="poem" id="poem" onclick="location.href='https://baike.baidu.com/item/%E8%89%BE%E5%B0%94%E7%99%BB%E6%B3%95%E7%8E%AF/57233820';">
     <p>The fallen leaves tell a story.<br>落叶捎来讯息：</p>
@@ -157,7 +194,7 @@
           </ul>
         </li>
 
-        <li><a href="details/notes.md">...</a>
+        <li><a href="details/notes.md" target="_blank">...</a>
 
         </li>
       </ul>
@@ -223,8 +260,46 @@
     </div>
   </div>
 
-
   </div>
+    <div class="secondary">
+      <h2 style="text-align: center;">🔍猜你想找</h2>
+      <hr class="glow-line">
+
+      <div class="guessyoulike">
+        
+        <div class="like-item-container">
+          <div class="like-item-block-1">
+            <div class="like-item-block-1-image" style="background-image: url(details/background.png);">
+              <p style="font-size: 40px;">数据结构dsa</p>                
+            </div>
+            <p style="font-size: 15px;">大二春季学期邓老师《数据结构》课程</p>
+          </div>
+
+          <div class="like-item-block-1">
+            <div class="like-item-block-1-image" style="background-image: url(details/background2.png);">
+              <p style="font-size: 35px;">概率论与数理统计</p>                
+            </div>
+            <p style="font-size: 15px;">大二秋季学期唐老师《概率论与数理统计》课程</p>
+          </div>
+
+          <div class="like-item-block-1">
+            <div class="like-item-block-1-image" style="background-image: url(details/background3.png);">
+              <p style="font-size: 30px;">复变函数与数理方程</p>                
+            </div>
+            <p style="font-size: 15px;">大二秋季学期吴老师《复变函数与数理方程》课程</p>
+          </div>
+
+
+
+        </div>
+
+
+
+
+      </div>
+  </div>
+  
+</div>
 </div>
 
 

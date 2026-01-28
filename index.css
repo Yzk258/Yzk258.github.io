@@ -10,6 +10,7 @@
   --block-color-hover: rgba(255, 255, 255, 0.3);
   --border-color: rgba(255, 255, 255, 0.3);
   --border: 1px solid rgba(255, 255, 255, 0.3);
+  --golden-color: #d4af37;
 }
 html {
   scroll-behavior: smooth; /* 点击链接平滑滑动，而不是瞬间闪现 */
@@ -58,7 +59,7 @@ html {
   font-size: 15px;
   height: 100%; /* 填满导航栏高度 */
   transition: background 0.2s;
-  border-right: 1px solid 
+  border-right: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .nav-item:hover {
@@ -139,8 +140,10 @@ html {
 
 /* 激活状态的样式：变亮并变色 */
 .menu-item.active {
-  color: #d4af37; /* 艾尔登法环黄金色 */
+  color: var(--golden-color); /* 艾尔登法环黄金色 */
   font-weight: bold;
+  border-radius: 5px;
+  text-decoration: underline;
   transform: scale(1.1);
   padding-left: 5px;
 }
@@ -151,7 +154,39 @@ html {
     display: none;
   }
 }
+/* 修改星星样式 */
+.star {
+    position: fixed;
+    background: var(--golden-color);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 999;
+    /* 核心：三层阴影叠加，打造神圣感 */
+    box-shadow: 
+        0 0 5px #fff,           /* 核心白光 */
+        0 0 10px #d4af37,       /* 黄金内晕 */
+        0 0 20px rgba(212, 175, 55, 0.5); /* 扩散余晖 */
+    animation: starLife linear forwards;
+}
 
+@keyframes starLife {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+        transform: scale(1) rotate(45deg);
+    }
+    80% {
+        opacity: 0.8;
+        transform: scale(1.2) rotate(135deg); /* 慢慢变大并旋转 */
+    }
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
 
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
@@ -171,31 +206,120 @@ body {
   align-items: center;
   padding: 40px;
 }
+
+
+
+
+/* 1. 头像容器：设置为相对定位，作为光圈的参考系 */
 .top-image-container {
-  display: flex;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  margin: auto;
-  overflow: hidden;
-  border: 4px solid white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    position: relative;
+    display: flex;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    margin: auto;
+    overflow: visible; /* 必须改为 visible，否则外发光会被剪裁 */
+    border: 4px solid rgba(212, 175, 55, 0.8); /* 黄金边框 */
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); /* 基础静止光晕 */
 }
+
+/* 2. 使用伪元素制作旋转流光 */
+.top-image-container::before {
+    content: "";
+    position: absolute;
+    top: -10px; /* 比容器稍大 */
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border-radius: 50%;
+    
+    /* 核心：锥形渐变模拟旋转的光束 */
+background: conic-gradient(
+    transparent, #d4af37, #fff, #d4af37, transparent 30%,
+    transparent 50%, #00d4ff, #fff, #00d4ff, transparent 80%
+);
+    
+    /* 模糊效果让光束变柔和 */
+    filter: blur(8px);
+    z-index: -1; /* 放在头像后面 */
+    animation: goldRotate 4s linear infinite;
+}
+
+/* 3. 增加一个呼吸的外发光层 */
+.top-image-container::after {
+    content: "";
+    position: absolute;
+    inset: 0px;
+    border-radius: 50%;
+    box-shadow: 0 0 30px #d4af37;
+    opacity: 0.5;
+    z-index: -1;
+    animation: goldPulse 3s ease-in-out infinite alternate;
+}
+
+/* 4. 定义动画 */
+/* 旋转动画 */
+@keyframes goldRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 呼吸闪烁动画 */
+@keyframes goldPulse {
+    from { opacity: 0.3; transform: scale(0.98); }
+    to { opacity: 0.8; transform: scale(1.02); }
+}
+
+/* 5. 确保内部头像不会被遮挡且保持圆形 */
+.header-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%; /* 保持头像圆形 */
+    z-index: 1;
+}
+
+
 .top-name {
   font-size: 40px;
   font-weight: bold;
-  color: goldenrod;
+  color: var(--golden-color);
   text-shadow: 0 0 10px rgba(212, 175, 55, 0.7);
 }
 .top-text {
   text-align: center;
+  font-family: 'Times New Roman', Times, serif;
   font-size: 50px;
   margin-top: 20px;
   color: white;
-  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 0 5px var(--golden-color);
 }
 
+.type{
+    display: inline; /* 关键：让容器宽度随文字增长 */
+    position: relative;
+    padding-right: 5px; /* 给光标留点呼吸空间 */
+}
 
+/* 使用伪元素制作光标 */
+.type::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 15%;      /* 稍微向下偏移一点点，视觉上更居中 */
+    width: 4px;    /* 光标宽度 */
+    height: 70%;   /* 光标高度 */
+    background-color: var(--golden-color);
+    box-shadow: 0 0 8px var(--golden-color); /* 让光标也带点金光 */
+    
+    /* 闪烁动画 */
+    animation: cursorBlink 0.8s infinite;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
 
 
 .main-background {
@@ -206,12 +330,19 @@ body {
   padding-bottom: 0px;
 }
 
+.overlay {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+
+}
+
 .main {
   width: 90%;
   max-width: 900px;
   border-left: 1px solid var(--hover-bg);
   border-right: 1px solid var(--hover-bg);
-  margin: auto;
 }
 .glow-line {
     border: none;
@@ -238,9 +369,9 @@ body {
   background-color: var(--block-color);
   max-width: 60%;
   position: fixed;
-  padding: 20;
-  top: 200;
-  right: 20;
+  padding: 20px;
+  top: 200px;
+  right: 20px;
   width: 350px;
   overflow: hidden;
   display: fixed;
@@ -276,6 +407,39 @@ body {
   height: 100%;
   object-fit: cover;
 }
+
+.biaoqingbao {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 2000;
+    cursor: grab;
+    /* 重点：让 transform 的回归变得平滑 */
+    /* 我们给 transform 设置一个弹性曲线 */
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+    touch-action: none;
+}
+
+.biaoqingbao:active {
+    cursor: grabbing; /* 按下时的手型 */
+}
+
+.biaoqingbao-container {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  border-radius: 25%;
+  overflow: hidden;
+}
+.biaoqingbao-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none; /* 防止图片默认的“拖拽图片保存”行为干扰 JS */
+
+}
+
 
 .poem {
   background-color: var(--block-color);
@@ -550,4 +714,62 @@ body {
   font-size: 30px;
   text-decoration: none;
   color: var(--primary-color);
+}
+
+
+.secondary {
+  width: 400px;
+  height: 1000px;
+  background-color: rgba(19, 28, 98, 0.5);
+  padding: 40px;
+  border-radius: 5px;
+  border: 2px dashed var(--block-color);
+  box-shadow: inset 0 0 10px 5px rgba(0, 0, 0, 0.5);
+}
+
+.guessyoulike {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+
+
+
+.like-item-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 80%;
+  gap: 20px;
+}
+
+.like-item-block-1 {
+  width: 350px;
+  padding: 5px;
+  height: 250px;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: block;
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  font-size: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: 300ms;
+}
+.like-item-block-1-image {
+  width: 325px;
+  height: 180px;
+  margin: 10px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  border-radius: 10px;
+  
+}
+.like-item-block-1:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  background: var(--block-color-hover);
 }
