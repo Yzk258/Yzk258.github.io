@@ -23,22 +23,10 @@
       <a class="nav-item" onclick="location.href='details/notes.md';">更新日志</a>
       <a class="nav-item" onclick="location.href='details/study.html';">学习资料库</a>
     </div>
-    <div class="search-box" style="margin: auto;">
-      <input type="text" id="searchInput" placeholder="请输入搜索内容..." onkeydown="if(event.keyCode==13) searchAll()">
-      <button onclick="searchAll()">搜索</button>
-    </div>
-
-<script>
-function searchAll() {
-  const query = document.getElementById('searchInput').value;
-  if (query) {
-    // 这里以百度为例，也可以换成 google.com/search?q=
-    window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(query)}`, '_blank');
-  }
-}
-</script>
-
-
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="搜索文件、网页或文件夹..." autocomplete="off">
+    <div id="resultsList" class="results-list"></div>
+</div>
 
 
 
@@ -85,23 +73,54 @@ function searchAll() {
   <aside class="sidebar-menu">
   <nav>
     <ul>
-      <li><a href="#introduce" class="menu-item active">简介</a></li>
-      <li><a href="#poem" class="menu-item">法环序言</a></li>
       <li><a href="#introduction" class="menu-item">网站介绍</a></li>
+      <li><a href="#poem" class="menu-item">法环序言</a></li>
       <li><a href="#notes" class="menu-item">日志更新</a></li>
       <li><a href="#projects" class="menu-item">项目展示</a></li>
       <li><a href="#service3" class="menu-item">其他</a></li>
     </ul>
   </nav>
   </aside>
+
   <div class="biaoti">
     <h1 style="  text-align: center;font-size: 40;
     font-family: 'Cinzel', serif;padding:50;">Winter Project: "PIW"<br>——The Personal Information Web</h1>
-    <p class="introduce" id="introduce">寒假项目之个人学习资料信息库web，目的在于提升自己的web开发能力，补全自己没有个人网站的空缺与遗憾，同时也是对于自己兴趣爱好的追逐。开工，奥里给！</p>
-  
 </div>
-  
-  
+
+
+  <hr class="glow-line">
+
+  <div class="introduction" id="introduction">
+    <p class="header" style="text-align: center;margin-bottom: 20px;">
+      网站介绍：
+    </p>
+      <div class="introduce">
+      <p style="text-indent: 0%;">To陌生人：</p>
+      <p>
+        恭喜你，你发现了<span style="font-size: 30px;color: brown;"><del>答辩</del></span>！这个网站可能对你无很大帮助，因为创立初衷只是为了<span style="font-size: 30px;">练习</span>作者的web能力。作为寒假项目之个人学习资料信息库web，目的在于提升作者自己的web开发能力，补全自己没有个人网站的空缺与遗憾，同时也是对于自己兴趣爱好的追逐。
+        因此无论是<span style="font-size: 30px;color: red;"><技术性></span>还是<span style="font-size: 30px;color: red;"><规范性></span>上都远远不如各位一根（？<span style="text-decoration: underline;font-size: 30px;">嘴下留情😭！</span>
+      </p>
+      <P>
+        当然，如果你对这个网站感兴趣，想要了解更多关于作者的信息，或者想要获取一些学习资料，也可以在我的web中进行访问，绝对开源，且仅供学习交流使用！
+        毕竟，<span style="font-size: 30px;color: goldenrod; text-decoration: underline;">To share is to live - 只有分享才是真正的活过。</span>祝我们都能徜徉于知识的海洋，共勉！
+      </P>
+      
+    <div class="split-container">
+    <div class="split-box left">
+      <h3>左侧标题</h3>
+      <p>这里写你的左侧内容，比如中文翻译或者技术参数。</p>
+    </div>
+
+    <div class="split-box right">
+      <h3>右侧标题</h3>
+      <p>这里写你的右侧内容，比如英文原文或者项目演示。</p>
+    </div>
+  </div>
+
+
+
+    </div>
+    </div>
   <hr class="glow-line">
   
   <div class="aboutme" onclick="location.href='details/aboutme.html';">
@@ -113,7 +132,8 @@ function searchAll() {
     </div>
     <div class="aboutme-content">
       <p>
-        目前是大二在读理工🚹，废宅一个，人菜瘾大，喜欢糟蹋各种技术，尤其是编程相关的东西。平时喜欢打游戏（单机游戏为主，从背景和开头的台词也能看出来是一枚老头环发烧友❌）、刷视频、听音乐。
+        目前是大二在读理工🚹，废宅一个，人菜瘾大，喜欢糟蹋各种技术，尤其是和code相关的东西。
+        平时喜欢打打小游戏（单机抑智小游戏为主，从背景和开头的台词也能看出来是一枚老头环魔怔人❌）、刷刷小视频、听听小音乐、搞搞小啾啾（？。
       </p>
       <div>
 
@@ -147,36 +167,16 @@ function searchAll() {
   
   <hr class="glow-line">
 
-  <div class="introduction" id="introduction">
-    <p class="header" style="text-align: center;">
-      网站介绍：
-    </p>
-    <p class="intro-text">
-      这是一个用于存放个人学习资料与项目的web，旨在提升个人的web开发能力，同时也作为个人学习资料的一个归档与分享平台。
-      未来可能会持续更新内容，添加更多有趣和实用的功能，敬请期待！
-    </p>
-  </div>
 
-  <div class="split-container">
-    <div class="split-box left">
-      <h3>左侧标题</h3>
-      <p>这里写你的左侧内容，比如中文翻译或者技术参数。</p>
-    </div>
-
-    <div class="split-box right">
-      <h3>右侧标题</h3>
-      <p>这里写你的右侧内容，比如英文原文或者项目演示。</p>
-    </div>
-  </div>
-  <hr class="glow-line">
 
   <div class="notes" id="notes">
     <p class="header" style="text-align: center;">
       日志：
     </p>
-
+    <div class="notes-text-container">
     <div class="notes-text">
       <ul>
+        <div style="color: white; text-decoration: none; font-size: 30px; text-align: center;">web更新日志</div>
         <li>26/1/25-更新内容：
           <ul class="fancy-list">
             <li>正式立项！！！我相信这个项目不会烂尾；</li>
@@ -194,12 +194,19 @@ function searchAll() {
           </ul>
         </li>
 
-        <li><a href="details/notes.md" target="_blank">...</a>
+        <li><a href="details/notes.md" target="_blank">...（点击查看更多！）</a>
 
         </li>
       </ul>
     </div>
+        <div class="notes-text">
+      <ul>
+        <li>此地空空如也。。。
+        </li>
 
+      </ul>
+    </div>
+    </div>
   </div>
 
   <hr class="glow-line">
@@ -256,7 +263,7 @@ function searchAll() {
     <p>联系我：yzk24@mails.tsinghua.edu.cn</p>
     </div>
     <div class="footer-right">
-    <a href="#top">Top</a>
+    <a href="#top">↑Top</a>
     </div>
   </div>
 

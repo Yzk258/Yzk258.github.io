@@ -166,3 +166,70 @@ window.addEventListener('scroll', function() {
         topElement.classList.remove('is-sidebar');
     }
 });
+
+
+const searchInput = document.getElementById('searchInput');
+const resultsList = document.getElementById('resultsList');
+
+const data = [
+    { title: "2024产品手册", url: "./files/manual.pdf", type: "file", category: "previewable" },
+    { title: "公司官网", url: "https://www.google.com", type: "web" },
+    { title: "公司官网1", url: "https://www.google.com", type: "web" },
+    { title: "公司官网2", url: "https://www.google.com", type: "web" },
+    { title: "素材资源库", url: "/assets/images/", type: "folder" },
+    { title: "财务报表", url: "./files/report.xlsx", type: "file", category: "download-only" }
+];
+
+searchInput.addEventListener('input', (e) => {
+    const value = e.target.value.trim().toLowerCase();
+    
+    if (!value) {
+        resultsList.classList.remove('show');
+        return;
+    }
+
+    const matched = data.filter(item => 
+        item.title.toLowerCase().includes(value)
+    );
+
+    renderResults(matched);
+});
+
+function renderResults(results) {
+    if (results.length === 0) {
+        resultsList.innerHTML = `<div class="no-results">🔍 未找到相关结果</div>`;
+    } else {
+        resultsList.innerHTML = results.map(item => {
+            let icon = "📄";
+            let actionHtml = "";
+
+            if (item.type === "web") {
+                icon = "🌐";
+                actionHtml = `<a href="${item.url}" target="_blank" class="btn">访问</a>`;
+            } else if (item.type === "folder") {
+                icon = "📁";
+                actionHtml = `<a href="${item.url}" class="btn">打开</a>`;
+            } else {
+                const previewBtn = item.category === 'previewable' 
+                    ? `<a href="${item.url}" target="_blank" class="btn">预览</a>` 
+                    : "";
+                actionHtml = `${previewBtn} <a href="${item.url}" download="${item.title}" class="btn">下载</a>`;
+            }
+
+            return `
+                <div class="result-item">
+                    <div class="result-info">${icon} ${item.title}</div>
+                    <div class="action-btns">${actionHtml}</div>
+                </div>
+            `;
+        }).join('');
+    }
+    resultsList.classList.add('show');
+}
+
+// 点击空白处关闭
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-container')) {
+        resultsList.classList.remove('show');
+    }
+});
