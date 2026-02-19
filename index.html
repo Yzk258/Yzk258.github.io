@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>nihao</title>
+    <title>YZK'web</title>
     <link rel="stylesheet" href="index.css">
 </head>
 
@@ -19,9 +19,9 @@
           <a href="#service3">其他</a>
         </div>
       </div>
-      <a class="nav-item" onclick="location.href='details/projects.html';">一些项目库</a>
-      <a class="nav-item" onclick="location.href='details/notes.md';">更新日志</a>
-      <a class="nav-item" onclick="location.href='details/study.html';">学习资料库</a>
+      <a class="nav-item" onclick="location.href='subweb/projects/projects.html';">项目库</a>
+      <a class="nav-item" onclick="location.href='subweb/note/notes.md';">更新日志</a>
+      <a class="nav-item" onclick="location.href='subweb/study/study.html';">学习资料库</a>
     </div>
 <div class="search-container">
     <input type="text" id="searchInput" placeholder="搜索文件、网页或文件夹..." autocomplete="off">
@@ -30,7 +30,7 @@
 
 
 
-    <div class="nav-right" onclick="location.href='details/aboutme.html';">
+    <div class="nav-right" onclick="location.href='subweb/aboutme/aboutme.html';">
       <a href="#about" class="nav-item active">关于我</a>
     </div>
   </div>
@@ -53,6 +53,7 @@
     <div class="top-text">
       <p class="type">早上中午晚上好！老大！</p>
       <p>Welcome to YZK's Personal Information Web!</p>
+      <p>北京时间：<span id="clock"></span></p>
 
 
 
@@ -91,7 +92,7 @@
   <hr class="glow-line">
 
   <div class="introduction" id="introduction">
-    <p class="header" style="text-align: center;margin-bottom: 20px;">
+    <p class="header">
       网站介绍：
     </p>
       <div class="introduce">
@@ -123,7 +124,7 @@
     </div>
   <hr class="glow-line">
   
-  <div class="aboutme" onclick="location.href='details/aboutme.html';">
+  <div class="aboutme" onclick="location.href='subweb/aboutme/aboutme.html';">
     <div class="aboutme-header">
       <div class="header-container">
         <img src="details/maxresdefault.jpg" alt="头像" class="header-image">
@@ -143,7 +144,7 @@
   </div>
 
   <div class="biaoqingbao">
-    <div class="biaoqingbao-container">
+    <div class="biaoqingbao-container" title="拖动我试一试！">
       <img src="details/feixiao.gif" alt="表情包" class="biaoqingbao-image">
 
     </div>
@@ -170,7 +171,7 @@
 
 
   <div class="notes" id="notes">
-    <p class="header" style="text-align: center;">
+    <p class="header">
       日志：
     </p>
     <div class="notes-text-container">
@@ -213,7 +214,7 @@
 
 
   <div class="projects" id="projects">
-    <p class="header" style="text-align: center;">
+    <p class="header">
       一些项目库：
     </p>
 
@@ -241,7 +242,7 @@
 
 
   <div class="service3" id="service3">
-    <p class="header" style="text-align: center;">
+    <p class="header">
       其他：
     </p>
   </div>
@@ -269,27 +270,33 @@
 
   </div>
     <div class="secondary">
-      <h2 style="text-align: center;">🔍猜你想找</h2>
+      <p style="text-align: left;">正在进行中的文档：</p>
+      <p style="text-align: center;">学习资料库/大二下/数据结构</p>
+
+
+      <hr class="glow-line">
+      
+      <h2 style="text-align: center;">🔍猜你想找：</h2>
       <hr class="glow-line">
 
       <div class="guessyoulike">
         
         <div class="like-item-container">
-          <div class="like-item-block-1">
+          <div class="like-item-block-1" onclick="location.href='subweb/study/study.html#ds';" >
             <div class="like-item-block-1-image" style="background-image: url(details/background.png);">
               <p style="font-size: 40px;">数据结构dsa</p>                
             </div>
             <p style="font-size: 15px;">大二春季学期邓老师《数据结构》课程</p>
           </div>
 
-          <div class="like-item-block-1">
+          <div class="like-item-block-1" onclick="location.href='subweb/study/study.html#probability';">
             <div class="like-item-block-1-image" style="background-image: url(details/background2.png);">
               <p style="font-size: 35px;">概率论与数理统计</p>                
             </div>
             <p style="font-size: 15px;">大二秋季学期唐老师《概率论与数理统计》课程</p>
           </div>
 
-          <div class="like-item-block-1">
+          <div class="like-item-block-1" onclick="location.href='subweb/study/study.html#fb';">
             <div class="like-item-block-1-image" style="background-image: url(details/background3.png);">
               <p style="font-size: 30px;">复变函数与数理方程</p>                
             </div>

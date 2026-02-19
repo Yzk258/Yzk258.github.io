@@ -172,12 +172,46 @@ const searchInput = document.getElementById('searchInput');
 const resultsList = document.getElementById('resultsList');
 
 const data = [
-    { title: "2024产品手册", url: "./files/manual.pdf", type: "file", category: "previewable" },
-    { title: "公司官网", url: "https://www.google.com", type: "web" },
-    { title: "公司官网1", url: "https://www.google.com", type: "web" },
-    { title: "公司官网2", url: "https://www.google.com", type: "web" },
-    { title: "素材资源库", url: "/assets/images/", type: "folder" },
-    { title: "财务报表", url: "./files/report.xlsx", type: "file", category: "download-only" }
+    { title: "主页（为什么不直接从左边进呢？）", url: "./index.html", type: "web" },
+    { title: "项目库（为什么不直接从左边进呢？）", url: "./subweb/projects/projects.html", type: "web" },
+    { title: "学习资料库（为什么不直接从左边进呢？）", url: "./subweb/study/study.html", type: "web" },
+    { title: "日志（为什么不直接从左边进呢？）", url: "./subweb/note/notes.md", type: "web" },
+
+    // 大一上学期
+    { title: "微积分A1", url: "./subweb/study/study.html#math1", type: "web" },
+    { title: "线性代数（理科类）", url: "./subweb/study/study.html#matrix", type: "web" },
+    { title: "基础物理学1", url: "./subweb/study/study.html#jw1", type: "web" },
+    { title: "写作与沟通", url: "./subweb/study/study.html#write", type: "web" },
+    { title: "英语阅读与写作b", url: "./subweb/study/study.html#english1", type: "web" },
+
+    // 大一下学期
+    { title: "微积分A2", url: "./subweb/study/study.html#math2", type: "web" },
+    { title: "基础物理学2", url: "./subweb/study/study.html#jw2", type: "web" },
+    { title: "计算机程序设计基础python", url: "./subweb/study/study.html#python", type: "web" },
+    { title: "基础物理实验1", url: "./subweb/study/study.html#jwsy1", type: "web" },
+    { title: "工程图学基础", url: "./subweb/study/study.html#gt", type: "web" },
+    { title: "英语听说b", url: "./subweb/study/study.html#english2", type: "web" },
+    { title: "通识课", url: "./subweb/study/study.html#general1", type: "web" },
+
+    // 大二上学期
+    { title: "复变函数与数理方程", url: "./subweb/study/study.html#fb", type: "web" },
+    { title: "基础物理学3", url: "./subweb/study/study.html#jw3", type: "web" },
+    { title: "概率论与数理统计", url: "./subweb/study/study.html#probability", type: "web" },
+    { title: "离散数学1", url: "./subweb/study/study.html#discrete", type: "web" },
+    { title: "基础物理实验2", url: "./subweb/study/study.html#jwsy2", type: "web" },
+    { title: "足球专项", url: "./subweb/study/study.html#football", type: "web" },
+    { title: "通识课", url: "./subweb/study/study.html#general2", type: "web" },
+
+    // 大二下学期
+    { title: "量子力学", url: "./subweb/study/study.html#quantum", type: "web" },
+    { title: "核辐射物理与探测学", url: "./subweb/study/study.html#nuclear", type: "web" },
+    { title: "数字电路与嵌入式系统", url: "./subweb/study/study.html#digital", type: "web" },
+    { title: "数据结构", url: "./subweb/study/study.html#ds", type: "web" },
+    { title: "计算机网络原理", url: "./subweb/study/study.html#network", type: "web" },
+    { title: "高等线性代数选讲", url: "./subweb/study/study.html#advanced-linear-algebra", type: "web" },
+    { title: "健美专项", url: "./subweb/study/study.html#fitness", type: "web" }
+
+
 ];
 
 searchInput.addEventListener('input', (e) => {
@@ -233,3 +267,19 @@ document.addEventListener('click', (e) => {
         resultsList.classList.remove('show');
     }
 });
+
+function updateClock() {
+    const now = new Date();
+    
+    // 自定义格式：小时:分钟:秒
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    
+    const timeString = `${hours}:${minutes}:${seconds}`;
+    document.getElementById('clock').innerText = timeString;
+}
+    // 每 1000 毫秒（1秒）执行一次
+setInterval(updateClock, 1000);
+  // 页面加载后立即执行一次，避免 1 秒的空白
+updateClock();
