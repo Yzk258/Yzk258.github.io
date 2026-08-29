@@ -283,3 +283,39 @@ function updateClock() {
 setInterval(updateClock, 1000);
   // 页面加载后立即执行一次，避免 1 秒的空白
 updateClock();
+
+// ============ 移动端汉堡菜单 ============
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+
+function closeNavMenu() {
+    navLinks.classList.remove('open');
+    navToggle.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+}
+
+navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+});
+
+// 点击菜单里的链接后自动收起面板（下拉按钮本身除外）
+navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (link.classList.contains('dropbtn')) return;
+        closeNavMenu();
+    });
+});
+
+// 点击菜单外区域收起面板
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.navbar')) {
+        closeNavMenu();
+    }
+});
+
+// 窗口切回桌面尺寸时清理状态
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 1100) closeNavMenu();
+});

@@ -53,7 +53,7 @@ html {
 .nav-item {
   display: flex;
   align-items: center; /* 垂直居中核心：Flex 自带对齐 */
-  padding: 0 20px;
+  padding: 0 14px;
   cursor: pointer;
   color: var(--text-white);
   text-decoration: none;
@@ -116,7 +116,7 @@ html {
 
 .search-container {
   position: relative; /* 父容器相对定位 */
-  width: 300px;
+  width: min(300px, 30vw);
   margin: auto;
 }
 
@@ -207,7 +207,8 @@ html {
 .btn:hover { opacity: 0.8; }
 
 #searchInput {
-  width: 350px;
+  width: 100%;
+  max-width: 350px;
   padding: 10px;
   border: 2px solid #dfe1e5;
   border-radius: 24px; /* 圆角：高度的一半即可实现胶囊形状 */
@@ -307,6 +308,7 @@ body {
 
 .top {
   display: flex;
+  flex-wrap: wrap;
   gap: 40px;
   justify-content: center;
   align-items: center;
@@ -320,13 +322,14 @@ body {
 .top-image-container {
     position: relative;
     display: flex;
-    width: 300px;
-    height: 300px;
+    width: min(300px, 64vw);
+    height: min(300px, 64vw);
     border-radius: 50%;
     margin: auto;
     overflow: visible; /* 必须改为 visible，否则外发光会被剪裁 */
     border: 4px solid rgba(212, 175, 55, 0.8); /* 黄金边框 */
     box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); /* 基础静止光晕 */
+    transition: width 0.45s ease, height 0.45s ease; /* 滚动缩小时的平滑过渡 */
 }
 
 /* 2. 使用伪元素制作旋转流光 */
@@ -387,7 +390,7 @@ background: conic-gradient(
 
 
 .top-name {
-  font-size: 40px;
+  font-size: clamp(26px, 3.5vw, 40px);
   font-weight: bold;
   color: var(--golden-color);
   text-shadow: 0 0 10px rgba(212, 175, 55, 0.7);
@@ -395,7 +398,7 @@ background: conic-gradient(
 .top-text {
   text-align: center;
   font-family: 'Times New Roman', Times, serif;
-  font-size: 50px;
+  font-size: clamp(22px, 4.5vw, 50px);
   margin-top: 20px;
   color: white;
   text-shadow: 0 0 5px var(--golden-color);
@@ -438,6 +441,7 @@ background: conic-gradient(
 
 .overlay {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
   gap: 20px;
@@ -463,7 +467,7 @@ background: conic-gradient(
   padding: 0 5%;
 }
 .introduce p {
-  font-size: 20px;
+  font-size: clamp(16px, 2.2vw, 20px);
   color: white;
   text-indent: 2em;
 }
@@ -477,7 +481,7 @@ background: conic-gradient(
   right: 20px;
   width: 350px;
   overflow: hidden;
-  display: fixed;
+  display: block;
   backdrop-filter: blur(4px);
   border-radius: 15px;
   font-size: 20px;
@@ -493,8 +497,8 @@ background: conic-gradient(
 .aboutme-header {
   display: flex;
   align-items: center;
-  padding: 20;
-  gap: 300;
+  padding: 0 0 10px;
+  gap: 15px;
 }
 .header-container {
   margin: auto;
@@ -549,12 +553,12 @@ background: conic-gradient(
   transition: all 0.3s ease; /* 关键：让变化在0.3秒内平滑发生 */
   cursor: pointer;           /* 提示用户这是可以互动的 */
   max-width: 90%;
-  margin: 100px auto;
+  margin: clamp(50px, 8vw, 100px) auto;
   backdrop-filter: blur(4px);
   border-radius: 15px;
   border: 2px solid;
   font-family: 'Crimson Text', 'Lora', serif;
-  font-size: 20px;
+  font-size: clamp(15px, 1.9vw, 20px);
   animation: poemBreath 4s ease-in-out infinite alternate;
 
 }
@@ -574,7 +578,7 @@ background: conic-gradient(
   text-align: center;
   padding-top: 40px;
   color: goldenrod;
-  font-size: 50px;
+  font-size: clamp(26px, 4.5vw, 50px);
   font-weight: bold;
   background: linear-gradient(
         to right, 
@@ -602,7 +606,7 @@ background: conic-gradient(
 .poem p {
   font-weight: bold;
   text-align: center;
-  padding: 40px;
+  padding: clamp(16px, 3.5vw, 40px);
   color: goldenrod;
   background: linear-gradient(
         to right, 
@@ -649,17 +653,18 @@ background: conic-gradient(
 
 .header {
   margin-top: 10px;
-  margin: 100px 20px;
+  margin: clamp(40px, 8vw, 100px) 20px;
   backdrop-filter: blur(4px);
   border-bottom: 1px solid white;
   font-family: 'Crimson Text', 'Lora', serif;
-  font-size: 30px;
+  font-size: clamp(22px, 3.2vw, 30px);
   padding-left: 5%;
 }
 
 
 .notes-text-container {
   display: flex;
+  flex-wrap: wrap;
   margin: 0px auto;
   padding: 0px 15px;
   gap: 15px;
@@ -671,8 +676,9 @@ background: conic-gradient(
 .notes-text {
   background-color: var(--block-color);
   max-width: 60%;
-  margin: 40 auto;
-  padding: 40;
+  flex: 1 1 280px;
+  margin: 40px auto;
+  padding: 24px;
   backdrop-filter: blur(4px);
   border-radius: 15px;
   font-size: 20px;
@@ -823,8 +829,8 @@ background: conic-gradient(
 
 
 .secondary {
-  width: 400px;
-  height: 1000px;
+  width: min(400px, 96%);
+  height: auto;
   background-color: rgba(19, 28, 98, 0.5);
   padding: 40px;
   border-radius: 5px;
@@ -845,37 +851,373 @@ background: conic-gradient(
   display: flex;
   align-items: center;
   flex-direction: column;
-  width: 80%;
+  width: 100%;
+  max-width: 360px;
   gap: 20px;
 }
 
 .like-item-block-1 {
-  width: 350px;
+  width: min(350px, 100%);
   padding: 5px;
-  height: 250px;
+  height: auto;
   background-color: rgba(255, 255, 255, 0.5);
   display: block;
   border: 1px solid var(--border-color);
   border-radius: 15px;
-  font-size: 20px;
+  font-size: clamp(16px, 2vw, 20px);
   text-align: center;
   cursor: pointer;
   transition: 300ms;
 }
 .like-item-block-1-image {
-  width: 325px;
-  height: 180px;
+  width: calc(100% - 16px);
+  max-width: 325px;
+  aspect-ratio: 16 / 9;
+  height: auto;
   margin: 10px auto;
   display: flex;
   justify-content: center;
   align-items: center;
   background-size: cover;
   border-radius: 10px;
-  
+
 }
 .like-item-block-1:hover {
   transform: translateY(-10px);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
   background: var(--block-color-hover);
+}
+
+/* ============================================================
+   资源中转站 · Hub 卡片区（连接个人各类资源）
+   ============================================================ */
+.hub-desc {
+  padding: 0 5%;
+  margin-bottom: 24px;
+  font-size: clamp(15px, 2vw, 18px);
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.8;
+}
+
+.inline-link {
+  color: var(--golden-color);
+  text-decoration: underline;
+  transition: text-shadow 0.3s ease;
+}
+.inline-link:hover {
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
+}
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  padding: 0 5%;
+}
+
+.hub-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px;
+  background: var(--block-color);
+  backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  color: var(--text-white);
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+              background 0.3s ease, border-color 0.3s ease;
+}
+.hub-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  background: var(--block-color-hover);
+  border-color: var(--golden-color);
+}
+
+.hub-card-icon {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.hub-card h3 {
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.hub-card-url {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 13px;
+  color: var(--golden-color);
+  opacity: 0.85;
+  word-break: break-all;
+}
+
+.hub-card p:not(.hub-card-url) {
+  font-size: 15px;
+  line-height: 1.6;
+  opacity: 0.88;
+}
+
+/* 主站卡片：金色高亮，突出“中转站的主要去向” */
+.hub-card-primary {
+  border-color: rgba(212, 175, 55, 0.7);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), var(--block-color));
+}
+.hub-card-primary:hover {
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 18px rgba(212, 175, 55, 0.35);
+}
+
+/* ============================================================
+   导航品牌 / 汉堡按钮 / 主站 CTA
+   ============================================================ */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  color: var(--text-white);
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding-right: 16px;
+  white-space: nowrap;
+}
+.nav-brand-sub {
+  font-size: 13px;
+  font-weight: normal;
+  color: var(--golden-color);
+  margin-left: 4px;
+}
+
+.nav-item-site {
+  color: var(--golden-color);
+  font-weight: bold;
+}
+
+/* 主站跳转按钮（hero 区） */
+.primary-cta {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 12px 26px;
+  border-radius: 999px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: clamp(15px, 2vw, 18px);
+  font-weight: bold;
+  color: #1a1a1a;
+  text-decoration: none;
+  background: linear-gradient(
+      to right,
+      #8a6d3b 0%,
+      #d4af37 25%,
+      #f9f1c0 50%,
+      #d4af37 75%,
+      #8a6d3b 100%
+  );
+  background-size: 200% auto;
+  animation: goldFlow 5s linear infinite;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.primary-cta:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.55);
+  color: #000;
+}
+
+/* 汉堡按钮：桌面端隐藏 */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.nav-toggle span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--text-white);
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* 滚动后 hero 头像平滑缩小（配合 index.js 的 is-sidebar） */
+.top.is-sidebar .top-image-container {
+  width: 170px;
+  height: 170px;
+}
+
+/* ============================================================
+   响应式改造
+   ============================================================ */
+
+/* ---- 平板 / 窄桌面（≤1100px）：切换为汉堡菜单 ---- */
+@media (max-width: 1100px) {
+  :root {
+    --nav-height: 114px; /* 导航变为两行：品牌行 + 搜索行 */
+  }
+
+  .navbar {
+    height: auto;
+  }
+
+  .nav-container {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 0 14px;
+  }
+
+  .nav-toggle {
+    display: flex;
+    order: 2;
+  }
+
+  .nav-brand {
+    order: 1;
+    height: 60px;
+  }
+
+  .search-container {
+    order: 3;
+    width: 100%;
+    margin: 0 0 12px;
+  }
+
+  #searchInput {
+    width: 100%;
+    max-width: none;
+  }
+
+  /* 链接列表收进下拉面板 */
+  .nav-links {
+    order: 4;
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    height: auto;
+    background: #22303f;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+  }
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-item {
+    width: 100%;
+    height: auto;
+    padding: 14px 18px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .nav-right {
+    display: none; /* 「关于我」已并入汉堡菜单的下拉里 */
+  }
+
+  .dropdown {
+    width: 100%;
+    height: auto;
+  }
+  .dropdown-content {
+    position: static;
+    min-width: 0;
+    background: rgba(0, 0, 0, 0.18);
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .dropdown-content a {
+    color: rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-left: 38px;
+  }
+  .dropdown-content a:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--golden-color);
+  }
+}
+
+/* ---- 手机（≤768px）：内容全部纵向堆叠 ---- */
+@media (max-width: 768px) {
+  .top {
+    flex-wrap: wrap;
+    padding: 24px 12px;
+    gap: 18px;
+  }
+  .top-text {
+    font-size: clamp(22px, 6vw, 34px);
+  }
+  .primary-cta {
+    padding: 10px 20px;
+  }
+
+  .main {
+    width: 96%;
+  }
+
+  .secondary {
+    width: 96%;
+    padding: 20px;
+  }
+
+  .split-container {
+    margin: 40px auto;
+    gap: 16px;
+  }
+  .grid-container {
+    margin: 40px auto;
+    gap: 16px;
+    grid-auto-rows: 150px;
+  }
+
+  .header {
+    margin: 40px 12px;
+  }
+
+  .notes-text-container {
+    flex-direction: column;
+  }
+  .notes-text {
+    max-width: 100%;
+  }
+
+  .aboutme {
+    font-size: 17px;
+  }
+
+  /* 表情包挂件缩小，避免挡住正文 */
+  .biaoqingbao-container {
+    width: 120px;
+    height: 120px;
+  }
+
+  .like-item-container {
+    max-width: none;
+  }
+
+  .hub-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+  .footer-right a {
+    font-size: 22px;
+  }
 }
 
