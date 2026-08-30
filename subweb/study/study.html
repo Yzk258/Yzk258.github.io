@@ -2,17 +2,20 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="YZK 的学习资料库：大学各学期课程资料整理，按学期与科目分类。">
     <title>学习资料库</title>
     <link rel="stylesheet" href="study.css">
 </head>
 
+<body>
 <nav class="navbar">
   <div class="nav-container">
     <div class="nav-links">
       <div class="dropdown">
         <a href="javascript:void(0)" onclick="location.href='../../index.html';" class="nav-item dropbtn">主页▾</a>
         <div class="dropdown-content">
-          <a href="../../index.html#introduce">网站介绍</a>
+          <a href="../../index.html#introduction">网站介绍</a>
           <a href="../../index.html#notes">日志</a>
           <a href="../../index.html#projects">一些项目库</a>
           <a href="../../index.html#service3">其他</a>
@@ -23,19 +26,17 @@
       <a class="nav-item" onclick="location.href='../study/study.html';">学习资料库</a>
     </div>
 <div class="search-container">
-    <input type="text" id="searchInput" placeholder="搜索文件、网页或文件夹..." autocomplete="off">
+    <input type="text" id="searchInput" placeholder="搜索课程与页面…" autocomplete="off" aria-label="站内搜索">
     <div id="resultsList" class="results-list"></div>
 </div>
 
 
 
-    <div class="nav-right" onclick="location.href='../../subweb/aboutme/aboutme.html';">
-      <a href="#about" class="nav-item-aboutme">关于我</a>
+    <div class="nav-right">
+      <a href="../aboutme/aboutme.html" class="nav-item-aboutme">关于我</a>
     </div>
   </div>
 </nav>
-
-<body>
 <div id="star-container"></div>
 <div class="main-background">
 <div class="overlay">
@@ -107,7 +108,7 @@
         <p>请从<span style="font-size: 30px; color: red; text-decoration: underline;">左侧</span>目录选择相应的学期和课程以查看详细资料。
         如果<span style="font-size: 30px; color: red; text-decoration: underline;">没有</span>目录请尝试切换
             <span style="font-size: 30px; color: red; text-decoration: underline;">电脑端</span>查看！</p>
-        <img src="../../details/82vVeNNKpJ.png" alt="欢迎图片" style="width: 100%; max-width: 400px; margin: 20px 0;">
+        <img src="../../details/82vVeNNKpJ.png" alt="欢迎图片" style="width: 100%; max-width: 400px; margin: 20px 0;" loading="lazy" decoding="async">
         <div class="quick-stats">
             <p>该网站收录的学习资料主要为目前作者所学的专业课程、数理基础课程以及工科基础课程，部分通识课、思政课以及一些任选课因个人原因<span style="font-size: 10px; color: gray;">（懒）</span>并未做整理，每一块课程都有详细个人评价、课程ppt（如果老师允许外传）、题目资料以及作业解答等内容，
                 部分内容附有下载链接，如有需要可自行下载！</p>
@@ -260,6 +261,7 @@
 </div>
 </div>
 
+<script src="../../search.js"></script>
 <script src="study.js"></script>
 </body>
 </html>

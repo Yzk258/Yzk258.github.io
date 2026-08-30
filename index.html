@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YZK · 资源中转站</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta name="description" content="YZK 的个人资源中转站：学习资料库、项目库、更新日志与个人主站的统一入口。">
     <link rel="stylesheet" href="index.css">
 </head>
 
@@ -38,7 +38,7 @@
     </div>
 
     <div class="search-container">
-      <input type="text" id="searchInput" placeholder="搜索文件、网页或文件夹..." autocomplete="off">
+      <input type="text" id="searchInput" placeholder="搜索课程与页面…" autocomplete="off" aria-label="站内搜索">
       <div id="resultsList" class="results-list"></div>
     </div>
 
@@ -157,38 +157,25 @@
       网站介绍：
     </p>
       <div class="introduce">
-      <p style="text-indent: 0%;">To陌生人：</p>
+      <p class="introduce-lead">写给每一位访客：</p>
       <p>
-        恭喜你，你发现了<span style="font-size: 1.5em;color: brown;"><del>答辩</del></span>！这个网站可能对你无很大帮助，因为创立初衷只是为了<span style="font-size: 1.5em;">练习</span>作者的web能力。
-        如今作者已建立了新的个人主站，本站便顺势转型为<strong>连接个人各类资源的中转站</strong>——把散落各处的学习资料、项目、日志与主站串到一起。
-        无论是<span style="font-size: 1.5em;color: red;"><技术性></span>还是<span style="font-size: 1.5em;color: red;"><规范性></span>上都远远不如各位一根（？<span style="text-decoration: underline;font-size: 1.5em;">嘴下留情😭！</span>
+        欢迎访问本站。这里最初是作者练习 Web 开发时搭建的个人实验项目，随着个人主站的建成，如今正式转型为<strong>连接个人各类资源的中转站</strong>——将分散各处的学习资料、项目展示与建站日志汇聚一体，并作为通往主站与各类资源的统一入口。
       </p>
       <p>
-        当然，如果你对这个网站感兴趣，想要了解更多关于作者的信息，或者想要获取一些学习资料，也可以在我的web中进行访问，绝对开源，且仅供学习交流使用！
-        毕竟，<span style="font-size: 1.5em;color: goldenrod; text-decoration: underline;">To share is to live - 只有分享才是真正的活过。</span>祝我们都能徜徉于知识的海洋，共勉！
+        站内<strong>学习资料库</strong>按学期与科目整理了作者大学阶段的部分课程资料与个人评价；<strong>项目库</strong>收录日常的代码实践与技术尝试；<strong>更新日志</strong>则记录了本站逐步完善的全部过程。全部内容开源于 GitHub，仅供学习交流使用，欢迎按需取用、批评指正。
+      </p>
+      <p>
+        <span class="introduce-motto">To share is to live —— 只有分享才是真正的活过。</span>愿我们都能在分享与交流中彼此成就，徜徉于知识的海洋，共勉。
       </p>
     </div>
   </div>
   <hr class="glow-line">
   
-  <div class="aboutme" onclick="location.href='subweb/aboutme/aboutme.html';">
-    <div class="aboutme-header">
-      <div class="header-container">
-        <img src="details/maxresdefault.jpg" alt="头像" class="header-image">
-      </div>
-      <h2>关于我</h2>
-    </div>
-    <div class="aboutme-content">
-      <p>
-        目前是大二在读理工🚹，废宅一个，人菜瘾大，喜欢糟蹋各种技术，尤其是和code相关的东西。
-        平时喜欢打打小游戏（单机抑智小游戏为主，从背景和开头的台词也能看出来是一枚老头环魔怔人❌）、刷刷小视频、听听小音乐、搞搞小啾啾（？。
-      </p>
-    </div>
-  </div>
+
 
   <div class="biaoqingbao">
     <div class="biaoqingbao-container" title="拖动我试一试！">
-      <img src="details/feixiao.gif" alt="表情包" class="biaoqingbao-image">
+      <img src="details/feixiao.gif" alt="表情包" class="biaoqingbao-image" loading="lazy" decoding="async">
     </div>
   </div>
 
@@ -317,32 +304,40 @@
 
       <hr class="glow-line">
       
-      <h2 class="secondary-guess">🔍猜你想找：</h2>
+      <h2 class="secondary-guess">🔍 好玩的 API：</h2>
       <hr class="glow-line">
 
       <div class="guessyoulike">
-        
+
         <div class="like-item-container">
-          <div class="like-item-block-1" onclick="location.href='subweb/study/study.html#ds';" >
-            <div class="like-item-block-1-image" style="background-image: url(details/background.png);">
-              <p>数据结构dsa</p>                
+
+          <div class="like-item-block-1 api-card" id="api-card-hitokoto" role="button" tabindex="0" title="点我换一句！">
+            <div class="like-item-block-1-image api-image-hitokoto">
+              <div class="api-quote-box">
+                <p class="api-quote" id="api-hitokoto-text">正在召唤一句话…</p>
+                <p class="api-quote-from" id="api-hitokoto-from">一言 · Hitokoto</p>
+              </div>
             </div>
-            <p class="like-item-desc">大二春季学期邓老师《数据结构》课程</p>
+            <p class="like-item-desc">💬 一言 · 随机句子，点击卡片换一句</p>
           </div>
 
-          <div class="like-item-block-1" onclick="location.href='subweb/study/study.html#probability';">
-            <div class="like-item-block-1-image" style="background-image: url(details/background2.png);">
-              <p>概率论与数理统计</p>                
+          <div class="like-item-block-1 api-card" id="api-card-dog" role="button" tabindex="0" title="点我换一只狗狗！">
+            <div class="like-item-block-1-image api-image-dog">
+              <img id="api-dog-img" class="api-dog-img" alt="随机狗狗照片" loading="lazy" decoding="async">
             </div>
-            <p class="like-item-desc">大二秋季学期唐老师《概率论与数理统计》课程</p>
+            <p class="like-item-desc">🐶 随机狗狗 · Dog CEO API，点击换一只</p>
           </div>
 
-          <div class="like-item-block-1" onclick="location.href='subweb/study/study.html#fb';">
-            <div class="like-item-block-1-image" style="background-image: url(details/background3.png);">
-              <p>复变函数与数理方程</p>                
+          <div class="like-item-block-1 api-card" id="api-card-poem" role="button" tabindex="0" title="点我换一句诗！">
+            <div class="like-item-block-1-image api-image-poem">
+              <div class="api-quote-box">
+                <p class="api-quote" id="api-poem-text">正在翻书…</p>
+                <p class="api-quote-from" id="api-poem-from">今日诗词 · JinRiShiCi</p>
+              </div>
             </div>
-            <p class="like-item-desc">大二秋季学期吴老师《复变函数与数理方程》课程</p>
+            <p class="like-item-desc">🏮 今日诗词 · 点击卡片换一句</p>
           </div>
+
         </div>
       </div>
   </div>
@@ -350,6 +345,7 @@
 </div>
 </div>
 
+<script src="search.js"></script>
 <script src="index.js"></script>
 
 </body>

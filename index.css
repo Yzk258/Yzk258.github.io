@@ -120,92 +120,6 @@ html {
   margin: auto;
 }
 
-.results-list {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-top: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  max-height: 300px;
-  overflow-y: auto;
-
-  /* --- 动画核心配置 --- */
-  opacity: 0;            /* 默认透明 */
-  visibility: hidden;    /* 默认隐藏（且不可点击） */
-  transform: translateY(-10px); /* 默认向上偏移 10px */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 贝塞尔曲线让动画更丝滑 */
-}
-
-/* 显示状态的类名 */
-.results-list.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0); /* 回到原位 */
-}
-
-.result-item:hover {
-  background-color: #f0f0f0;
-}
-/* 结果项容器 */
-/* 统一列表项的最小高度和对齐方式 */
-.result-item {
-  min-height: 45px;
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-/* 专门针对“未找到”状态的样式 */
-.no-results {
-  justify-content: center; /* 居中显示提示 */
-  color: #999;             /* 灰色文字 */
-  font-size: 14px;
-  padding: 20px 0;         /* 增加一点上下间距 */
-  background: #fafafa;
-}
-
-/* 确保最后一个条目没有底边框 */
-.result-item:last-child {
-  border-bottom: none;
-}
-.result-info {
-  flex-grow: 1;
-  color: #333;
-  text-decoration: none;
-}
-
-.action-btns {
-  display: flex;
-  gap: 8px; /* 按钮之间的间距 */
-}
-
-/* 按钮基础样式 */
-.btn {
-  padding: 4px 8px;
-  font-size: 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  text-decoration: none;
-  border: 1px solid #ddd;
-}
-.btn-web { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
-.btn-folder { background: #fff3e0; color: #ef6c00; border-color: #ffe0b2; }
-
-/* 让文件夹和网页在鼠标悬停时整行可点击 */
-.result-item:has(.btn-web):hover, 
-.result-item:has(.btn-folder):hover {
-  background-color: #f9f9f9;
-}
-.btn-preview { background: #e3f2fd; color: #1976d2; }
-.btn-download { background: #f5f5f5; color: #333; }
-.btn:hover { opacity: 0.8; }
-
 #searchInput {
   width: 100%;
   max-width: 350px;
@@ -298,7 +212,7 @@ html {
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-  url(details/thumb-1920-1311862.jpeg);
+  url(details/bg.jpg);
   background-attachment: fixed;
   background-size: cover;
   color: white;
@@ -470,6 +384,15 @@ background: conic-gradient(
   font-size: clamp(16px, 2.2vw, 20px);
   color: white;
   text-indent: 2em;
+}
+.introduce-lead {
+  text-indent: 0;
+  font-weight: 700;
+  color: var(--golden-color);
+}
+.introduce-motto {
+  color: var(--golden-color);
+  font-weight: 600;
 }
 .aboutme {
   transition: all 0.3s ease; /* 关键：让变化在0.3秒内平滑发生 */
@@ -887,6 +810,49 @@ background: conic-gradient(
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
   background: var(--block-color-hover);
 }
+
+/* ---------- 好玩的 API 卡片 ---------- */
+.api-card {
+  user-select: none;
+}
+.api-card:focus-visible {
+  outline: 2px solid var(--golden-color);
+  outline-offset: 3px;
+}
+.api-image-hitokoto { background-image: url(details/background.jpg); }
+.api-image-dog      { background-image: url(details/background2.jpg); }
+.api-image-poem     { background-image: url(details/background3.jpg); }
+.api-quote-box {
+  width: 100%;
+  padding: 16px 14px;
+  background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.6));
+  border-radius: 10px;
+}
+.api-quote {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #fff;
+  margin: 0 0 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.api-quote-from {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: right;
+  margin: 0;
+}
+.api-dog-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+.api-dog-img.api-loading { opacity: 0.25; }
 
 /* ============================================================
    资源中转站 · Hub 卡片区（连接个人各类资源）

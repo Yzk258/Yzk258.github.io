@@ -135,94 +135,10 @@ html {
   margin: auto;
 }
 
-.results-list {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-top: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  max-height: 300px;
-  overflow-y: auto;
-
-  /* --- 动画核心配置 --- */
-  opacity: 0;            /* 默认透明 */
-  visibility: hidden;    /* 默认隐藏（且不可点击） */
-  transform: translateY(-10px); /* 默认向上偏移 10px */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 贝塞尔曲线让动画更丝滑 */
-}
-
-/* 显示状态的类名 */
-.results-list.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0); /* 回到原位 */
-}
-
-.result-item:hover {
-  background-color: #f0f0f0;
-}
-/* 结果项容器 */
-/* 统一列表项的最小高度和对齐方式 */
-.result-item {
-  min-height: 45px;
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-/* 专门针对“未找到”状态的样式 */
-.no-results {
-  justify-content: center; /* 居中显示提示 */
-  color: #999;             /* 灰色文字 */
-  font-size: 14px;
-  padding: 20px 0;         /* 增加一点上下间距 */
-  background: #fafafa;
-}
-
-/* 确保最后一个条目没有底边框 */
-.result-item:last-child {
-  border-bottom: none;
-}
-.result-info {
-  flex-grow: 1;
-  color: #333;
-  text-decoration: none;
-}
-
-.action-btns {
-  display: flex;
-  gap: 8px; /* 按钮之间的间距 */
-}
-
-/* 按钮基础样式 */
-.btn {
-  padding: 4px 8px;
-  font-size: 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  text-decoration: none;
-  border: 1px solid #ddd;
-}
-.btn-web { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
-.btn-folder { background: #fff3e0; color: #ef6c00; border-color: #ffe0b2; }
-
-/* 让文件夹和网页在鼠标悬停时整行可点击 */
-.result-item:has(.btn-web):hover, 
-.result-item:has(.btn-folder):hover {
-  background-color: #f9f9f9;
-}
-.btn-preview { background: #e3f2fd; color: #1976d2; }
-.btn-download { background: #f5f5f5; color: #333; }
-.btn:hover { opacity: 0.8; }
-
 #searchInput {
-  width: 350px;
+  width: 100%;
+  max-width: 350px;
+  box-sizing: border-box;
   padding: 10px;
   border: 2px solid #dfe1e5;
   border-radius: 24px; /* 圆角：高度的一半即可实现胶囊形状 */
@@ -356,6 +272,13 @@ html {
     display: none;
   }
 }
+
+/* 桌面端侧栏固定占 240px，给主内容留出空间，避免被半透明侧栏盖住 */
+@media (min-width: 1201px) {
+  .overlay {
+    padding-left: 260px;
+  }
+}
 /* 修改星星样式 */
 .star {
     position: fixed;
@@ -408,11 +331,9 @@ html {
 
 .main {
   width: 90%;
-  max-width: 900px;
+  max-width: 1200px;
   border-left: 1px solid var(--hover-bg);
   border-right: 1px solid var(--hover-bg);
-  display: block;
-  max-width: 1200px;
   margin: 0 auto;
   height: calc(100vh - var(--nav-height));
   display: flex;         /* 新增：开启 flex 布局 */
@@ -425,7 +346,7 @@ body {
     
     /* 2. 保持你的背景设置 */
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                      url(../../details/thumb-1920-1311862.jpeg);
+                      url(../../details/bg.jpg);
     background-attachment: fixed;
     background-size: cover;
     background-position: center; /* 建议加上，保证居中 */

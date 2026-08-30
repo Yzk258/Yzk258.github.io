@@ -1,118 +1,62 @@
 function showSection(sectionId) {
-    // 1. 隐藏所有分区
-    const sections = document.querySelectorAll('.section');
-    sections.forEach(s => s.classList.remove('active'));
-
-    // 2. 显示选中的分区
-    document.getElementById(sectionId).classList.add('active');
-
-    // 3. 更新导航栏激活状态
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => item.classList.remove('active'));
-            
-    // 找到点击的元素并加高亮 (通过事件对象或遍历)
-    event.currentTarget.classList.add('active');
-}
-
-const searchInput = document.getElementById('searchInput');
-const resultsList = document.getElementById('resultsList');
-
-const data = [
-    { title: "主页（为什么不直接从左边进呢？）", url: "./index.html", type: "web" },
-    { title: "项目库（为什么不直接从左边进呢？）", url: "./subweb/projects/projects.html", type: "web" },
-    { title: "学习资料库（为什么不直接从左边进呢？）", url: "./subweb/study/study.html", type: "web" },
-    { title: "日志（为什么不直接从左边进呢？）", url: "./subweb/note/notes.md", type: "web" },
-
-    // 大一上学期
-    { title: "微积分A1", url: "./subweb/study/study.html#math1", type: "web" },
-    { title: "线性代数（理科类）", url: "./subweb/study/study.html#matrix", type: "web" },
-    { title: "基础物理学1", url: "./subweb/study/study.html#jw1", type: "web" },
-    { title: "写作与沟通", url: "./subweb/study/study.html#write", type: "web" },
-    { title: "英语阅读与写作b", url: "./subweb/study/study.html#english1", type: "web" },
-
-    // 大一下学期
-    { title: "微积分A2", url: "./subweb/study/study.html#math2", type: "web" },
-    { title: "基础物理学2", url: "./subweb/study/study.html#jw2", type: "web" },
-    { title: "计算机程序设计基础python", url: "./subweb/study/study.html#python", type: "web" },
-    { title: "基础物理实验1", url: "./subweb/study/study.html#jwsy1", type: "web" },
-    { title: "工程图学基础", url: "./subweb/study/study.html#gt", type: "web" },
-    { title: "英语听说b", url: "./subweb/study/study.html#english2", type: "web" },
-    { title: "通识课", url: "./subweb/study/study.html#general1", type: "web" },
-
-    // 大二上学期
-    { title: "复变函数与数理方程", url: "./subweb/study/study.html#fb", type: "web" },
-    { title: "基础物理学3", url: "./subweb/study/study.html#jw3", type: "web" },
-    { title: "概率论与数理统计", url: "./subweb/study/study.html#probability", type: "web" },
-    { title: "离散数学1", url: "./subweb/study/study.html#discrete", type: "web" },
-    { title: "基础物理实验2", url: "./subweb/study/study.html#jwsy2", type: "web" },
-    { title: "足球专项", url: "./subweb/study/study.html#football", type: "web" },
-    { title: "通识课", url: "./subweb/study/study.html#general2", type: "web" },
-
-    // 大二下学期
-    { title: "量子力学", url: "./subweb/study/study.html#quantum", type: "web" },
-    { title: "核辐射物理与探测学", url: "./subweb/study/study.html#nuclear", type: "web" },
-    { title: "数字电路与嵌入式系统", url: "./subweb/study/study.html#digital", type: "web" },
-    { title: "数据结构", url: "./subweb/study/study.html#ds", type: "web" },
-    { title: "计算机网络原理", url: "./subweb/study/study.html#network", type: "web" },
-    { title: "高等线性代数选讲", url: "./subweb/study/study.html#advanced-linear-algebra", type: "web" },
-    { title: "健美专项", url: "./subweb/study/study.html#fitness", type: "web" }
-
-
-];
-
-searchInput.addEventListener('input', (e) => {
-    const value = e.target.value.trim().toLowerCase();
-    
-    if (!value) {
-        resultsList.classList.remove('show');
-        return;
-    }
-
-    const matched = data.filter(item => 
-        item.title.toLowerCase().includes(value)
-    );
-
-    renderResults(matched);
-});
-
-function renderResults(results) {
-    if (results.length === 0) {
-        resultsList.innerHTML = `<div class="no-results">🔍 未找到相关结果</div>`;
+    // 隐藏所有 section
+    document.querySelectorAll('.section').forEach(s => {s.style.display = 'none'; s.classList.remove('active');});
+    // 显示对应的 section
+    const target = document.getElementById(sectionId);
+    if (target) {
+        target.style.display = 'block';
+        target.classList.add('active');
     } else {
-        resultsList.innerHTML = results.map(item => {
-            let icon = "📄";
-            let actionHtml = "";
-
-            if (item.type === "web") {
-                icon = "🌐";
-                actionHtml = `<a href="${item.url}" target="_blank" class="btn">访问</a>`;
-            } else if (item.type === "folder") {
-                icon = "📁";
-                actionHtml = `<a href="${item.url}" class="btn">打开</a>`;
-            } else {
-                const previewBtn = item.category === 'previewable' 
-                    ? `<a href="${item.url}" target="_blank" class="btn">预览</a>` 
-                    : "";
-                actionHtml = `${previewBtn} <a href="${item.url}" download="${item.title}" class="btn">下载</a>`;
-            }
-
-            return `
-                <div class="result-item">
-                    <div class="result-info">${icon} ${item.title}</div>
-                    <div class="action-btns">${actionHtml}</div>
-                </div>
-            `;
-        }).join('');
+        console.warn(`未找到 ID 为 ${sectionId} 的 section`);
     }
-    resultsList.classList.add('show');
+
+    // 更新侧边栏链接的样式（加亮当前选中的课程）
+    // 注意：通过 hash 自动跳转时不存在点击事件，需做防御
+    document.querySelectorAll('.course-list a').forEach(a => { a.style.color = ''; a.classList.remove('active'); });
+    const clicked = (typeof event !== 'undefined' && event && event.target && event.target.style) ? event.target : null;
+    if (clicked) clicked.style.color = 'var(--golden-color)';
 }
 
-// 点击空白处关闭
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-container')) {
-        resultsList.classList.remove('show');
-    }
-});
+// 搜索数据：由共享模块 search.js 消费（路径基于 subweb/*，两个子页面通用）
+window.__SEARCH_ITEMS__ = [
+    { title: "主页 · 资源中转站", url: "../../index.html", icon: "🏠", group: "快速导航", keywords: "home 首页 中转 hub resource" },
+    { title: "项目库", url: "../projects/projects.html", icon: "🛠️", group: "快速导航", keywords: "projects 项目 代码 code" },
+    { title: "学习资料库", url: "../study/study.html", icon: "📚", group: "快速导航", keywords: "study 学习 课程 course 资料" },
+    { title: "更新日志", url: "../note/notes.md", icon: "📝", group: "快速导航", keywords: "log 日志 changelog notes" },
+    { title: "关于我", url: "../aboutme/aboutme.html", icon: "🙋", group: "快速导航", keywords: "about 关于我 介绍" },
+    { title: "个人主站", url: "https://yinzachary24.top/", icon: "🏰", group: "快速导航", keywords: "blog 博客 主站 yinzachary" },
+    { title: "GitHub", url: "https://github.com/Yzk258", icon: "🐙", group: "快速导航", keywords: "github 源码 开源 仓库" },
+
+    { title: "微积分A1", url: "../study/study.html#math1", icon: "📘", group: "课程资料", keywords: "calculus a1 math 微积分 数学" },
+    { title: "线性代数（理科类）", url: "../study/study.html#matrix", icon: "📘", group: "课程资料", keywords: "linear algebra matrix 矩阵 线代 代数" },
+    { title: "基础物理学1", url: "../study/study.html#jw1", icon: "📘", group: "课程资料", keywords: "physics 力学 热学 物理" },
+    { title: "写作与沟通", url: "../study/study.html#write", icon: "📘", group: "课程资料", keywords: "writing 写作 沟通 论文" },
+    { title: "英语阅读与写作b", url: "../study/study.html#english1", icon: "📘", group: "课程资料", keywords: "english reading 英语 阅读 精读" },
+
+    { title: "微积分A2", url: "../study/study.html#math2", icon: "📘", group: "课程资料", keywords: "calculus a2 微积分 多元 级数" },
+    { title: "基础物理学2", url: "../study/study.html#jw2", icon: "📘", group: "课程资料", keywords: "physics 电磁 光学 物理" },
+    { title: "计算机程序设计基础python", url: "../study/study.html#python", icon: "📘", group: "课程资料", keywords: "python 编程 programming cs 程序设计" },
+    { title: "基础物理实验1", url: "../study/study.html#jwsy1", icon: "📘", group: "课程资料", keywords: "physics lab 实验 误差" },
+    { title: "工程图学基础", url: "../study/study.html#gt", icon: "📘", group: "课程资料", keywords: "drawing cad 制图 工程图" },
+    { title: "英语听说b", url: "../study/study.html#english2", icon: "📘", group: "课程资料", keywords: "english listening 英语 听说 口语" },
+    { title: "通识课（大一下）", url: "../study/study.html#general1", icon: "📘", group: "课程资料", keywords: "elective 通识 任选 general" },
+
+    { title: "复变函数与数理方程", url: "../study/study.html#fb", icon: "📘", group: "课程资料", keywords: "complex analysis 复变 数理方程 傅里叶", featured: true },
+    { title: "基础物理学3", url: "../study/study.html#jw3", icon: "📘", group: "课程资料", keywords: "physics 近代 原子 物理" },
+    { title: "概率论与数理统计", url: "../study/study.html#probability", icon: "📘", group: "课程资料", keywords: "probability statistics 概率 统计", featured: true },
+    { title: "离散数学1", url: "../study/study.html#discrete", icon: "📘", group: "课程资料", keywords: "discrete 离散 图论 集合 逻辑" },
+    { title: "基础物理实验2", url: "../study/study.html#jwsy2", icon: "📘", group: "课程资料", keywords: "physics lab 实验" },
+    { title: "足球专项", url: "../study/study.html#football", icon: "⚽", group: "课程资料", keywords: "football soccer 足球 体育" },
+    { title: "通识课（大二上）", url: "../study/study.html#general2", icon: "📘", group: "课程资料", keywords: "elective 通识 任选 general" },
+
+    { title: "量子力学", url: "../study/study.html#quantum", icon: "📘", group: "课程资料", keywords: "quantum 量子 薛定谔 qm" },
+    { title: "核辐射物理与探测学", url: "../study/study.html#nuclear", icon: "📘", group: "课程资料", keywords: "nuclear radiation 核 辐射 探测" },
+    { title: "数字电路与嵌入式系统", url: "../study/study.html#digital", icon: "📘", group: "课程资料", keywords: "digital embedded fpga 数电 嵌入式 电路" },
+    { title: "数据结构", url: "../study/study.html#ds", icon: "📘", group: "课程资料", keywords: "data structure ds dsa algorithm 算法 链表", featured: true },
+    { title: "计算机网络原理", url: "../study/study.html#network", icon: "📘", group: "课程资料", keywords: "network 网络 tcp ip 计网" },
+    { title: "高等线性代数选讲", url: "../study/study.html#advanced-linear-algebra", icon: "📘", group: "课程资料", keywords: "advanced linear algebra 高等线代 矩阵" },
+    { title: "健美专项", url: "../study/study.html#fitness", icon: "💪", group: "课程资料", keywords: "fitness 健身 体育 力量" }
+];
 
 function createSnowflake() {
     const snowflake = document.createElement('div');
@@ -141,8 +85,19 @@ function createSnowflake() {
     animation.onfinish = () => snowflake.remove();
 }
 
-// 每隔 200 毫秒生成一片雪花
-setInterval(createSnowflake, 80);
+// 每隔 80 毫秒生成一片雪花；切到后台时暂停，省 CPU
+let ambientTimer1 = setInterval(createSnowflake, 80);
+let ambientTimer2 = setInterval(createOptimizedStar, 50);
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        clearInterval(ambientTimer1); ambientTimer1 = null;
+        clearInterval(ambientTimer2); ambientTimer2 = null;
+    } else {
+        if (!ambientTimer1) ambientTimer1 = setInterval(createSnowflake, 80);
+        if (!ambientTimer2) ambientTimer2 = setInterval(createOptimizedStar, 50);
+    }
+});
 
 function createOptimizedStar() {
     const container = document.getElementById('star-container');
@@ -175,7 +130,6 @@ function createOptimizedStar() {
 }
 
 // 提高生成频率，营造满天星斗的感觉
-setInterval(createOptimizedStar, 50);
 
 function toggleSubMenu(header) {
     // 找到当前点击的学期组
@@ -192,49 +146,26 @@ function toggleSubMenu(header) {
     group.classList.toggle('active');
 }
 
-// 可选：根据当前页面内容自动加亮二级菜单
-function showSection(sectionId) {
-    // 隐藏所有 section
-    document.querySelectorAll('.section').forEach(s => {s.style.display = 'none'; s.classList.remove('active');});
-    // 显示对应的 section
-    const target = document.getElementById(sectionId);
-    if (target) {
-        target.style.display = 'block';
-        target.classList.add('active');
-    } else {
-        console.warn(`未找到 ID 为 ${sectionId} 的 section`);
-    }
-    
-    // 更新侧边栏链接的样式（加亮当前选中的课程）
-    document.querySelectorAll('.course-list a').forEach(a => a.style.color = '');
-    event.target.style.color = 'var(--golden-color)';
-    
-}
-
-// 页面加载完成后自动处理 Hash 跳转
-window.addEventListener('DOMContentLoaded', () => {
-    // 获取 URL 中的 Hash 词（例如 "#ds" 变成 "ds"）
+// 页面加载与 hash 变化时统一处理跳转（站内搜索跳转同一页面时不触发 reload）
+function handleHashNavigation() {
     const hash = window.location.hash.replace('#', '');
 
     if (hash) {
-        // 1. 执行你已有的显示函数
         showSection(hash);
 
-        // 2. 自动展开侧边栏对应的学期组 (Semester Group)
         const activeLink = document.querySelector(`.course-list a[href="#${hash}"]`);
         if (activeLink) {
-            // 找到该链接所属的父级学期组，并添加 active 类使其展开
             const group = activeLink.closest('.semester-group');
             if (group) {
-                group.classList.add('active'); 
+                group.classList.add('active');
             }
-            
-            // 3. 强行触发一次高亮
             activeLink.classList.add('active');
             activeLink.style.color = 'var(--golden-color)';
         }
     } else {
-        // 如果没有 Hash，默认显示第一课
         showSection('default-view');
     }
-});
+}
+
+window.addEventListener('DOMContentLoaded', handleHashNavigation);
+window.addEventListener('hashchange', handleHashNavigation);
