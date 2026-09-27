@@ -1,0 +1,220 @@
+---
+import { useTranslations } from "@/i18n";
+
+const t = useTranslations();
+
+/*
+ * discussion 的标识（term）。
+ *
+ * 这里不用 giscus 的 pathname 映射，而是用 specific 自己算，原因：
+ * pathname 映射在客户端里是
+ *   location.pathname.substring(1).replace(/\.\w+$/, "")
+ * 结尾斜杠不会被去掉，`/posts/site-setup/` 会变成 `posts/site-setup/`，
+ * 查询 discussion 时就差这一个字符，直接 404。
+ *
+ * 自己算还能让「本地预览 / 线上」两种路径落到同一个 discussion 上：
+ * 线上是 /posts/site-setup/，本地预览是 /posts/site-setup.html。
+ *
+ * 注意：改了这里的规则会让已有评论「找不到」（discussion 标题变了），
+ * 所以定下来后别轻易动。
+ */
+const term = Astro.url.pathname
+  .replace(/^\/+/, "")
+  .replace(/\/+$/, "")
+  .replace(/\.\w+$/, "");
+---
+
+<!--
+  Giscus 评论区。评论存在本仓库的 GitHub Discussions 里，
+  所以站点不需要任何后端，仍然是纯静态。
+
+  这里只放一个占位容器，真正的 <script> 由同文件底部的脚本
+  在容器进入视口时才注入 —— 首屏不会为评论区付任何代价。
+-->
+<section
+  id="comments"
+  class="giscus mt-12"
+  aria-labelledby="comments-heading"
+>
+  <div class="flex items-baseline gap-2">
+    <span class="text-accent" aria-hidden="true">##</span>
+    <h2 id="comments-heading" class="text-xl font-semibold tracking-wide">
+      {t.comments.title}
+    </h2>
+  </div>
+
+  <p class="text-muted-foreground mt-2 text-sm">{t.comments.hint}</p>
+
+  <div
+    id="giscus-container"
+    class="border-border mt-4"
+    data-giscus-repo="Yzk258/Yzk258.github.io"
+    data-giscus-repo-id="R_kgDOQGVnVQ"
+    data-giscus-category="Announcements"
+    data-giscus-category-id="DIC_kwDOQGVnVc4DGgVG"
+    data-giscus-mapping="specific"
+    data-giscus-term={term}
+    data-giscus-lang="zh-CN"
+    data-iframe-title={t.comments.iframeTitle}
+  >
+    <noscript>
+      <p class="text-muted-foreground text-sm">{t.comments.noscript}</p>
+    </noscript>
+  </div>
+</section>
+
+<script>
+  /*
+   * giscus 加载器。
+   *
+   * 几个刻意的选择：
+   *
+   * 1. 等容器进入视口才注入 script。评论区在页面最底部，
+   *    多数读者不会滚到底；不延迟的话每个人都要为它下载并
+   *    加载一个 iframe。
+   *
+   * 2. 主题由站点状态决定，而不是用官方的 preferred_color_scheme。
+   *    后者只认系统偏好，读者手动点过深浅色切换按钮后，
+   *    评论区会和站点不一致。
+   *
+   * 3. giscus 只在首次加载时读取 data-theme，之后换主题必须重设
+   *    「iframe 的 URL」（不是 data 属性），否则不生效。
+   *    重设 URL 会重新加载 iframe —— 这是它目前唯一的换主题方式。
+   */
+  const container = document.getElementById("giscus-container");
+
+  if (container) {
+    const currentTheme = () =>
+      document.documentElement.getAttribute("data-theme") === "dark"
+        ? "dark"
+        : "light";
+
+    /** 注入 giscus 客户端；它会在 .giscus 容器内创建 iframe */
+    const injectClient = () => {
+      const script = document.createElement("script");
+      /*
+       * 语言必须通过 data-lang 传。
+       *
+       * 客户端里是 `const q = b.lang ? \`/${b.lang}\` : ""`，
+       * 拼进 `/zh-CN/widget?...`。虽然从 /zh-CN/client.js 加载也能跑，
+       * 但那只影响脚本本身，iframe 依然会加载 /widget（英文界面）——
+       * 实测确认过，所以这里保留 data-lang。
+       */
+      script.src = "https://giscus.app/client.js";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      // 客户端从 data-* 读配置；theme 在这里给它首屏用的值
+      script.dataset.repo = container.dataset.giscusRepo;
+      script.dataset.repoId = container.dataset.giscusRepoId;
+      script.dataset.category = container.dataset.giscusCategory;
+      script.dataset.categoryId = container.dataset.giscusCategoryId;
+      script.dataset.mapping = container.dataset.giscusMapping;
+      script.dataset.term = container.dataset.giscusTerm;
+      script.dataset.strict = "0";
+      script.dataset.reactionsEnabled = "1";
+      script.dataset.emitMetadata = "0";
+      script.dataset.inputPosition = "bottom";
+      script.dataset.theme = currentTheme();
+      script.dataset.lang = container.dataset.giscusLang ?? "zh-CN";
+      document.head.appendChild(script);
+    };
+
+    /**
+     * 换主题：客户端只认首次的 data-theme，之后要直接改 iframe 的地址，
+     * 把地址里的 theme 参数换掉。改地址会重载 iframe —— 这是它目前
+     * 唯一支持的换主题方式。
+     *
+     * 注意 iframe 是在 document 里找，不是只在容器里：
+     * giscus 的插入逻辑是找 `.giscus` 容器的兄弟位置，在我们的结构下
+     * 它会挂到 document.head 下，用容器去查是找不到的。
+     */
+    const applyTheme = (theme: string) => {
+      const frame = document.querySelector<HTMLIFrameElement>(
+        "iframe.giscus-frame"
+      );
+      if (!frame?.src) return;
+      const url = new URL(frame.src);
+      if (url.searchParams.get("theme") === theme) return;
+      url.searchParams.set("theme", theme);
+      frame.src = url.toString();
+    };
+
+    let loaded = false;
+    const ensureLoaded = () => {
+      if (loaded) return;
+      loaded = true;
+      injectClient();
+    };
+
+    // 进入视口前 300px 就开始加载，滚到底时评论区已经就绪
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        entries => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            ensureLoaded();
+            observer.disconnect();
+          }
+        },
+        { rootMargin: "300px" }
+      );
+      observer.observe(container);
+    } else {
+      ensureLoaded();
+    }
+
+    // 站点主题变化时同步评论区（含手动点击与系统偏好变化）。
+    // 不判断是否已加载 —— 没加载时 applyTheme 会因为找不到 iframe 直接返回。
+    document.addEventListener("theme-change", event => {
+      applyTheme((event as CustomEvent<{ theme: string }>).detail.theme);
+    });
+
+    // 首次注入用的 theme 取自站点当前状态，个别情况下客户端可能
+    // 先于主题脚本执行、拿到旧值，这里再纠一次。
+    document.addEventListener("astro:page-load", () => {
+      applyTheme(currentTheme());
+    });
+
+    /*
+     * 给 giscus 创建的 iframe 补两件事：
+     * - 中文的可访问名称（它硬编码英文 "Comments"，读屏会念出来）
+     * - 与站点一致的边框和背景，避免它在正文里显得突兀
+     */
+    const decorateIframe = () => {
+      const frame = document.querySelector<HTMLIFrameElement>(
+        "iframe.giscus-frame"
+      );
+      if (!frame) return;
+
+      const title = container.dataset.iframeTitle;
+      if (title && frame.getAttribute("title") !== title) {
+        frame.setAttribute("title", title);
+      }
+
+      if (frame.dataset.styled !== "true") {
+        frame.dataset.styled = "true";
+        frame.style.colorScheme = "normal";
+        frame.style.border = "none";
+        frame.style.width = "100%";
+      }
+
+      /*
+       * 高度兜底：giscus 加载后会用 postMessage 回传内容高度，
+       * 但在那之前 iframe 高度是 0，会把页面撑出一段空白跳变。
+       * 这里只给一个「初始」最小值，一旦 giscus 给过高度就不再干预，
+       * 否则会把它的真实高度压回 180px。
+       */
+      if (!frame.style.height && frame.dataset.heightFallback !== "done") {
+        frame.dataset.heightFallback = "done";
+        frame.style.minHeight = "180px";
+      }
+    };
+
+    // giscus 是异步插入 iframe 的，用 MutationObserver 盯住 DOM 变化
+    new MutationObserver(decorateIframe).observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+    decorateIframe();
+  }
+</script>

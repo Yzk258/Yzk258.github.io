@@ -12,6 +12,7 @@
 - TypeScript（`astro/tsconfigs/strict`）
 - 字体 [JetBrains Mono](https://www.jetbrains.com/lp/mono/)（自托管，`@fontsource-variable`）
 - 文章：`@astrojs/mdx` + Shiki 代码高亮 + `remark-toc` / `rehype-callouts`
+- 评论：[giscus](https://giscus.app/)，评论存在仓库的 GitHub Discussions 里
 
 主题基于 [AstroPaper](https://github.com/satnaing/astro-paper) v6 改造，
 沿用其布局与设计令牌，去掉了标签、归档、站内搜索等用不到的博客功能。
@@ -32,6 +33,7 @@ src/
 ├── components/
 │   ├── ApiCards.astro   三个第三方接口小卡片
 │   ├── Card.astro       文章列表项
+│   ├── Comments.astro   giscus 评论区（评论存在 GitHub Discussions）
 │   ├── Datetime.astro   日期显示（按站点时区格式化）
 │   ├── Header.astro     页头与导航
 │   ├── Footer.astro     页脚
@@ -107,6 +109,43 @@ draft: false         # true 则不参与构建
 更细的示例见 `src/content/posts/writing-guide.md` 本身。
 
 写完后 `npm run build` 会校验 frontmatter，格式不对会直接报错并指出问题。
+
+## 评论
+
+文章页底部有评论区，用的是 [giscus](https://giscus.app/)：
+评论存在本仓库的 **GitHub Discussions** 里，所以站点仍然是纯静态，
+没有后端、没有数据库、没有费用。代价是评论者需要登录 GitHub 账号。
+
+相关设置（要改的话都得动）：
+
+| 位置 | 内容 |
+| --- | --- |
+| `src/components/Comments.astro` | 仓库名、repoId、category、categoryId |
+| 仓库 Settings → Features | 必须开启 **Discussions** |
+| GitHub 上的 giscus App | 必须授权给本仓库，否则读取评论会 403 |
+
+**每篇文章对应一个 discussion**，标识（term）由页面路径算出：
+`/posts/site-setup/` → `posts/site-setup`。
+这个规则在 `Comments.astro` 顶部，**定下来后别轻易改** ——
+改了 term 会让已有评论“找不到”（旧 discussion 还在，只是不再关联）。
+
+注意这里没用 giscus 自带的 `pathname` 映射，而是用 `specific` 自己算：
+`pathname` 映射在客户端里不会去掉结尾斜杠，`/posts/site-setup/`
+会变成 `posts/site-setup/`，查询时差这一个字符就直接 404。
+自己算还能让线上（`/posts/x/`）和本地预览（`/posts/x.html`）
+落到同一个 discussion 上。
+
+几个实现细节：
+
+- **延迟加载**：评论区进入视口前 300px 才开始加载，读者不滚到底就不会
+  为它付任何代价（可以用 `.tools/check-comments.mjs` 复核首屏请求数）
+- **跟随主题**：主题由站点状态驱动，而不是 giscus 的 `preferred_color_scheme`
+  （后者只认系统偏好，读者手动点过切换按钮后会不一致）
+- 语言固定 `zh-CN`（必须通过 `data-lang` 传，见 `Comments.astro` 里的注释）
+- iframe 的 `title` 覆盖成了中文，否则读屏会念英文 "Comments"
+
+**管理评论**：直接在仓库的 Discussions 里回复、删除或锁定。
+giscus 的回复和 GitHub 上是同一份数据，两边同步。
 
 ## 怎么改内容
 
