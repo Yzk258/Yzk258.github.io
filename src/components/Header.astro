@@ -1,153 +1,164 @@
 ---
-/**
- * 站点头部 —— 品牌、主导航、主题切换、移动端抽屉。
- * 导航数据来自 src/config.ts，全站只需维护一处。
- */
-import { nav, site } from '../config';
-import Search from './Search.astro';
+import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
+import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
+import IconMoon from "@/assets/icons/IconMoon.svg";
+import IconX from "@/assets/icons/IconX.svg";
+import { stripBase } from "@/utils/withBase";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
 
-const currentPath = Astro.url.pathname;
+const { site, features } = config;
 
-/** 当前路径是否命中该导航项（含子路由，如 /study/xxx/） */
-function isActive(href: string): boolean {
-  if (href === '/') return currentPath === '/' || currentPath === '';
-  return currentPath.startsWith(href);
-}
+const t = useTranslations();
+
+// Strip the base prefix so isActive comparisons work regardless of deploy subdirectory.
+// e.g. with base "/blog": "/blog/posts/slug" → "/posts/slug"
+const relativePath = stripBase(Astro.url.pathname);
+const pathWithoutTrailingSlash =
+  relativePath.endsWith("/") && relativePath !== "/"
+    ? relativePath.slice(0, -1)
+    : relativePath;
+
+const currentPath = pathWithoutTrailingSlash;
+
+const isActive = (path: string) => {
+  const currentPathArray = currentPath.split("/").filter(p => p.trim());
+  const pathArray = path.split("/").filter(p => p.trim());
+  return currentPath === path || currentPathArray[0] === pathArray[0];
+};
 ---
 
-<header class="site-header">
-  <div class="wrap header-inner">
-    <a class="brand" href="/" aria-label={`${site.title} 首页`}>
-      <span class="brand-mark" aria-hidden="true">YZ</span>
-      <span>{site.title}</span>
+<a
+  id="skip-to-content"
+  href="#main-content"
+  class="bg-background text-accent absolute inset-s-16 -top-full z-50 px-3 py-2 backdrop-blur-lg transition-all focus:top-4"
+>
+  {t.a11y.skipToContent}
+</a>
+
+<header
+  class="app-layout flex flex-col items-center justify-between sm:flex-row"
+>
+  <div
+    class="border-border bg-background relative flex w-full items-baseline justify-between border-b py-4 sm:items-center sm:py-6"
+  >
+    <a
+      href="/"
+      class="absolute py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:static sm:my-auto sm:text-2xl sm:leading-none"
+    >
+      {site.title}
     </a>
-
-    <nav class="nav" id="site-nav" aria-label="主导航">
-      {
-        nav.map((item) => (
-          <a
-            class="nav-item"
-            href={item.href}
-            aria-current={isActive(item.href) ? 'page' : undefined}
-          >
-            {item.label}
-          </a>
-        ))
-      }
-    </nav>
-
-    <div class="header-tools">
-      <Search />
+    <nav
+      id="nav-menu"
+      class="flex w-full flex-col items-center sm:ms-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"
+    >
       <button
-        class="icon-btn"
-        type="button"
-        data-theme-toggle
-        aria-label="切换深色 / 浅色主题"
-        aria-pressed="false"
-        title="切换深色 / 浅色主题"
-      >
-        <svg
-          class="icon-sun"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="4.2"></circle>
-          <path
-            d="M12 2.6v2.2M12 19.2v2.2M4.4 4.4l1.6 1.6M18 18l1.6 1.6M2.6 12h2.2M19.2 12h2.2M4.4 19.6L6 18M18 6l1.6-1.6"
-          ></path>
-        </svg>
-        <svg
-          class="icon-moon"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          aria-hidden="true"
-        >
-          <path d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.2 8.2 0 1 0 10.2 10.2Z"></path>
-        </svg>
-      </button>
-
-      <button
-        class="icon-btn menu-btn"
-        type="button"
-        data-menu-toggle
-        aria-controls="site-nav"
+        id="menu-btn"
+        class="focus-outline self-end p-2 sm:hidden"
+        aria-label={t.a11y.openMenu}
         aria-expanded="false"
-        aria-label="展开导航菜单"
-        title="导航菜单"
+        aria-controls="menu-items"
+        data-label-open={t.a11y.openMenu}
+        data-label-close={t.a11y.closeMenu}
       >
-        <svg
-          class="icon-menu"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          aria-hidden="true"
-        >
-          <path d="M3.5 7h17M3.5 12h17M3.5 17h17"></path>
-        </svg>
-        <svg
-          class="icon-close"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          aria-hidden="true"
-        >
-          <path d="M6 6l12 12M18 6L6 18"></path>
-        </svg>
+        <IconX id="close-icon" class="hidden" />
+        <IconMenuDeep id="menu-icon" />
       </button>
-    </div>
+      <ul
+        id="menu-items"
+        class="[&>li>a]:hover:text-accent mt-4 hidden w-44 grid-cols-2 place-content-center gap-2 sm:mt-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0 sm:[&>li]:h-8 [&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-3 [&>li>a]:text-center [&>li>a]:font-medium sm:[&>li>a]:px-2 sm:[&>li>a]:py-1"
+      >
+        <li class="col-span-2">
+          <a href="/" class:list={{ "active-nav": isActive("/") }}>
+            {t.nav.home}
+          </a>
+        </li>
+        <li class="col-span-2">
+          <a
+            href="/about/"
+            class:list={{ "active-nav": isActive("/about") }}
+          >
+            {t.nav.about}
+          </a>
+        </li>
+        {
+          features.lightAndDarkMode && (
+            <li class="col-span-1 flex items-center justify-center">
+              <button
+                id="theme-btn"
+                class="focus-outline hover:[&>svg]:stroke-accent relative size-12 p-4 sm:size-8"
+                title={t.a11y.toggleTheme}
+                aria-label="auto"
+                aria-live="polite"
+              >
+                <IconMoon class="absolute top-[50%] left-[50%] translate-[-50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                <IconSunHigh class="absolute top-[50%] left-[50%] translate-[-50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+              </button>
+            </li>
+          )
+        }
+      </ul>
+    </nav>
   </div>
 </header>
 
 <script>
-  const navEl = document.getElementById('site-nav');
-  const menuBtn = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  function toggleNav() {
+    const menuBtn = document.querySelector<HTMLButtonElement>("#menu-btn");
+    const menuItems = document.querySelector("#menu-items");
+    const menuIcon = document.querySelector("#menu-icon");
+    const closeIcon = document.querySelector("#close-icon");
 
-  if (navEl && menuBtn) {
-    const setOpen = (open: boolean) => {
-      navEl.dataset.open = String(open);
-      menuBtn.setAttribute('aria-expanded', String(open));
-      menuBtn.setAttribute('aria-label', open ? '收起导航菜单' : '展开导航菜单');
-    };
+    if (!menuBtn || !menuItems || !menuIcon || !closeIcon) return;
 
-    menuBtn.addEventListener('click', () => {
-      setOpen(navEl.dataset.open !== 'true');
-    });
+    const openLabel = menuBtn.dataset.labelOpen ?? "Open menu";
+    const closeLabel = menuBtn.dataset.labelClose ?? "Close menu";
 
-    // 点击导航项后收起抽屉
-    navEl.addEventListener('click', (event) => {
-      if ((event.target as HTMLElement).closest('a')) setOpen(false);
-    });
+    menuBtn.addEventListener("click", () => {
+      const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
 
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && navEl.dataset.open === 'true') {
-        setOpen(false);
-        menuBtn.focus();
-      }
-    });
+      menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
+      menuBtn.setAttribute("aria-label", openMenu ? openLabel : closeLabel);
 
-    // 回到桌面宽度时重置抽屉状态，避免残留内联布局
-    const desktop = window.matchMedia('(min-width: 821px)');
-    desktop.addEventListener('change', (event) => {
-      if (event.matches) setOpen(false);
+      menuItems.classList.toggle("hidden");
+      menuItems.classList.toggle("grid");
+      menuIcon.classList.toggle("hidden");
+      closeIcon.classList.toggle("hidden");
     });
   }
+
+  function handleSkipToContent() {
+    const skipLink = document.getElementById("skip-to-content");
+    if (!skipLink) return;
+    skipLink.addEventListener("click", e => {
+      if (
+        e.defaultPrevented ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.shiftKey ||
+        e.button !== 0
+      )
+        return;
+      e.preventDefault();
+      const target = document.getElementById("main-content");
+      if (target) {
+        target.setAttribute("tabindex", "-1");
+        target.addEventListener(
+          "blur",
+          () => target.removeAttribute("tabindex"),
+          {
+            once: true,
+          }
+        );
+        target.focus();
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  }
+
+  toggleNav();
+  document.addEventListener("astro:after-swap", toggleNav);
+
+  handleSkipToContent();
+  document.addEventListener("astro:after-swap", handleSkipToContent);
 </script>

@@ -1,0 +1,86 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import Main from "@/components/Main.astro";
+import Footer from "@/components/Footer.astro";
+import config from "@/config";
+
+const { site } = config;
+const title = "关于我";
+
+const facts = [
+  { label: "身份", value: "清华大学 工程物理系 本科生" },
+  { label: "邮箱", value: "yzk24@mails.tsinghua.edu.cn" },
+  { label: "个人主站", value: site.profile ?? "" },
+].filter(fact => fact.value);
+---
+
+<Layout title={`${title} | ${site.title}`} description={site.description}>
+  <Header />
+
+  <Breadcrumb />
+
+  <Main pageTitle={title}>
+    <section class="space-y-4 leading-7">
+      <p>
+        我是 <strong>YZK</strong>，目前在清华大学工程物理系读本科。这个站点是我的主页兼资源中转站
+        —— 把散落在各处的入口收在一处，方便自己也方便同学。
+      </p>
+      <p>
+        日常更新的内容、更完整的介绍都在
+        <a
+          href="https://yinzachary24.top/"
+          target="_blank"
+          rel="noopener noreferrer">个人主站</a
+        >；各类代码、课程作业和本站源码放在
+        <a
+          href="https://github.com/Yzk258"
+          target="_blank"
+          rel="noopener noreferrer">GitHub</a
+        >。
+      </p>
+    </section>
+
+    <section class="mt-10">
+      <h2 class="text-xl font-semibold tracking-wide">基本信息</h2>
+      <dl class="mt-4 grid gap-3 sm:grid-cols-2">
+        {
+          facts.map(fact => (
+            <div class="border-border rounded-lg border p-3">
+              <dt class="text-muted-foreground text-xs">{fact.label}</dt>
+              <dd class="mt-1 break-all text-sm">{fact.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <section class="mt-10">
+      <h2 class="text-xl font-semibold tracking-wide">这个站点</h2>
+      <p class="mt-3 leading-7">
+        用 <a href="https://astro.build/" target="_blank" rel="noopener noreferrer">Astro</a> 构建，
+        主题基于
+        <a
+          href="https://github.com/satnaing/astro-paper"
+          target="_blank"
+          rel="noopener noreferrer">AstroPaper</a
+        >（MIT 许可）改造。首页的三个接口卡片分别调用
+        <a href="https://hitokoto.cn/" target="_blank" rel="noopener noreferrer">一言</a>、<a
+          href="https://dog.ceo/"
+          target="_blank"
+          rel="noopener noreferrer">Dog CEO</a
+        > 和
+        <a href="https://www.jinrishici.com/" target="_blank" rel="noopener noreferrer"
+          >今日诗词</a
+        >，内容来自第三方，与本站无关。
+      </p>
+      <p class="text-muted-foreground mt-3 text-sm leading-7">
+        想补充资料或者交流，发邮件到
+        <a href="mailto:yzk24@mails.tsinghua.edu.cn">yzk24@mails.tsinghua.edu.cn</a>。
+      </p>
+    </section>
+  </Main>
+
+  <Footer />
+</Layout>

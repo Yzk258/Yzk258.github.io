@@ -1,0 +1,61 @@
+---
+import { stripBase } from "@/utils/withBase";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+const t = useTranslations();
+
+// Strip base prefix and trailing slash so segments reflect the logical page path only.
+const currentUrlPath = stripBase(Astro.url.pathname).replace(/\/+$/, "");
+
+// Get url array from path
+// eg: /tags/tailwindcss => ['tags', 'tailwindcss']
+const breadcrumbList = currentUrlPath.split("/").slice(1).filter(Boolean);
+
+const decodeSegment = (value: string) => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
+const navLabels: Record<string, string> = {
+  about: t.nav.about,
+};
+---
+
+<nav class="app-layout mt-8 mb-1" aria-label="breadcrumb">
+  <ul
+    class="text-muted-foreground flex flex-wrap items-center gap-x-1 font-light [&>li:not(:last-child)>a]:hover:text-foreground"
+  >
+    <li class="flex items-center gap-x-1">
+      <a href="/">
+        {t.nav.home}
+      </a>
+      <span aria-hidden="true">&raquo;</span>
+    </li>
+    {
+      breadcrumbList.map((breadcrumb, index) =>
+        index + 1 === breadcrumbList.length ? (
+          <li>
+            <span
+              class:list={["text-foreground capitalize", { lowercase: index > 0 }]}
+              aria-current="page"
+            >
+              {/* make the last part lowercase in Home > Tags > some-tag */}
+              {navLabels[breadcrumb] ?? decodeSegment(breadcrumb)}
+            </span>
+          </li>
+        ) : (
+          <li class="flex items-center gap-x-1">
+            <a href={`/${breadcrumb}/`} class="capitalize">
+              {navLabels[breadcrumb] ?? decodeSegment(breadcrumb)}
+            </a>
+            <span aria-hidden="true">&raquo;</span>
+          </li>
+        )
+      )
+    }
+  </ul>
+</nav>

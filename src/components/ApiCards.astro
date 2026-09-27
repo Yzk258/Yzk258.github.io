@@ -1,392 +1,385 @@
 ---
 /**
- * 好玩的 API 卡片 —— 从旧站点 index.js 迁移而来。
+ * 三个调用公开接口的小卡片：一言 / 随机狗狗 / 今日诗词。
  *
- * 保留的核心逻辑：
- *   · 6 秒超时（AbortController），失败时显示兜底文案而非空白
- *   · seq 序号：连点时旧响应不会覆盖新响应
- *   · 点击与键盘（Enter / 空格）都能触发刷新
- *
- * 新增的改进：
- *   · 延后到卡片接近视口才发首次请求，不为看不见的内容消耗流量
- *   · 断网时直接显示离线提示，不做注定失败的请求
- *   · 图片预留宽高，避免加载完成时页面跳动
+ * 特性（沿用此前实现的约定）：
+ *   - 每张卡片首次接近视口才发请求，避免白等
+ *   - 6 秒超时，失败走兜底文案，不让页面卡住
+ *   - 连点用自增序号保护，只采用最后一次请求的结果
+ *   - 断网时直接提示，不做无效请求
+ *   - 整卡可键盘操作（Enter / Space），带 aria-label
  */
 ---
 
-<section class="api-section" aria-labelledby="api-heading" data-api-cards data-reveal>
-  <div class="api-head">
-    <h2 id="api-heading" class="api-title">好玩的 API</h2>
-    <p class="api-desc">三个简单的第三方接口，点一下换一换。</p>
+<section class="api-grid mt-6" aria-label="第三方接口小卡片">
+  <!-- 一言 -->
+  <div
+    class="api-card"
+    role="button"
+    tabindex="0"
+    data-api="hitokoto"
+    aria-label="每日一言，点击换一句"
+    title="点我换一句"
+  >
+    <span class="api-icon" aria-hidden="true">💬</span>
+    <p class="api-text" data-api-text>正在召唤一句话…</p>
+    <p class="api-from" data-api-from-label>一言 · Hitokoto</p>
   </div>
 
-  <div class="api-grid">
-    <!-- 一言 -->
-    <div
-      class="api-card"
-      id="api-card-hitokoto"
-      role="button"
-      tabindex="0"
-      data-api="hitokoto"
-      aria-label="一言，点击换一句"
-      title="点我换一句！"
-    >
-      <p class="api-quote" data-api-text>正在召唤一句话…</p>
-      <p class="api-from" data-api-from data-api-from-label>一言 · Hitokoto</p>
-      <span class="api-hint" aria-hidden="true">点击换一句</span>
+  <!-- 随机狗狗 -->
+  <div
+    class="api-card api-card--wide"
+    role="button"
+    tabindex="0"
+    data-api="dog"
+    aria-label="随机狗狗照片，点击换一只"
+    title="点我换一只狗狗"
+  >
+    <span class="api-icon" aria-hidden="true">🐕</span>
+    <div class="api-frame">
+      <img
+        class="api-img"
+        data-api-img
+        alt=""
+        width="640"
+        height="420"
+        loading="lazy"
+        decoding="async"
+      />
+      <p class="api-placeholder" data-api-placeholder>正在领养一只狗狗…</p>
     </div>
-
-    <!-- 随机狗狗 -->
-    <div
-      class="api-card api-card-dog"
-      id="api-card-dog"
-      role="button"
-      tabindex="0"
-      data-api="dog"
-      aria-label="随机狗狗照片，点击换一只"
-      title="点我换一只狗狗！"
-    >
-      <div class="api-dog-frame" data-api-frame>
-        <img
-          class="api-dog-img"
-          data-api-img
-          alt=""
-          width="640"
-          height="420"
-          loading="lazy"
-          decoding="async"
-        />
-        <span class="api-dog-placeholder" data-api-placeholder>正在领养一只狗狗…</span>
-      </div>
-      <p class="api-from" data-api-from-dog>Dog CEO · 随机狗狗</p>
-      <span class="api-hint" aria-hidden="true">点击换一只</span>
-    </div>
-
-    <!-- 今日诗词 -->
-    <div
-      class="api-card"
-      id="api-card-poem"
-      role="button"
-      tabindex="0"
-      data-api="poem"
-      aria-label="今日诗词，点击换一句"
-      title="点我换一句诗！"
-    >
-      <p class="api-quote" data-api-text>正在翻书…</p>
-      <p class="api-from" data-api-from-label>今日诗词 · JinRiShiCi</p>
-      <span class="api-hint" aria-hidden="true">点击换一句</span>
-    </div>
+    <p class="api-from" data-api-from-dog>Dog CEO · 随机狗狗</p>
   </div>
 
-  <p class="api-credit">
-    接口来源：<a href="https://hitokoto.cn/" target="_blank" rel="noopener noreferrer">一言</a> ·
-    <a href="https://dog.ceo/dog-api/" target="_blank" rel="noopener noreferrer">Dog CEO</a> ·
-    <a href="https://www.jinrishici.com/" target="_blank" rel="noopener noreferrer">今日诗词</a>
-  </p>
+  <!-- 今日诗词 -->
+  <div
+    class="api-card"
+    role="button"
+    tabindex="0"
+    data-api="poem"
+    aria-label="今日诗词，点击换一句"
+    title="点我换一句诗"
+  >
+    <span class="api-icon" aria-hidden="true">📜</span>
+    <p class="api-text" data-api-text>正在翻书…</p>
+    <p class="api-from" data-api-from-label>今日诗词 · JinRiShiCi</p>
+  </div>
 </section>
 
 <style>
-  .api-head {
-    margin-block-end: 1.5rem;
-  }
-
-  .api-title {
-    font-size: clamp(1.3rem, 2.4vw, 1.6rem);
-  }
-
-  .api-desc {
-    margin-block-start: 0.5rem;
-    color: var(--c-text-soft);
-    font-size: 0.9375rem;
-  }
-
   .api-grid {
     display: grid;
-    gap: 1.25rem;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .api-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .api-card--wide {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
   }
 
   .api-card {
     position: relative;
     display: flex;
     flex-direction: column;
-    min-height: 11rem;
-    padding: 1.25rem;
-    border: var(--border-hairline);
-    border-radius: var(--radius-lg);
-    background: var(--c-surface);
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
-      border-color var(--dur) var(--ease);
+    gap: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 0.25rem;
+    padding: 1rem;
+    transition:
+      border-color 0.2s ease,
+      transform 0.2s ease;
   }
 
   .api-card:hover {
-    transform: translateY(-3px);
-    border-color: var(--c-card-hover-border);
-    box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
+    transform: translateY(-2px);
   }
 
   .api-card:focus-visible {
-    outline: 2px solid var(--c-accent);
-    outline-offset: 3px;
+    outline: 2px dashed var(--accent);
+    outline-offset: 2px;
   }
 
-  .api-quote {
+  .api-icon {
+    font-size: 1.125rem;
+    line-height: 1;
+  }
+
+  .api-text {
+    margin: 0;
     flex: 1;
-    display: grid;
-    place-items: center;
-    color: var(--c-text);
-    font-size: 1rem;
-    line-height: 1.8;
-    text-align: center;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    text-wrap: pretty;
   }
 
   .api-from {
-    margin-block-start: 0.75rem;
-    color: var(--c-text-dim);
-    font-size: 0.8125rem;
-    text-align: center;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.8rem;
+    line-height: 1.5;
   }
 
-  .api-hint {
-    margin-block-start: 0.5rem;
-    color: var(--c-text-dim);
-    font-size: 0.75rem;
-    text-align: center;
-    opacity: 0;
-    transition: opacity var(--dur) var(--ease);
-  }
-
-  .api-card:hover .api-hint,
-  .api-card:focus-visible .api-hint {
-    opacity: 1;
-  }
-
-  /* ---------- 狗狗图片 ---------- */
-  .api-card-dog {
-    padding: 0.75rem;
-  }
-
-  .api-dog-frame {
+  /* 狗狗图片区域 */
+  .api-frame {
     position: relative;
-    display: grid;
-    place-items: center;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 8rem;
     overflow: hidden;
-    border-radius: var(--radius-md);
-    background: var(--c-bg-soft);
-    aspect-ratio: 16 / 10;
+    border-radius: 0.25rem;
+    background: var(--muted);
   }
 
-  .api-dog-img {
+  .api-card--wide .api-frame {
+    min-height: 12rem;
+  }
+
+  .api-img {
+    display: none;
     width: 100%;
     height: 100%;
+    max-height: 18rem;
     object-fit: cover;
-    opacity: 0;
-    transition: opacity var(--dur) var(--ease);
   }
 
-  .api-dog-img[data-loaded='true'] {
-    opacity: 1;
+  .api-img[data-loaded='true'] {
+    display: block;
   }
 
-  .api-dog-placeholder {
-    position: absolute;
-    padding-inline: 1rem;
-    color: var(--c-text-dim);
-    font-size: 0.8125rem;
+  .api-img[data-loaded='true'] + .api-placeholder {
+    display: none;
+  }
+
+  .api-placeholder {
+    margin: 0;
+    padding: 1rem;
+    color: var(--muted-foreground);
+    font-size: 0.85rem;
     text-align: center;
   }
 
-  .api-credit {
-    margin-block-start: 1.25rem;
-    color: var(--c-text-dim);
-    font-size: 0.8125rem;
+  /* 加载中 / 失败的状态文字 */
+  .api-card[data-state='error'] .api-text,
+  .api-card[data-state='offline'] .api-text {
+    color: var(--muted-foreground);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .api-card,
-    .api-dog-img {
+    .api-card {
       transition: none;
+    }
+
+    .api-card:hover {
+      transform: none;
     }
   }
 </style>
 
 <script>
-  /** 与旧实现保持一致的 6 秒超时 */
-  const API_TIMEOUT = 6000;
+  type Kind = 'hitokoto' | 'dog' | 'poem';
 
-  async function fetchJson(url: string, timeout = API_TIMEOUT): Promise<any> {
+  const TIMEOUT_MS = 6000;
+
+  /** 请求序号：连点时只采用最后一次的结果 */
+  const seqMap = new Map<Kind, number>();
+
+  function nextSeq(kind: Kind): number {
+    const next = (seqMap.get(kind) ?? 0) + 1;
+    seqMap.set(kind, next);
+    return next;
+  }
+
+  function isCurrent(kind: Kind, seq: number): boolean {
+    return seqMap.get(kind) === seq;
+  }
+
+  /** 带超时的 fetch —— 超时后主动 abort，避免请求悬挂 */
+  async function fetchJson<T>(url: string): Promise<T> {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeout);
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
     try {
       const res = await fetch(url, { signal: controller.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
+      return (await res.json()) as T;
     } finally {
       clearTimeout(timer);
     }
   }
 
-  const root = document.querySelector<HTMLElement>('[data-api-cards]');
+  function setText(el: Element | null, text: string) {
+    if (el) el.textContent = text;
+  }
 
-  if (root) {
-    const online = () => navigator.onLine !== false;
+  /** 一律用 textContent 写入，天然免疫 HTML 注入 */
+  async function loadHitokoto(card: HTMLElement, seq: number) {
+    const textEl = card.querySelector<HTMLElement>('[data-api-text]');
+    const fromEl = card.querySelector<HTMLElement>('[data-api-from-label]');
+    if (!textEl || !fromEl) return;
 
-    /** 每张卡片独立的请求序号，防止连点时旧响应覆盖新响应 */
-    const seqs = new Map<string, number>();
-
-    function seqFor(kind: string): number {
-      const next = (seqs.get(kind) ?? 0) + 1;
-      seqs.set(kind, next);
-      return next;
+    if (!navigator.onLine) {
+      card.dataset.state = 'offline';
+      setText(textEl, '离线状态下用不了，联网后再点。');
+      return;
     }
 
-    function isCurrent(kind: string, seq: number): boolean {
-      return seqs.get(kind) === seq;
+    card.dataset.state = 'loading';
+    try {
+      const data = await fetchJson<{
+        hitokoto: string;
+        from?: string;
+        from_who?: string;
+      }>('https://v1.hitokoto.cn/');
+      if (!isCurrent('hitokoto', seq)) return;
+      card.dataset.state = 'ready';
+      setText(textEl, `「${data.hitokoto}」`);
+      const who = data.from_who
+        ? `${data.from_who}「${data.from ?? ''}」`
+        : (data.from ?? '');
+      setText(fromEl, who ? `—— ${who}` : '一言 · Hitokoto');
+    } catch {
+      if (!isCurrent('hitokoto', seq)) return;
+      card.dataset.state = 'error';
+      setText(textEl, '一言开小差了，点一下重试。');
+    }
+  }
+
+  async function loadDog(card: HTMLElement, seq: number) {
+    const img = card.querySelector<HTMLImageElement>('[data-api-img]');
+    const placeholder = card.querySelector<HTMLElement>('[data-api-placeholder]');
+    const fromEl = card.querySelector<HTMLElement>('[data-api-from-dog]');
+    if (!img || !placeholder) return;
+
+    if (!navigator.onLine) {
+      card.dataset.state = 'offline';
+      setText(placeholder, '离线状态下领不到狗狗，联网后再点。');
+      return;
     }
 
-    const offlineText = '离线状态下这个接口用不了';
+    card.dataset.state = 'loading';
+    setText(placeholder, '正在领养一只狗狗…');
+    try {
+      const data = await fetchJson<{ message: string; status: string }>(
+        'https://dog.ceo/api/breeds/image/random'
+      );
+      if (!isCurrent('dog', seq)) return;
+      if (data.status !== 'success' || !data.message) throw new Error('bad payload');
 
-    async function loadHitokoto(card: HTMLElement, seq: number) {
-      const textEl = card.querySelector<HTMLElement>('[data-api-text]');
-      const fromEl = card.querySelector<HTMLElement>('[data-api-from-label]');
-      if (!textEl || !fromEl) return;
-
-      if (!online()) {
-        textEl.textContent = offlineText;
-        fromEl.textContent = '联网后点一下试试';
-        return;
-      }
-
-      textEl.textContent = '加载中…';
-      fromEl.textContent = '一言 · Hitokoto';
-      try {
-        const data = await fetchJson('https://v1.hitokoto.cn/?c=a&c=b&c=d&c=i&c=k&max_length=30');
-        if (!isCurrent('hitokoto', seq)) return;
-        textEl.textContent = `「${data.hitokoto}」`;
-        fromEl.textContent = data.from_who
-          ? `—— ${data.from_who}「${data.from}」`
-          : data.from
-            ? `——「${data.from}」`
-            : '—— 一言';
-      } catch {
-        if (!isCurrent('hitokoto', seq)) return;
-        textEl.textContent = '一言 API 开小差了…';
-        fromEl.textContent = '再点一下试试';
-      }
-    }
-
-    async function loadDog(card: HTMLElement, seq: number) {
-      const img = card.querySelector<HTMLImageElement>('[data-api-img]');
-      const placeholder = card.querySelector<HTMLElement>('[data-api-placeholder]');
-      const fromEl = card.querySelector<HTMLElement>('[data-api-from-dog]');
-      if (!img || !placeholder) return;
-
-      if (!online()) {
-        placeholder.textContent = offlineText;
-        return;
-      }
-
-      placeholder.textContent = '正在领养一只狗狗…';
-      placeholder.hidden = false;
-      img.dataset.loaded = 'false';
-      try {
-        const data = await fetchJson('https://dog.ceo/api/breeds/image/random');
-        if (!isCurrent('dog', seq)) return;
-
-        img.onload = () => {
-          if (!isCurrent('dog', seq)) return;
-          img.dataset.loaded = 'true';
-          placeholder.hidden = true;
-          // 从图片地址里取出品种名，显示在下方
-          const breed = String(data.message ?? '')
-            .split('/breeds/')[1]
-            ?.split('/')[0]
-            ?.replace(/-/g, ' ');
-          if (fromEl && breed) fromEl.textContent = `Dog CEO · ${breed}`;
-        };
-        img.onerror = () => {
-          if (!isCurrent('dog', seq)) return;
-          placeholder.textContent = '这张照片加载失败了，再点一下试试';
-        };
+      // 等图片真正解码完再显示，避免出现半张图
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('image failed'));
         img.src = data.message;
-      } catch {
-        if (!isCurrent('dog', seq)) return;
-        placeholder.textContent = '狗狗 API 开小差了，再点一下试试';
-      }
-    }
-
-    async function loadPoem(card: HTMLElement, seq: number) {
-      const textEl = card.querySelector<HTMLElement>('[data-api-text]');
-      const fromEl = card.querySelector<HTMLElement>('[data-api-from-label]');
-      if (!textEl || !fromEl) return;
-
-      if (!online()) {
-        textEl.textContent = offlineText;
-        fromEl.textContent = '联网后点一下试试';
-        return;
-      }
-
-      textEl.textContent = '加载中…';
-      fromEl.textContent = '今日诗词 · JinRiShiCi';
-      try {
-        const data = await fetchJson('https://v1.jinrishici.com/all.json');
-        if (!isCurrent('poem', seq)) return;
-        textEl.textContent = `「${data.content}」`;
-        fromEl.textContent = data.author ? `—— ${data.author}《${data.origin}》` : `——《${data.origin}》`;
-      } catch {
-        if (!isCurrent('poem', seq)) return;
-        textEl.textContent = '诗仙暂时不在家…';
-        fromEl.textContent = '再点一下试试';
-      }
-    }
-
-    const loaders: Record<string, (card: HTMLElement, seq: number) => Promise<void>> = {
-      hitokoto: loadHitokoto,
-      dog: loadDog,
-      poem: loadPoem,
-    };
-
-    function refresh(card: HTMLElement) {
-      const kind = card.dataset.api;
-      if (!kind) return;
-      const loader = loaders[kind];
-      if (!loader) return;
-      void loader(card, seqFor(kind));
-    }
-
-    const cards = root.querySelectorAll<HTMLElement>('[data-api]');
-    for (const card of cards) {
-      card.addEventListener('click', () => refresh(card));
-      card.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          refresh(card);
-        }
       });
+      if (!isCurrent('dog', seq)) return;
+
+      card.dataset.state = 'ready';
+      img.dataset.loaded = 'true';
+      // 品种从 URL 里提取，例如 .../breeds/lakeland-terrier/xxx.jpg
+      const breed = /\/breeds\/([^/]+)\//.exec(data.message)?.[1]?.replace(/-/g, ' ');
+      setText(fromEl, breed ? `Dog CEO · ${breed}` : 'Dog CEO · 随机狗狗');
+    } catch {
+      if (!isCurrent('dog', seq)) return;
+      card.dataset.state = 'error';
+      img.dataset.loaded = 'false';
+      setText(placeholder, '狗狗跑丢了，点一下再试。');
+    }
+  }
+
+  async function loadPoem(card: HTMLElement, seq: number) {
+    const textEl = card.querySelector<HTMLElement>('[data-api-text]');
+    const fromEl = card.querySelector<HTMLElement>('[data-api-from-label]');
+    if (!textEl || !fromEl) return;
+
+    if (!navigator.onLine) {
+      card.dataset.state = 'offline';
+      setText(textEl, '离线状态下翻不了书，联网后再点。');
+      return;
     }
 
-    // 卡片接近视口后才发首次请求
+    card.dataset.state = 'loading';
+    try {
+      const data = await fetchJson<{
+        content: string;
+        origin?: { title?: string; author?: string };
+      }>('https://v1.jinrishici.com/all.json');
+      if (!isCurrent('poem', seq)) return;
+      card.dataset.state = 'ready';
+      setText(textEl, `「${data.content}」`);
+      const { title, author } = data.origin ?? {};
+      const who = [author, title].filter(Boolean).join('《');
+      setText(
+        fromEl,
+        who ? `—— ${who}${title ? '》' : ''}` : '今日诗词 · JinRiShiCi'
+      );
+    } catch {
+      if (!isCurrent('poem', seq)) return;
+      card.dataset.state = 'error';
+      setText(textEl, '诗词接口不在家，点一下重试。');
+    }
+  }
+
+  const loaders: Record<
+    Kind,
+    (card: HTMLElement, seq: number) => Promise<void>
+  > = {
+    hitokoto: loadHitokoto,
+    dog: loadDog,
+    poem: loadPoem,
+  };
+
+  function refresh(card: HTMLElement) {
+    const kind = card.dataset.api as Kind | undefined;
+    if (!kind || !loaders[kind]) return;
+    void loaders[kind](card, nextSeq(kind));
+  }
+
+  function initCard(card: HTMLElement) {
+    // 启用客户端路由后 astro:after-swap 会再次触发，避免重复绑定监听
+    if (card.dataset.bound === 'true') return;
+    card.dataset.bound = 'true';
+    card.addEventListener('click', () => refresh(card));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        refresh(card);
+      }
+    });
+  }
+
+  function init() {
+    const cards = document.querySelectorAll<HTMLElement>('[data-api]');
+    if (cards.length === 0) return;
+
+    cards.forEach(initCard);
+
+    // 真正进入视口时才发首次请求（首屏可见的话会立即触发）
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver(
-        (entries) => {
+        entries => {
           for (const entry of entries) {
             if (!entry.isIntersecting) continue;
             refresh(entry.target as HTMLElement);
             observer.unobserve(entry.target);
           }
         },
-        { rootMargin: '200px 0px' },
+        { rootMargin: '0px' }
       );
-      for (const card of cards) observer.observe(card);
+      cards.forEach(card => observer.observe(card));
     } else {
-      for (const card of cards) refresh(card);
+      cards.forEach(card => refresh(card));
     }
-
-    // 恢复联网后，把之前失败的卡片重新加载一次
-    window.addEventListener('online', () => {
-      for (const card of cards) refresh(card);
-    });
   }
+
+  init();
+  document.addEventListener("astro:after-swap", init);
 </script>
