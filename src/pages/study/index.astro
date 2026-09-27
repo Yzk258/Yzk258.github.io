@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { courseCount, coursesOf, semesters } from '../../data/study';
+
+const totalResources = 0;
+---
+
+<BaseLayout
+  title="学习资料库"
+  description="按学期整理的大学课程笔记、习题与实验报告。"
+>
+  <PageHeader
+    eyebrow="Study"
+    title="学习资料库"
+    description="按学期与课程归档的笔记、习题、实验报告等材料。目前骨架已就位，资料在陆续上传。"
+  >
+    <p class="summary">
+      共 <strong>{semesters.length}</strong> 个学期 · <strong>{courseCount}</strong> 门课程 ·
+      已上传 <strong>{totalResources}</strong> 份资料
+    </p>
+  </PageHeader>
+
+  <div class="semester-list">
+    {
+      semesters.map((semester) => (
+        <a class="card card-link semester-card" href={`/study/${semester.id}/`} data-reveal>
+          <div class="semester-head">
+            <h2 class="card-title">{semester.label}</h2>
+            {semester.note && <span class="tag">{semester.note}</span>}
+          </div>
+          <p class="card-text">
+            {coursesOf(semester.id).length} 门课程
+          </p>
+          <span class="semester-go" aria-hidden="true">查看课程 →</span>
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="notice gap-top" data-reveal>
+    <span aria-hidden="true">📥</span>
+    <p>
+      <strong>资料还没开始放上来。</strong>
+      想加内容时，在 <code>src/data/study.ts</code> 里补上课程信息，
+      再把文件放进 <code>public/files/</code>，然后给课程加上资料链接即可。
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .summary {
+    margin-block-start: 1.25rem;
+    color: var(--c-text-dim);
+    font-size: 0.9375rem;
+  }
+
+  .summary strong {
+    color: var(--c-text);
+  }
+
+  .semester-list {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  }
+
+  .semester-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .semester-go {
+    display: inline-block;
+    margin-block-start: 1rem;
+    color: var(--c-accent-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .gap-top {
+    margin-block-start: var(--section-gap);
+  }
+</style>

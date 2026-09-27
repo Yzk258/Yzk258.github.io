@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import CardGrid from '../../components/CardGrid.astro';
+import { projects } from '../../data/projects';
+---
+
+<BaseLayout
+  title="项目库"
+  description="个人练手项目与课程大作业的记录与归档。"
+>
+  <PageHeader
+    eyebrow="Projects"
+    title="项目库"
+    description="折腾过的东西都放在这里：课程大作业、练手的小工具，以及一些半途而废但舍不得删的实验。"
+  />
+
+  {
+    projects.length > 0 ? (
+      <CardGrid min="19rem">
+        {projects
+          .slice()
+          .sort((a, b) => b.year - a.year)
+          .map((project) => (
+            <article class="card" data-reveal>
+              <div class="project-head">
+                <h2 class="card-title">{project.title}</h2>
+                {project.status && <span class="tag">{project.status}</span>}
+              </div>
+              <p class="card-text">{project.summary}</p>
+
+              {project.tags && project.tags.length > 0 && (
+                <div class="tag-row project-tags">
+                  {project.tags.map((tag) => (
+                    <span class="tag tag-neutral">{tag}</span>
+                  ))}
+                </div>
+              )}
+
+              {(project.repo || project.demo) && (
+                <div class="btn-row project-links">
+                  {project.repo && (
+                    <a class="btn" href={project.repo} target="_blank" rel="noopener noreferrer">
+                      源码
+                    </a>
+                  )}
+                  {project.demo && (
+                    <a class="btn" href={project.demo} target="_blank" rel="noopener noreferrer">
+                      在线演示
+                    </a>
+                  )}
+                </div>
+              )}
+            </article>
+          ))}
+      </CardGrid>
+    ) : (
+      <div class="empty card">
+        <p class="empty-icon" aria-hidden="true">📦</p>
+        <h2 class="card-title">这里还是空的</h2>
+        <p class="card-text">
+          项目记录还没开始整理。想来想去，比起先摆一堆半成品上来，
+          不如等它们真的能跑起来再说 —— 会有的，会有的。
+        </p>
+        <div class="btn-row empty-actions">
+          <a class="btn" href="/study/">先去看看学习资料库</a>
+          <a
+            class="btn"
+            href="https://github.com/Yzk258"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            去 GitHub 翻翻
+          </a>
+        </div>
+      </div>
+    )
+  }
+
+  <div class="notice gap-top" data-reveal>
+    <span aria-hidden="true">➕</span>
+    <p>
+      <strong>怎么加项目：</strong>
+      在 <code>src/data/projects.ts</code> 的 <code>projects</code> 数组里加一条，
+      填上 <code>title</code>、<code>summary</code>、<code>year</code> 和仓库链接就会自动出现在上面。
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .project-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .project-tags {
+    margin-block-start: 0.9rem;
+  }
+
+  .project-links {
+    margin-block-start: 1.25rem;
+  }
+
+  .empty {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    padding: clamp(2rem, 6vw, 3.5rem) 1.5rem;
+    text-align: center;
+  }
+
+  .empty-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  .empty .card-text {
+    max-width: 46ch;
+  }
+
+  .empty-actions {
+    justify-content: center;
+    margin-block-start: 1rem;
+  }
+
+  .gap-top {
+    margin-block-start: var(--section-gap);
+  }
+</style>
