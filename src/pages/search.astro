@@ -1,0 +1,175 @@
+---
+/**
+ * 站内搜索。索引由 pagefind 在构建后生成（见 package.json 的 postbuild），
+ * 页面只负责挂载 pagefind 自带的 UI。
+ *
+ * 索引不在仓库里：每次构建重新生成，所以改了文章不需要手动同步。
+ * 代价是 `astro dev` 下没有索引 —— 这也是上游那个开发模式提示存在的原因。
+ *
+ * 受 `features.search` 控制：设为 false 时这个地址返回 404，导航入口一并消失。
+ */
+import "@pagefind/default-ui/css/ui.css";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Main from "@/components/Main.astro";
+import Footer from "@/components/Footer.astro";
+import { getAssetPath } from "@/utils/withBase";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+// 关闭搜索时交回 404，避免留下没有入口的孤儿页面
+if (config.features.search !== "pagefind") {
+  return Astro.rewrite("/404");
+}
+
+const t = useTranslations();
+const pagefindBundlePath = getAssetPath("pagefind/");
+const isDev = import.meta.env.DEV;
+---
+
+<Layout
+  title={`${t.search.title} | ${config.site.title}`}
+  description={t.search.description}
+>
+  <Header />
+
+  <Main pageTitle={t.search.title} pageDesc={t.search.description}>
+    <div
+      id="pagefind-search"
+      transition:persist
+      data-bundle-path={pagefindBundlePath}
+      data-dev={isDev ? "true" : "false"}
+      data-dev-hint={t.search.devHint}
+      data-dev-command={t.search.devHintCommand}
+      data-input-label={t.search.searchLabel}
+    >
+    </div>
+  </Main>
+
+  <Footer />
+</Layout>
+
+<script>
+  function initSearch() {
+    const container = document.querySelector<HTMLElement>("#pagefind-search");
+    if (!container) return;
+    // pagefind 初始化后会在容器里插入 form，据此避免重复挂载
+    if (container.querySelector("form")) return;
+
+    const bundlePath = container.dataset.bundlePath;
+    if (!bundlePath) return;
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (container.dataset.dev === "true") {
+      container.innerHTML = `
+        <div class="bg-muted text-muted-foreground mb-4 space-y-2 rounded p-4">
+          <p><strong>${container.dataset.devHint}</strong></p>
+          <code class="bg-background block rounded px-2 py-1">${container.dataset.devCommand}</code>
+        </div>
+      `;
+      return;
+    }
+
+    const onIdle = window.requestIdleCallback ?? (cb => setTimeout(cb, 1));
+
+    onIdle(async () => {
+      // @ts-expect-error — @pagefind/default-ui 没有类型声明
+      const { PagefindUI } = await import("@pagefind/default-ui");
+
+      const search = new PagefindUI({
+        element: "#pagefind-search",
+        bundlePath,
+        showImages: false,
+        showSubResults: true,
+        translations: {
+          placeholder: "搜索文章…",
+          clear_search: "清除",
+          load_more: "加载更多结果",
+          search_label: "搜索本站",
+          zero_matches: "没有找到结果",
+        },
+        processTerm: (term: string) => {
+          // 把关键词写进地址栏，这样搜索结果可以直接分享
+          if (term) params.set("q", term);
+          else params.delete("q");
+          const query = params.toString();
+          history.replaceState(
+            history.state,
+            "",
+            query ? `?${query}` : window.location.pathname
+          );
+          return term;
+        },
+      });
+
+      // 带 ?q= 进来时自动执行搜索
+      const query = params.get("q");
+      if (query) search.triggerSearch(query);
+
+      addInputLabel();
+    });
+  }
+
+  /**
+   * pagefind 自带的 UI 没给搜索框配 <label>，只有一个 title 属性，
+   * 而 axe 的 label-title-only 规则判定这不合格（标题提示不会朗读给
+   * 依赖屏幕阅读器的用户）。这里补一个视觉隐藏的 label 关联上去。
+   */
+  function addInputLabel() {
+    const container = document.querySelector<HTMLElement>("#pagefind-search");
+    const input = container?.querySelector<HTMLInputElement>(
+      "input.pagefind-ui__search-input"
+    );
+    if (!container || !input) return;
+    if (document.getElementById("pagefind-search-label")) return;
+
+    const label = document.createElement("label");
+    label.id = "pagefind-search-label";
+    label.htmlFor = "pagefind-search-input";
+    label.textContent = container.dataset.inputLabel ?? "Search";
+    label.className = "sr-only";
+    input.id = "pagefind-search-input";
+    input.insertAdjacentElement("beforebegin", label);
+  }
+
+  initSearch();
+  document.addEventListener("astro:after-swap", initSearch);
+</script>
+
+<style is:global>
+  /* 让 pagefind 自带的 UI 跟随站点配色，而不是它默认的蓝白 */
+  #pagefind-search {
+    --pagefind-ui-font: var(--font-app);
+    --pagefind-ui-text: var(--foreground);
+    --pagefind-ui-background: var(--background);
+    --pagefind-ui-border: var(--border);
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-tag: var(--background);
+    --pagefind-ui-border-radius: 0.375rem;
+    --pagefind-ui-border-width: 1px;
+
+    form::before {
+      background-color: var(--foreground);
+    }
+
+    input {
+      font-weight: 400;
+      border: 1px solid var(--border);
+    }
+
+    input:focus-visible {
+      outline: 1px solid var(--accent);
+    }
+
+    .pagefind-ui__result-title a {
+      color: var(--accent);
+      text-decoration-style: dashed;
+      text-underline-offset: 4px;
+    }
+
+    .pagefind-ui__result:last-of-type {
+      border-bottom: 0;
+    }
+  }
+</style>

@@ -1,0 +1,36 @@
+---
+/**
+ * 标签链接。文章卡片与标签总览页共用。
+ * size="sm" 用于卡片里的紧凑排布，size="lg" 用于标签总览页。
+ */
+import IconHash from "@/assets/icons/IconHash.svg";
+
+type Props = {
+  /** URL 用的 slug */
+  tag: string;
+  /** 显示的原文 */
+  tagName: string;
+  size?: "sm" | "lg";
+};
+
+const { tag, tagName, size = "lg" } = Astro.props;
+---
+
+<li>
+  <a
+    href={`/tags/${tag}/`}
+    transition:name={tag}
+    class:list={[
+      "focus-outline flex items-center gap-0.5 no-underline",
+      "border-foreground border-b-2 border-dashed",
+      "hover:border-accent hover:text-accent hover:-mt-0.5",
+      { "text-sm": size === "sm" },
+      { "text-lg": size === "lg" },
+    ]}
+  >
+    <IconHash
+      class:list={["opacity-80", size === "lg" ? "size-5" : "size-4"]}
+    />
+    {tagName}
+  </a>
+</li>

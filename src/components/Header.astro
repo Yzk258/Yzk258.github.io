@@ -26,6 +26,29 @@ const isActive = (path: string) => {
   const pathArray = path.split("/").filter(p => p.trim());
   return currentPath === path || currentPathArray[0] === pathArray[0];
 };
+
+/**
+ * 导航项集中在这里，方便看出顺序与各自由哪个开关控制。
+ * 归档与搜索受 features 控制 —— 关掉开关时入口消失、页面也交回 404。
+ *
+ * spanClass 写成完整类名字面量而不是 `col-span-${n}`：Tailwind 是静态
+ * 扫描源码收集类名的，拼出来的字符串它看不到，样式会丢。
+ */
+const wide = "col-span-2";
+const half = "col-span-1";
+
+const navItems = [
+  { href: "/", label: t.nav.home, spanClass: wide },
+  { href: "/posts/", label: t.nav.posts, spanClass: wide },
+  { href: "/tags/", label: t.nav.tags, spanClass: half },
+  ...(features.showArchives
+    ? [{ href: "/archives/", label: t.nav.archives, spanClass: half }]
+    : []),
+  ...(features.search === "pagefind"
+    ? [{ href: "/search/", label: t.nav.search, spanClass: half }]
+    : []),
+  { href: "/about/", label: t.nav.about, spanClass: half },
+];
 ---
 
 <a
@@ -73,25 +96,18 @@ const isActive = (path: string) => {
             {t.nav.home}
           </a>
         </li>
-        <li class="col-span-2">
-          <a
-            href="/posts/"
-            class:list={{ "active-nav": isActive("/posts") }}
-          >
-            {t.nav.posts}
-          </a>
-        </li>
-        <li class="col-span-2">
-          <a
-            href="/about/"
-            class:list={{ "active-nav": isActive("/about") }}
-          >
-            {t.nav.about}
-          </a>
-        </li>
+        {
+          navItems.slice(1).map(({ href, label, spanClass }) => (
+            <li class={spanClass}>
+              <a href={href} class:list={{ "active-nav": isActive(href) }}>
+                {label}
+              </a>
+            </li>
+          ))
+        }
         {
           features.lightAndDarkMode && (
-            <li class="col-span-1 flex items-center justify-center">
+            <li class="border-border col-span-2 mt-1 flex items-center justify-center border-t pt-2 sm:col-span-1 sm:border-t-0 sm:pt-0">
               <button
                 id="theme-btn"
                 class="focus-outline hover:[&>svg]:stroke-accent relative size-12 p-4 sm:size-8"

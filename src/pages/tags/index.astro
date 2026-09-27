@@ -1,0 +1,39 @@
+---
+/** 标签总览：列出全站用到的所有标签。 */
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Main from "@/components/Main.astro";
+import Footer from "@/components/Footer.astro";
+import Tag from "@/components/Tag.astro";
+import { getUniqueTags } from "@/utils/tags";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+const posts = await getCollection("posts");
+const tags = getUniqueTags(posts);
+const t = useTranslations();
+---
+
+<Layout
+  title={`${t.tags.title} | ${config.site.title}`}
+  description={t.tags.description}
+>
+  <Header />
+
+  <Main pageTitle={t.tags.title} pageDesc={t.tags.description}>
+    {
+      tags.length === 0 ? (
+        <p class="text-muted-foreground">{t.tags.empty}</p>
+      ) : (
+        <ul class="flex flex-wrap gap-x-6 gap-y-4">
+          {tags.map(({ tag, tagName }) => (
+            <Tag {tag} {tagName} />
+          ))}
+        </ul>
+      )
+    }
+  </Main>
+
+  <Footer />
+</Layout>

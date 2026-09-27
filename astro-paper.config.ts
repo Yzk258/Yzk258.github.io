@@ -26,10 +26,11 @@ export default defineAstroPaperConfig({
     // 分享图统一使用 public/default-og.jpg
     dynamicOgImage: false,
     // 本站不使用归档与站内搜索，Header 里对应入口一并关掉
-    showArchives: false,
+    showArchives: true,
     showBackButton: false,
     editPost: { enabled: false },
-    search: false,
+    // pagefind：构建后生成索引（见 package.json 的 postbuild）
+    search: "pagefind",
   },
   socials: [
     {
