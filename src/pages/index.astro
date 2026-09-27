@@ -7,6 +7,7 @@ import Socials from "@/components/Socials.astro";
 import Avatar from "@/components/Avatar.astro";
 import ApiCards from "@/components/ApiCards.astro";
 import Card from "@/components/Card.astro";
+import ContributionHeatmap from "@/components/ContributionHeatmap.astro";
 import { hubs } from "@/data/hubs";
 import { getSortedPosts } from "@/utils/posts";
 import { useTranslations } from "@/i18n";
@@ -29,7 +30,7 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
     <section id="hero" class="border-border border-b pt-8 pb-6">
       <p class="text-accent mb-2 text-sm" aria-hidden="true">~ $ whoami</p>
       <div class="my-4 flex items-center gap-4 sm:my-6 sm:gap-5">
-        <Avatar size="sm" href="https://github.com/Yzk258" />
+        <Avatar size="sm" href={`https://github.com/${config.site.github}`} />
         <h1
           class="terminal-title inline-block text-3xl font-bold sm:text-4xl"
           transition:name="site-title"
@@ -50,7 +51,7 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
               rel="noopener noreferrer"
               class="bg-accent text-accent-foreground focus-outline inline-block rounded px-4 py-2 font-medium no-underline"
             >
-              {primaryHub.icon} 前往{primaryHub.title}
+              前往{primaryHub.title}
               <span aria-hidden="true"> ↗</span>
             </a>
           </p>
@@ -139,6 +140,30 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
         三个调用公开接口的小卡片，点一下换一条。内容来自第三方。
       </p>
       <ApiCards />
+    </section>
+
+    <section id="activity" class="border-border border-t pt-12 pb-6">
+      <div class="flex items-baseline gap-2">
+        <span class="text-accent" aria-hidden="true">##</span>
+        <h2 class="text-xl font-semibold tracking-wide">
+          {t.activity.title}
+        </h2>
+      </div>
+      <p class="text-muted-foreground mt-2">
+        {t.activity.homeDescription}
+        <a href="/about/" class="hover:text-accent focus-outline underline">
+          {t.activity.homeMore} →
+        </a>
+      </p>
+      <ContributionHeatmap
+        username={config.site.github}
+        size="lg"
+        class="mt-6"
+      />
+      {/* 窄屏放不下 53 列，热力图可以横向滑动，给一句提示 */}
+      <p class="text-muted-foreground mt-2 text-xs sm:hidden">
+        {t.activity.scrollHint}
+      </p>
     </section>
   </main>
   <Footer />

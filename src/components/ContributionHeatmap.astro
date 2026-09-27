@@ -1,0 +1,154 @@
+---
+/**
+ * GitHub 逐日贡献热力图。
+ *
+ * 数据在构建时抓取（src/utils/github-activity.ts），渲染成静态 HTML，
+ * 运行时没有客户端 JS。首页和关于页共用这一个组件。
+ *
+ * 数据取不到时整块不渲染：抓的是 GitHub 的页面结构，万一它变了，
+ * 宁可不显示也不要显示错的数字。
+ */
+import { fetchContributionStats, toWeekGrid } from "@/utils/github-activity";
+import { useTranslations } from "@/i18n";
+
+interface Props {
+  username: string;
+  /** 格子尺寸：home 用在首页，lg 用在关于页 */
+  size?: "home" | "lg";
+  /** 是否显示「少 / 多」色阶图例 */
+  legend?: boolean;
+  /** 是否显示月份标签（格子太小时关掉更干净） */
+  monthLabels?: boolean;
+  class?: string;
+}
+
+const {
+  username,
+  size = "lg",
+  legend = true,
+  monthLabels: showMonths = true,
+  class: className = "",
+} = Astro.props;
+
+const t = useTranslations();
+
+// 色阶：0 用底色，1-4 用 accent 的四档透明度。
+// 写成字面量类名，Tailwind 才能扫到；拼接字符串会被漏掉。
+const LEVEL_CLASS = [
+  "bg-muted",
+  "bg-accent/35",
+  "bg-accent/55",
+  "bg-accent/80",
+  "bg-accent",
+];
+
+const cell = size === "home" ? "7px" : "9px";
+const cellClass = size === "home" ? "size-[7px]" : "size-[9px]";
+
+const stats = await fetchContributionStats(username);
+const grid = stats ? toWeekGrid(stats.days) : [];
+const weekCount = grid.length / 7;
+
+/** 每个月的第一周，用来放月份标签 */
+const labels: Array<{ label: string; week: number }> = [];
+if (stats) {
+  /*
+   * 首月如果只占所在周的最后几天（区间从月末起算就是如此：2025-09-28
+   * 是周日，整个 9 月只占第 0 周的 3 格），给它放标签会和次月挤在同一列。
+   * 这种首月直接跳过，让次月代表这一列。
+   *
+   * 必须在下面的循环之前判断：次月的周序和首月相同，如果先让它占了位，
+   * 次月会因为间隔不足被循环拒掉，事后补是补不回来的。
+   */
+  const secondMonthIndex = stats.days.findIndex(d =>
+    d.date.startsWith(stats.months[1]?.key ?? "")
+  );
+  const skipFirstMonth =
+    stats.months.length > 1 &&
+    secondMonthIndex >= 0 &&
+    Math.floor(secondMonthIndex / 7) === 0;
+
+  let lastWeek = -99;
+  stats.months.forEach((month, index) => {
+    if (skipFirstMonth && index === 0) return;
+    const dayIndex = stats.days.findIndex(d => d.date.startsWith(month.key));
+    if (dayIndex < 0) return;
+    const week = Math.floor(dayIndex / 7);
+    const gap = week - lastWeek;
+    // 标签至少要隔 2 周才不挤在一起；3 周更舒展，所以优先试 3 周，
+    // 但开头几个标签会退到 2 周，免得整月没有标签。
+    if (gap < 2 || (gap < 3 && labels.length >= 2)) return;
+    lastWeek = week;
+    labels.push({ label: `${+month.key.slice(5, 7)}月`, week });
+  });
+}
+
+/** 2026-09-27 -> 2026/09/27 */
+const slashes = (iso: string) => iso.replace(/-/g, "/");
+---
+
+{
+  stats && (
+    <div class:list={[className]}>
+      <div class="overflow-x-auto pb-1">
+        <div
+          class="grid w-max gap-[3px]"
+          style={`grid-template-columns: repeat(${weekCount}, ${cell})`}
+          role="img"
+          aria-label={t.activity.heatmapLabel
+            .replace("{from}", slashes(stats.first))
+            .replace("{to}", slashes(stats.last))
+            .replace("{total}", String(stats.total))}
+        >
+          {showMonths &&
+            labels.map(month => (
+              <span
+                class:list={[
+                  "text-muted-foreground mb-1 whitespace-nowrap",
+                  size === "home" ? "text-[9px]" : "text-[10px]",
+                ]}
+                style={`grid-column: ${month.week + 1}; grid-row: 1`}
+                aria-hidden="true"
+              >
+                {month.label}
+              </span>
+            ))}
+
+          {grid.map((day, index) =>
+            day ? (
+              <span
+                class:list={[
+                  "block rounded-[2px]",
+                  cellClass,
+                  LEVEL_CLASS[day.level] ?? "bg-muted",
+                ]}
+                style={`grid-column: ${Math.floor(index / 7) + 1}; grid-row: ${(index % 7) + (showMonths ? 2 : 1)}`}
+                title={`${slashes(day.date)}：${day.count}`}
+                aria-hidden="true"
+              ></span>
+            ) : (
+              <span
+                class:list={["block rounded-[2px]", cellClass]}
+                style={`grid-column: ${Math.floor(index / 7) + 1}; grid-row: ${(index % 7) + (showMonths ? 2 : 1)}`}
+                aria-hidden="true"
+              ></span>
+            )
+          )}
+        </div>
+      </div>
+
+      {legend && (
+        <div class="text-muted-foreground mt-2 flex items-center justify-end gap-1.5 text-xs">
+          <span>{t.activity.legendLess}</span>
+          {LEVEL_CLASS.map(cls => (
+            <span
+              class:list={["rounded-[2px]", cellClass, cls]}
+              aria-hidden="true"
+            />
+          ))}
+          <span>{t.activity.legendMore}</span>
+        </div>
+      )}
+    </div>
+  )
+}

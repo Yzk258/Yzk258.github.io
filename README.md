@@ -36,6 +36,7 @@ src/
 │   ├── Activity.astro   GitHub 活跃度（按月表格 + 逐日热力图）
 │   ├── Avatar.astro     头像框
 │   ├── Card.astro       文章列表项
+│   ├── ContributionHeatmap.astro  GitHub 逐日热力图（首页与关于页共用）
 │   ├── Comments.astro   giscus 评论区（评论存在 GitHub Discussions）
 │   ├── Datetime.astro   日期显示（按站点时区格式化）
 │   ├── Header.astro     页头与导航
@@ -119,7 +120,8 @@ draft: false         # true 则不参与构建
 | --- | --- |
 | `public/avatar.jpg` | 头像图片（460×460），用 `.tools/fetch-avatar.mjs` 重新拉取 |
 | `src/components/Avatar.astro` | 头像框，`size="sm"` 用于首页，`size="lg"` 用于关于页 |
-| `src/components/Activity.astro` | 活跃度表格与热力图，只在关于页 |
+| `src/components/Activity.astro` | 汇总数字 + 按月表格，只在关于页 |
+| `src/components/ContributionHeatmap.astro` | 逐日热力图，首页与关于页共用 |
 | `src/utils/github-activity.ts` | 抓取与解析，见下 |
 
 **头像**是本地文件而不是直接引用 GitHub 的地址，这样不依赖外站可用性。
@@ -147,7 +149,9 @@ GitHub 没有公开的贡献数据 REST 接口，那个 GraphQL 需要 token，�
 （03:17 UTC），因为数据只在构建时抓取，不重建的话会停在上次部署那天。
 想立即刷新就去 Actions 页面手动跑一次 workflow。
 
-需要改用户名时，`Activity.astro` 和 `fetch-avatar.mjs` 里的 `Yzk258` 都要改。
+用户名集中在 `astro-paper.config.ts` 的 `site.github`（该字段是必填的），
+头像链接、活跃度抓取、GitHub 入口都由它派生，改一处即可。
+只有 `.tools/fetch-avatar.mjs` 里还留着一份，因为它是独立脚本、不读站点配置。
 
 ## 评论
 
@@ -198,7 +202,8 @@ giscus 的回复和 GitHub 上是同一份数据，两边同步。
   title: "个人主站",
   description: "一句话说明",
   href: "https://example.com/",  // 站内用 "/xxx/"
-  icon: "🏠",                     // emoji，避免额外引入图标
+  icon: "📚",                     // emoji，避免额外引入图标
+                                  // 注意：primary 入口的图标不会渲染，只显示文字
   external: true,                // 是否新标签页打开
   primary: true,                 // 是否作为首页大按钮，最多一个
 }
