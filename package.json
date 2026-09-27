@@ -1,0 +1,17 @@
+{
+  "name": "yzk-homepage",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "YZK 的个人主页 —— 学习资料与项目归档",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "^7.3.5"
+  }
+}

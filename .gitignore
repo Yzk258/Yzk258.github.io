@@ -1,0 +1,19 @@
+# 构建产物与缓存
+dist/
+.astro/
+node_modules/
+.npm-cache/
+.npm-tmp/
+.npm-probe/
+
+# 环境与日志
+.env
+.env.production
+*.log
+
+# 编辑器 / 系统
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,23 @@
+---
+import { site } from '../config';
+
+const year = new Date().getFullYear();
+const yearText = year > site.since ? `${site.since}–${year}` : String(site.since);
+---
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-meta">
+      <span>© {yearText} {site.author} · {site.tagline}</span>
+      <span>
+        联系我：<a href={`mailto:${site.email}`}>{site.email}</a>
+      </span>
+    </div>
+
+    <div class="footer-links">
+      <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="/notes/">更新日志</a>
+      <a href="#top">回到顶部 ↑</a>
+    </div>
+  </div>
+</footer>

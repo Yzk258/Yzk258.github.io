@@ -1,0 +1,22 @@
+---
+/**
+ * 自适应卡片网格，并统一挂上滚动揭示标记。
+ */
+interface Props {
+  /** 单列最小宽度，默认 17rem */
+  min?: string;
+  class?: string;
+}
+
+const { min = '17rem', class: className = '' } = Astro.props;
+---
+
+<div class:list={['grid-auto', className]} style={`--min:${min}`}>
+  <slot />
+</div>
+
+<style>
+  .grid-auto {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--min)), 1fr));
+  }
+</style>
