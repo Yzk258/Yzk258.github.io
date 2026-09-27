@@ -10,6 +10,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
+    "postbuild": "pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check",
     "sync": "astro sync"
@@ -30,7 +31,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
+    "@pagefind/default-ui": "^1.5.2",
     "@tailwindcss/typography": "^0.5.20",
+    "pagefind": "^1.5.2",
     "typescript": "^6.0.3"
   }
 }

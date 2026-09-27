@@ -1,0 +1,56 @@
+---
+/**
+ * 单个标签下的文章列表，按 perPage 分页。
+ *
+ * 路由是 /tags/<tag>/，标签超过一页时是 /tags/<tag>/page/2/。
+ * 标签 slug 由中文原样保留（见 utils/slug.ts），所以「建站」这类标签
+ * 的 URL 里就是中文字符 —— Astro 与 GitHub Pages 都能正确处理。
+ */
+import { getCollection } from "astro:content";
+import type { GetStaticPathsOptions } from "astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Main from "@/components/Main.astro";
+import Footer from "@/components/Footer.astro";
+import Card from "@/components/Card.astro";
+import Pagination from "@/components/Pagination.astro";
+import { getUniqueTags, postHasTag } from "@/utils/tags";
+import { getSortedPosts } from "@/utils/posts";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const posts = await getCollection("posts");
+  const tags = getUniqueTags(posts);
+
+  return tags.flatMap(({ tag, tagName }) => {
+    const tagPosts = getSortedPosts(posts.filter(post => postHasTag(post, tag)));
+    return paginate(tagPosts, {
+      params: { tag },
+      props: { tagName },
+      pageSize: config.posts.perPage,
+    });
+  });
+}
+
+const { page, tagName } = Astro.props;
+const t = useTranslations();
+const heading = `${t.tags.one}：${tagName}`;
+---
+
+<Layout
+  title={`${heading} | ${config.site.title}`}
+  description={`${t.tags.oneDescription} ${tagName}`}
+>
+  <Header />
+
+  <Main pageTitle={heading} pageDesc={t.tags.oneDescription}>
+    <ul class="mt-2">
+      {page.data.map(post => <Card {...post} showTags />)}
+    </ul>
+  </Main>
+
+  <Pagination {page} />
+
+  <Footer />
+</Layout>

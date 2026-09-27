@@ -5,6 +5,9 @@ export default {
     home: "首页",
     about: "关于我",
     posts: "文章",
+    tags: "标签",
+    archives: "归档",
+    search: "搜索",
   },
   home: {
     socialLinks: "找到我",
@@ -29,6 +32,29 @@ export default {
     copyFailed: "复制失败",
     linkToHeading: "链接到本节",
     backToTop: "回到顶部",
+  },
+  tags: {
+    title: "标签",
+    description: "按主题浏览文章。",
+    one: "标签",
+    oneDescription: "这个标签下的全部文章：",
+    empty: "还没有任何标签。",
+  },
+  archives: {
+    title: "归档",
+    description: "按时间倒序浏览全部文章。",
+    count: "篇",
+  },
+  search: {
+    title: "搜索",
+    description: "在全站内容里查找关键词。",
+    searchLabel: "搜索本站内容",
+    devHint: "开发模式下没有搜索索引，需要先完整构建一次。",
+    devHintCommand: "npm run build",
+  },
+  pagination: {
+    prev: "上一页",
+    next: "下一页",
   },
   comments: {
     title: "评论",
@@ -74,6 +100,9 @@ export default {
     closeImage: "关闭图片预览",
     imagePreview: "图片预览",
     readingProgress: "阅读进度",
+    goToPreviousPage: "上一页",
+    goToNextPage: "下一页",
+    pagination: "分页导航",
   },
   notFound: {
     title: "404 页面不存在",

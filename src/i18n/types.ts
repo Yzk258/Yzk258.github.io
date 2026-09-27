@@ -3,6 +3,9 @@ export interface UIStrings {
     home: string;
     about: string;
     posts: string;
+    tags: string;
+    archives: string;
+    search: string;
   };
   home: {
     socialLinks: string;
@@ -27,6 +30,33 @@ export interface UIStrings {
     copyFailed: string;
     linkToHeading: string;
     backToTop: string;
+  };
+  tags: {
+    title: string;
+    description: string;
+    /** 单个标签页的标题前缀，形如「标签：Astro」 */
+    one: string;
+    oneDescription: string;
+    empty: string;
+  };
+  archives: {
+    title: string;
+    description: string;
+    /** 年份/月份后面的计数单位 */
+    count: string;
+  };
+  search: {
+    title: string;
+    description: string;
+    /** 搜索框的可访问标签（pagefind 自己只给 title，axe 判定不合格） */
+    searchLabel: string;
+    /** 开发模式下 pagefind 索引还没生成时的提示 */
+    devHint: string;
+    devHintCommand: string;
+  };
+  pagination: {
+    prev: string;
+    next: string;
   };
   comments: {
     title: string;
@@ -77,6 +107,9 @@ export interface UIStrings {
     closeImage: string;
     imagePreview: string;
     readingProgress: string;
+    goToPreviousPage: string;
+    goToNextPage: string;
+    pagination: string;
   };
   notFound: {
     title: string;

@@ -1,0 +1,106 @@
+---
+/**
+ * 归档页：按「年 → 月」倒序列出全部文章。
+ *
+ * 月份名用 Intl 按 zh-CN 生成，所以是「1月」而不是上游的 "January"。
+ *
+ * 受 `features.showArchives` 控制：关掉时这个地址返回 404，
+ * 导航入口也一并消失（见 Header.astro）。
+ */
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Main from "@/components/Main.astro";
+import Footer from "@/components/Footer.astro";
+import Card from "@/components/Card.astro";
+import { isPublished, sortPosts } from "@/utils/posts";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+// 关闭归档时直接交回 404，避免留下一个能访问但没有入口的孤儿页面
+if (!config.features.showArchives) {
+  return Astro.rewrite("/404");
+}
+
+const posts = sortPosts((await getCollection("posts")).filter(isPublished));
+const t = useTranslations();
+
+const monthFormatter = new Intl.DateTimeFormat("zh-CN", { month: "long" });
+
+/** 按给定规则分组，保持组内原顺序 */
+function groupBy<T, K extends string | number>(
+  items: T[],
+  keyOf: (item: T) => K
+): Map<K, T[]> {
+  const groups = new Map<K, T[]>();
+  for (const item of items) {
+    const key = keyOf(item);
+    const bucket = groups.get(key);
+    if (bucket) bucket.push(item);
+    else groups.set(key, [item]);
+  }
+  return groups;
+}
+
+const byYear = [...groupBy(posts, post => post.data.pubDatetime.getFullYear())]
+  .sort(([a], [b]) => b - a)
+  .map(([year, yearPosts]) => ({
+    year,
+    count: yearPosts.length,
+    months: [...groupBy(yearPosts, post => post.data.pubDatetime.getMonth() + 1)]
+      .sort(([a], [b]) => b - a)
+      .map(([month, monthPosts]) => ({
+        month,
+        label: monthFormatter.format(new Date(2000, month - 1, 1)),
+        count: monthPosts.length,
+        posts: monthPosts as CollectionEntry<"posts">[],
+      })),
+  }));
+---
+
+<Layout
+  title={`${t.archives.title} | ${config.site.title}`}
+  description={t.archives.description}
+>
+  <Header />
+
+  <Main pageTitle={t.archives.title} pageDesc={t.archives.description}>
+    {
+      posts.length === 0 ? (
+        <p class="text-muted-foreground">{t.posts.empty}</p>
+      ) : (
+        byYear.map(({ year, count, months }) => (
+          <section class="mb-4">
+            <h2 class="border-border flex items-baseline gap-2 border-b pb-1 text-2xl font-bold">
+              {year}
+              <span class="text-muted-foreground text-sm font-normal">
+                {count} {t.archives.count}
+              </span>
+            </h2>
+
+            {months.map(
+              ({ label, count: monthCount, posts: monthPosts }) => (
+                <div class="flex flex-col sm:flex-row">
+                  <div class="text-muted-foreground mt-6 min-w-24 text-lg whitespace-nowrap sm:my-6">
+                    <span class="font-bold">{label}</span>
+                    <span class="text-xs">
+                      {monthCount} {t.archives.count}
+                    </span>
+                  </div>
+                  <ul class="min-w-0 flex-1">
+                    {monthPosts.map(post => (
+                      <Card {...post} showReadingTime={false} />
+                    ))}
+                  </ul>
+                </div>
+              )
+            )}
+          </section>
+        ))
+      )
+    }
+  </Main>
+
+  <Footer />
+</Layout>

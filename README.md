@@ -14,9 +14,16 @@
 - 文章：`@astrojs/mdx` + Shiki 代码高亮 + `remark-toc` / `rehype-callouts`
 - 评论：[giscus](https://giscus.app/)，评论存在仓库的 GitHub Discussions 里
 - 头像与 GitHub 活跃度：头像本地化，活跃度在构建时抓取官方贡献页并渲染成静态 HTML
+- 站内搜索：[pagefind](https://pagefind.app/)，构建后生成索引（`postbuild` 钩子）
 
-主题基于 [AstroPaper](https://github.com/satnaing/astro-paper) v6 改造，
-沿用其布局与设计令牌，去掉了标签、归档、站内搜索等用不到的博客功能。
+主题基于 [AstroPaper](https://github.com/satnaing/astro-paper) v6 改造。
+沿用的是它的**布局骨架与机制**（主题切换、配置解析层、i18n 结构、路由组织）；
+**配色令牌与绝大多数界面是自己重写的** —— README 早期版本写成「沿用其设计令牌」
+不准确，只有令牌的命名结构留下来，取值全部换成了 Catppuccin。
+
+上游自带的标签、归档、站内搜索已按需接回（见下），
+归档与搜索受 `features.showArchives` / `features.search` 控制。
+未接回的是动态 OG 图（satori 渲染）、编辑链接与分享链接 —— 理由见文末。
 
 配色取自 [Catppuccin](https://catppuccin.com/)：
 浅色用 Latte，深色用 Mocha，两套同族，切换时观感一致。
@@ -43,16 +50,22 @@ src/
 │   ├── Footer.astro     页脚
 │   ├── Socials.astro    社交图标（由 socials 配置驱动）
 │   ├── Breadcrumb.astro 面包屑
-│   ├── Main.astro       内容页容器
-│   └── LinkButton.astro 链接按钮
+│   ├── Main.astro       内容页容器（也是搜索索引的正文边界）
+│   ├── Tag.astro        标签链接
+│   ├── Pagination.astro 分页导航
+│   └── LinkButton.astro 链接按钮（禁用时渲染成 span）
 ├── layouts/
 │   ├── Layout.astro     全局 HTML 骨架、meta、主题初始化
 │   └── PostLayout.astro 文章页附加的 meta 与 JSON-LD
 ├── i18n/                界面文案（仅中文）
 ├── pages/
 │   ├── index.astro      /            首页
-│   ├── posts/index.astro            文章列表
+│   ├── posts/[...page].astro        文章列表（分页，页大小 = posts.perPage）
 │   ├── posts/[...slug]/             文章详情
+│   ├── tags/index.astro             标签总览
+│   ├── tags/[tag]/[...page].astro   单个标签下的文章（分页）
+│   ├── archives/index.astro         归档（按年 → 月）
+│   ├── search.astro                 站内搜索（pagefind UI）
 │   ├── about.astro                  关于我
 │   ├── rss.xml.ts                   订阅源
 │   └── robots.txt.ts
@@ -66,13 +79,17 @@ src/
 ├── types/config.ts      配置的类型定义
 └── utils/
     ├── posts.ts         文章过滤与排序
+    ├── tags.ts          标签汇总与匹配
     ├── slug.ts          文件名 → URL
     ├── date.ts          日期格式化（按站点时区）
     ├── readingTime.ts   中文友好的阅读时长估算
     └── transformers/    Shiki 代码块文件名标签插件
 public/
 ├── favicon.svg
-└── default-og.jpg       分享卡片默认图
+├── default-og.jpg       分享卡片默认图
+└── giscus/
+    ├── theme-latte.css  giscus 评论区主题（浅色）
+    └── theme-mocha.css  giscus 评论区主题（深色）
 ```
 
 ## 写文章
@@ -113,6 +130,31 @@ draft: false         # true 则不参与构建
 更细的示例见 `src/content/posts/writing-guide.md` 本身。
 
 写完后 `npm run build` 会校验 frontmatter，格式不对会直接报错并指出问题。
+
+## 标签、归档、分页与搜索
+
+| 功能 | 地址 | 说明 |
+|---|---|---|
+| 标签总览 | `/tags/` | 汇总全站标签，点进去看该标签下的文章 |
+| 单个标签 | `/tags/<tag>/` | 标签 slug 由 `utils/slug.ts` 生成，**中文原样保留**，如 `/tags/建站/` |
+| 归档 | `/archives/` | 按「年 → 月」倒序列出全部文章 |
+| 分页 | `/posts/page/2/` … | 页大小取 `posts.perPage`，只有一页时不显示分页控件 |
+| 搜索 | `/search/` | pagefind 索引，支持 `?q=关键词` 直接进入 |
+
+标签来自文章 frontmatter 的 `tags` 字段。文章卡片上的标签可以直接点。
+
+### 两个容易踩的点
+
+**1. 搜索索引是构建后生成的，不在仓库里。**
+`npm run build` 之后会自动跑 `postbuild` 钩子（`pagefind --site dist`）生成索引，
+所以 `astro dev` 下搜索页显示的是「需要先完整构建」的提示，这是预期的。
+只想看搜索结果，用 `npm run build && npm run preview`。
+
+**2. 只有 `Main.astro` 与文章页的 `<main>` 内部会被索引。**
+这两处带 `data-pagefind-body`，作用是让 pagefind 跳过每页都重复的导航与页脚 ——
+否则搜任何词都会命中全部页面，结果里全是噪声。新增页面类型时记得套 `<Main>`。
+
+搜索索引不包含中文词干提取（pagefind 不支持），但中文按字符切分可以正常搜到。
 
 ## 头像与 GitHub 活跃度
 
@@ -187,6 +229,37 @@ GitHub 没有公开的贡献数据 REST 接口，那个 GraphQL 需要 token，�
 - 语言固定 `zh-CN`（必须通过 `data-lang` 传，见 `Comments.astro` 里的注释）
 - iframe 的 `title` 覆盖成了中文，否则读屏会念英文 "Comments"
 
+### 评论区外观
+
+评论区的配色由 `public/giscus/theme-latte.css`（浅色）和
+`public/giscus/theme-mocha.css`（深色）提供，通过 giscus 官方的
+`data-theme` 机制加载 —— 它支持把内置主题名换成**一个 CSS 文件的地址**。
+
+为什么不用现成的：
+
+| 方案 | 问题 |
+| --- | --- |
+| 内置的 `light` / `dark` | 是 GitHub 原生配色：正文 `#1f2328`、面板 `#fff`、强调色蓝 `#0969da`，与本站的 Catppuccin 完全脱节 |
+| 内置的 `catppuccin_latte` / `catppuccin_mocha` | 主色调对了，但「登录并评论」按钮是绿色（`#40a02b`）、字体写死 system-ui，且加载动画指向第三方 CDN（`giscus.catppuccin.com`） |
+
+自己写的两份主题与 `src/styles/theme.css` 的令牌逐项对应，
+主按钮用站点强调色（浅色紫 / 深色粉），加载动画换成纯 CSS。
+
+两个实测得出的约束：
+
+- **主题地址必须是绝对地址**。giscus 会把这个值放进 iframe 里的
+  `<link href>`，而 iframe 的源是 `giscus.app`，相对的
+  `/giscus/theme-latte.css` 会被解析成 `giscus.app/giscus/...` 从而 404。
+  代码里用运行时的 `location.origin` 拼，而不是构建时的 `Astro.site`
+  —— 后者会把地址写死成线上域名，本地预览时那个文件还不存在。
+- **iframe 内部是跨域隔离的**（实测 `contentDocument` 为 `null`），
+  所以没法用脚本注入样式，只能走 `data-theme` 这条官方路径。
+  这也是为什么换主题必须重设 iframe 的 URL、而不是改 CSS 变量。
+
+字体在 iframe 里拿不到本站自托管的 JetBrains Mono（跨域），
+所以主题里退到系统等宽字体栈 —— 保留「等宽」这个设计意图，
+不为此引入第三方字体请求。
+
 **管理评论**：直接在仓库的 Discussions 里回复、删除或锁定。
 giscus 的回复和 GitHub 上是同一份数据，两边同步。
 
@@ -194,6 +267,19 @@ giscus 的回复和 GitHub 上是同一份数据，两边同步。
 
 **改站点标题 / 描述 / 社交链接**：编辑 `astro-paper.config.ts`。
 `socials` 里的 `name` 必须对应 `src/assets/icons/socials/` 下的图标文件名。
+
+**改 GitHub 用户名**：只改 `astro-paper.config.ts` 里的 `site.github`
+（该字段必填）。头像链接、活跃度抓取、GitHub 入口都由它派生。
+只有 `.tools/fetch-avatar.mjs` 单独留着一份，因为它是不读站点配置的独立脚本。
+
+**开关功能**：`astro-paper.config.ts` 的 `features`：
+
+| 字段 | 当前值 | 关掉会怎样 |
+|---|---|---|
+| `showArchives` | `true` | `/archives/` 返回 404，导航入口消失 |
+| `search` | `"pagefind"` | `/search/` 返回 404，导航入口消失 |
+| `lightAndDarkMode` | `true` | 隐藏深浅色切换按钮 |
+| `dynamicOgImage` | `false` | 未接回，见文末说明 |
 
 **改首页中转入口**：编辑 `src/data/hubs.ts`。数组里每一项：
 
@@ -262,9 +348,22 @@ Mocha 没有这个问题，所以深色保留下与站点一致的配色。
 ```bash
 npm install
 npm run dev       # 开发服务器
-npm run build     # 类型检查 + 构建到 dist/
+npm run build     # 类型检查 + 构建到 dist/ + 生成搜索索引
 npm run preview   # 预览构建产物
 ```
+
+`npm run build` 之后会自动执行 `postbuild`（pagefind 生成索引），
+所以 `npm run build` 是验证搜索功能的唯一方式，`npm run dev` 看不到搜索结果。
+
+## 未接回的上游功能
+
+AstroPaper 自带但本站**刻意没有**启用的功能，以及理由：
+
+| 功能 | 上游实现 | 为什么不接 |
+|---|---|---|
+| 动态 OG 图 | `og.png.ts` + satori + sharp | satori 需要的字体在 `@fontsource-variable` 里只有 woff2（无 TTF），且**无法渲染中文标题** —— 本站标题基本是中文，接回来也只会缺字。分享图统一用 `public/default-og.jpg` |
+| 编辑链接 | `EditPost.astro` | 单人站点，没有「去 GitHub 编辑」的需求 |
+| 分享链接 | `ShareLinks.astro` | `shareLinks: []` 是当初特意清空的 |
 
 ## 部署
 
