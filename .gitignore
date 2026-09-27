@@ -2,9 +2,10 @@
 dist/
 .astro/
 node_modules/
-.npm-cache/
-.npm-tmp/
-.npm-probe/
+
+# 本地验证工具与截图（不属于站点代码）
+.tools/
+_shots/
 
 # 环境与日志
 .env
