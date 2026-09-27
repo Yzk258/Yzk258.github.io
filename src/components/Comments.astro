@@ -81,7 +81,11 @@ const term = Astro.url.pathname
    *    「iframe 的 URL」（不是 data 属性），否则不生效。
    *    重设 URL 会重新加载 iframe —— 这是它目前唯一的换主题方式。
    */
-  const container = document.getElementById("giscus-container");
+  // 容器是 giscus 定位用的：它找页面里最后一个 .giscus 元素插 iframe。
+  // <section> 上带了这个类，报错时也退回按类查找。
+  const container =
+    document.getElementById("giscus-container") ??
+    document.querySelector<HTMLElement>(".giscus");
 
   if (container) {
     const currentTheme = () =>

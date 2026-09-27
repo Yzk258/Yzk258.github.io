@@ -1,6 +1,6 @@
 ---
 /**
- * GitHub 活跃度：按月表格 + 逐日热力图。
+ * GitHub 活跃度：汇总数字 + 按月表格，热力图交给 ContributionHeatmap。
  *
  * 数据在构建时抓取（见 src/utils/github-activity.ts），渲染成静态 HTML，
  * 所以运行时没有任何客户端 JS，也不需要第三方服务。
@@ -8,67 +8,15 @@
  * 数据取不到时整块不渲染 —— 这是刻意的，抓的是 GitHub 的页面结构，
  * 万一它变了，宁可不显示也不要显示错的数字，更不该让构建失败。
  */
-import {
-  fetchContributionStats,
-  toWeekGrid,
-  type ContributionDay,
-} from "@/utils/github-activity";
+import { fetchContributionStats } from "@/utils/github-activity";
+import ContributionHeatmap from "@/components/ContributionHeatmap.astro";
 import { useTranslations } from "@/i18n";
 import config from "@/config";
 
 const t = useTranslations();
-const username = "Yzk258";
+const username = config.site.github;
 
 const stats = await fetchContributionStats(username);
-
-// 色阶：0 用底色，1-4 用 accent 的四档透明度。
-// 写成字面量类名，Tailwind 才能扫到；拼接字符串会被漏掉。
-const LEVEL_CLASS = [
-  "bg-muted",
-  "bg-accent/35",
-  "bg-accent/55",
-  "bg-accent/80",
-  "bg-accent",
-];
-
-const grid = stats ? toWeekGrid(stats.days) : [];
-const weekCount = grid.length / 7;
-
-/** 每个月的第一周，用来放月份标签 */
-const monthLabels: Array<{ key: string; label: string; week: number }> = [];
-if (stats) {
-  /*
-   * 首月如果只占所在周的最后几天（区间从月末起算就是如此：2025-09-28
-   * 是周日，整个 9 月只占第 0 周的 3 格），给它放标签会和次月挤在同一列。
-   * 这种首月直接跳过，让次月代表这一列。
-   *
-   * 必须在下面的循环之前判断：次月的周序和首月相同，如果先让它占了位，
-   * 次月会因为间隔不足被循环拒掉，事后补是补不回来的。
-   */
-  const skipFirstMonth =
-    stats.months.length > 1 &&
-    Math.floor(
-      (stats.days.findIndex(d => d.date.startsWith(stats.months[1].key)) ?? 99) / 7
-    ) === 0;
-
-  let lastWeek = -99;
-  stats.months.forEach((month, index) => {
-    if (skipFirstMonth && index === 0) return;
-    const dayIndex = stats.days.findIndex(d => d.date.startsWith(month.key));
-    if (dayIndex < 0) return;
-    const week = Math.floor(dayIndex / 7);
-    const gap = week - lastWeek;
-    // 标签至少要隔 2 周才不挤在一起；3 周更舒展，所以优先试 3 周，
-    // 但开头几个标签会退到 2 周，免得整月没有标签。
-    if (gap < 2 || (gap < 3 && monthLabels.length >= 2)) return;
-    lastWeek = week;
-    monthLabels.push({
-      key: month.key,
-      label: `${+month.key.slice(5, 7)}月`,
-      week,
-    });
-  });
-}
 
 /** 2026-09-27 -> 2026/09/27 */
 const slashes = (iso: string) => iso.replace(/-/g, "/");
@@ -76,7 +24,11 @@ const slashes = (iso: string) => iso.replace(/-/g, "/");
 const summaryItems = stats
   ? [
       { label: t.activity.totalCommits, value: stats.total, unit: "" },
-      { label: t.activity.activeDays, value: stats.activeDays, unit: t.activity.unitDay },
+      {
+        label: t.activity.activeDays,
+        value: stats.activeDays,
+        unit: t.activity.unitDay,
+      },
       { label: t.activity.maxInADay, value: stats.maxInADay, unit: "" },
       {
         label: t.activity.longestStreak,
@@ -113,60 +65,11 @@ const summaryItems = stats
       </dl>
 
       {/* 逐日热力图：桌面端显示，窄屏用下面的表格代替 */}
-      <div class="mt-6 hidden sm:block">
-        <div class="overflow-x-auto pb-1">
-          <div
-            class="grid w-max gap-[3px]"
-            style={`grid-template-columns: repeat(${weekCount}, var(--act-cell)); --act-cell: 9px`}
-            role="img"
-            aria-label={t.activity.heatmapLabel
-              .replace("{from}", slashes(stats.first))
-              .replace("{to}", slashes(stats.last))
-              .replace("{total}", String(stats.total))}
-          >
-            {monthLabels.map(month => (
-              <span
-                class="text-muted-foreground mb-1 text-[10px] whitespace-nowrap"
-                style={`grid-column: ${month.week + 1}; grid-row: 1`}
-                aria-hidden="true"
-              >
-                {month.label}
-              </span>
-            ))}
-
-            {grid.map((day, index) =>
-              day ? (
-                <span
-                  class:list={[
-                    "block size-[9px] rounded-[2px]",
-                    LEVEL_CLASS[day.level] ?? "bg-muted",
-                  ]}
-                  style={`grid-column: ${Math.floor(index / 7) + 1}; grid-row: ${(index % 7) + 2}`}
-                  title={`${slashes(day.date)}：${day.count}`}
-                  aria-hidden="true"
-                ></span>
-              ) : (
-                <span
-                  class="block size-[9px]"
-                  style={`grid-column: ${Math.floor(index / 7) + 1}; grid-row: ${(index % 7) + 2}`}
-                  aria-hidden="true"
-                ></span>
-              )
-            )}
-          </div>
-        </div>
-
-        <div class="text-muted-foreground mt-2 flex items-center justify-end gap-1.5 text-xs">
-          <span>{t.activity.legendLess}</span>
-          {LEVEL_CLASS.map(cls => (
-            <span
-              class:list={["size-[9px] rounded-[2px]", cls]}
-              aria-hidden="true"
-            />
-          ))}
-          <span>{t.activity.legendMore}</span>
-        </div>
-      </div>
+      <ContributionHeatmap
+        username={username}
+        size="lg"
+        class="mt-6 hidden sm:block"
+      />
 
       {/* 按月表格 */}
       <div class="mt-6 overflow-x-auto">
@@ -187,7 +90,8 @@ const summaryItems = stats
           </thead>
           <tbody>
             {stats.months.map(month => {
-              const percent = stats.total > 0 ? (month.total / stats.total) * 100 : 0;
+              const percent =
+                stats.total > 0 ? (month.total / stats.total) * 100 : 0;
               return (
                 <tr class="border-border/60 border-b last:border-0">
                   <th scope="row" class="py-1.5 text-start font-normal tabular-nums">

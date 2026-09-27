@@ -51,6 +51,12 @@ export interface UIStrings {
     legendMore: string;
     rangeNote: string;
     unavailable: string;
+    /** 首页区块的说明文案 */
+    homeDescription: string;
+    /** 首页跳到关于页的链接文字 */
+    homeMore: string;
+    /** 窄屏时热力图需要横向滑动，给一句提示 */
+    scrollHint: string;
     /** 逐日格子的可访问名称，{date} / {count} 会被替换 */
     dayLabel: string;
     /** 贡献热力图的可访问名称，{total} / {from} / {to} 会被替换 */

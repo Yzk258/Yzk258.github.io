@@ -9,6 +9,11 @@ interface SiteConfig {
   author: string;
   /** Author profile URL (used in structured data) */
   profile?: string;
+  /**
+   * GitHub 用户名。用于头像链接、活跃度数据抓取，以及拼出 GitHub 主页地址。
+   * 改这一处即可，不必去各处组件里找。
+   */
+  github: string;
   /** Fallback OG image filename in /public, e.g. "og.jpg" */
   ogImage?: string;
   /** HTML lang attribute, defaults to "en" */
@@ -114,7 +119,8 @@ type ResolvedSiteConfig = Required<
     | "ogImage"
   >
 > &
-  Pick<SiteConfig, "profile" | "googleVerification">;
+  Pick<SiteConfig, "profile" | "googleVerification"> &
+  Required<Pick<SiteConfig, "github">>;
 
 export interface ResolvedAstroPaperConfig {
   site: ResolvedSiteConfig;

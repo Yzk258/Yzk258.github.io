@@ -8,6 +8,8 @@ export default defineAstroPaperConfig({
       "YZK 的个人主页与资源中转站：学习资料、项目归档与个人主站的统一入口。",
     author: "YZK",
     profile: "https://yinzachary24.top/",
+    // 头像链接、活跃度统计、GitHub 入口都由这一处派生
+    github: "Yzk258",
     ogImage: "default-og.jpg",
     lang: "zh-CN",
     timezone: "Asia/Shanghai",

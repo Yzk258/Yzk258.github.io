@@ -6,6 +6,7 @@
  *   description 一句话说明
  *   href        目标链接，站内用 "/xxx/"，站外用完整 URL
  *   icon        卡片左上角的符号（emoji 即可，避免额外引入图标）
+ *               注意：primary 入口的图标不渲染，只显示文字
  *   external    是否新标签页打开
  *   primary     是否高亮为「主入口」，首页最多设一个
  */
@@ -13,24 +14,26 @@ export interface Hub {
   title: string;
   description: string;
   href: string;
-  icon: string;
+  /** 卡片符号；primary 入口不渲染，所以可选 */
+  icon?: string;
   external?: boolean;
   primary?: boolean;
 }
+
+import config from "@/config";
 
 export const hubs: Hub[] = [
   {
     title: "个人主站",
     description: "最新最全的内容都在这里，日常更新以主站为准。",
     href: "https://yinzachary24.top/",
-    icon: "🏠",
     external: true,
     primary: true,
   },
   {
     title: "GitHub",
     description: "课程作业、小工具和这个站点本身的源码。",
-    href: "https://github.com/Yzk258",
+    href: `https://github.com/${config.site.github}`,
     icon: "💻",
     external: true,
   },
