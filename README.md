@@ -13,6 +13,7 @@
 - 字体 [JetBrains Mono](https://www.jetbrains.com/lp/mono/)（自托管，`@fontsource-variable`）
 - 文章：`@astrojs/mdx` + Shiki 代码高亮 + `remark-toc` / `rehype-callouts`
 - 评论：[giscus](https://giscus.app/)，评论存在仓库的 GitHub Discussions 里
+- 头像与 GitHub 活跃度：头像本地化，活跃度在构建时抓取官方贡献页并渲染成静态 HTML
 
 主题基于 [AstroPaper](https://github.com/satnaing/astro-paper) v6 改造，
 沿用其布局与设计令牌，去掉了标签、归档、站内搜索等用不到的博客功能。
@@ -32,6 +33,8 @@ src/
 ├── data/hubs.ts         首页「资源中转」的入口列表
 ├── components/
 │   ├── ApiCards.astro   三个第三方接口小卡片
+│   ├── Activity.astro   GitHub 活跃度（按月表格 + 逐日热力图）
+│   ├── Avatar.astro     头像框
 │   ├── Card.astro       文章列表项
 │   ├── Comments.astro   giscus 评论区（评论存在 GitHub Discussions）
 │   ├── Datetime.astro   日期显示（按站点时区格式化）
@@ -109,6 +112,42 @@ draft: false         # true 则不参与构建
 更细的示例见 `src/content/posts/writing-guide.md` 本身。
 
 写完后 `npm run build` 会校验 frontmatter，格式不对会直接报错并指出问题。
+
+## 头像与 GitHub 活跃度
+
+| 位置 | 内容 |
+| --- | --- |
+| `public/avatar.jpg` | 头像图片（460×460），用 `.tools/fetch-avatar.mjs` 重新拉取 |
+| `src/components/Avatar.astro` | 头像框，`size="sm"` 用于首页，`size="lg"` 用于关于页 |
+| `src/components/Activity.astro` | 活跃度表格与热力图，只在关于页 |
+| `src/utils/github-activity.ts` | 抓取与解析，见下 |
+
+**头像**是本地文件而不是直接引用 GitHub 的地址，这样不依赖外站可用性。
+想换头像就改 GitHub 上的头像，再跑一次 `.tools/fetch-avatar.mjs`。
+
+**活跃度数据**在构建时抓取，渲染成静态 HTML（运行时零客户端 JS）。
+来源是 GitHub 官方的贡献页 `https://github.com/users/Yzk258/contributions` ——
+GitHub 没有公开的贡献数据 REST 接口，那个 GraphQL 需要 token，所以只能解析页面：
+
+```html
+<td data-date="2026-09-27" id="contribution-day-component-0-12" data-level="2">
+<tool-tip for="contribution-day-component-0-12">14 contributions on …</tool-tip>
+```
+
+精确次数只在 `tool-tip` 文案里，`data-level` 只是 0-4 的色阶，两者用 id 关联。
+
+这块是**唯一一处依赖第三方页面结构**的地方，所以：
+
+- 解析出的天数少于 300 就认为结构变了，**整块不渲染**（不会显示错的数字，
+  更不会让构建失败）；头像和其它内容不受影响
+- 逐日数据缓存在 `node_modules/.cache/`（按日期失效，已被 gitignore），
+  同一天内重复构建不重复打网络
+
+**每日自动重建**：`.github/workflows/deploy.yml` 里有一条 `schedule`
+（03:17 UTC），因为数据只在构建时抓取，不重建的话会停在上次部署那天。
+想立即刷新就去 Actions 页面手动跑一次 workflow。
+
+需要改用户名时，`Activity.astro` 和 `fetch-avatar.mjs` 里的 `Yzk258` 都要改。
 
 ## 评论
 

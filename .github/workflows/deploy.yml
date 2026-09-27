@@ -1,12 +1,20 @@
 # 构建 Astro 站点并发布到 GitHub Pages
 #
-# 触发条件：推送到 main 分支，或在 Actions 页面手动触发。
+# 触发条件：
+# - 推送到 main 分支
+# - 每天定时重建（见下方 schedule 的说明）
+# - 在 Actions 页面手动触发
+#
 # 前置：仓库 Settings → Pages → Source 需选择 "GitHub Actions"。
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
+  # 关于页的 GitHub 活跃度是在构建时抓取的，只在推送时构建会让数据
+  # 停在上次部署那天。每天重建一次，最多陈旧一天。
+  schedule:
+    - cron: "17 3 * * *" # 03:17 UTC = 11:17 北京时间
   workflow_dispatch:
 
 # 只允许一个并发部署，避免旧构建覆盖新构建
@@ -38,6 +46,10 @@ jobs:
 
       - name: Build site
         run: npm run build
+        env:
+          # 可选。带上它走 5000 次/小时的接口配额，不带则 60 次/小时
+          # （构建只用 1 次）。抓取失败不会让构建失败，只是不渲染贡献数据。
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
