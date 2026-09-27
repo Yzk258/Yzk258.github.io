@@ -53,6 +53,7 @@ src/
 │   ├── Main.astro       内容页容器（也是搜索索引的正文边界）
 │   ├── Tag.astro        标签链接
 │   ├── Pagination.astro 分页导航
+│   ├── TableOfContents.astro 文章页右侧大纲目录（≥1280px 显示）
 │   └── LinkButton.astro 链接按钮（禁用时渲染成 span）
 ├── layouts/
 │   ├── Layout.astro     全局 HTML 骨架、meta、主题初始化
@@ -262,6 +263,38 @@ GitHub 没有公开的贡献数据 REST 接口，那个 GraphQL 需要 token，�
 
 **管理评论**：直接在仓库的 Discussions 里回复、删除或锁定。
 giscus 的回复和 GitHub 上是同一份数据，两边同步。
+
+## 大纲目录
+
+文章页右侧有一条大纲目录，自动从文章的 h2 / h3 生成，滚动时高亮当前小节。
+
+**为什么用 fixed 定位而不是 grid 加宽**：正文列是固定 768px（`max-w-3xl`）
+居中的，两侧本来就有留白。目录直接用 `position: fixed` 停在右侧那片留白里，
+正文的版心、行宽、现有版式一点都不用动。
+
+代价是它**只在 ≥1280px（xl 断点）出现**：
+
+```
+正文 768px + 两侧各 16px 内边距 = 800px
+1280px 屏扣掉 800px，右侧剩约 240px，才放得下这条 13rem 的目录
+```
+
+实测目录左缘恒在正文右缘右侧 **16px**，任何宽度都不会与正文重叠。
+窄屏由正文里那个折叠目录负责（`remark-toc` 生成，见 `site-setup.md`），
+两者互补：宽屏看侧栏，窄屏看正文。
+
+几个实现要点：
+
+- 数据来自 `render(post)` 的 `headings`，顺序与正文一致，slug 也是同一个
+  `github-slugger` 算法，所以能直接当锚点用，不需要额外解析 DOM
+- 少于两条目录项就整个不渲染（一个条目的目录没有意义）
+- 高亮判定用「最后一条越过视口上方 120px 的标题」，而不是
+  `IntersectionObserver` —— 后者在快速滚动与锚点跳转时容易出现中间态
+- 当前项的样式写在 CSS 选择器里（`#post-toc a[aria-current]`），
+  脚本只维护 `aria-current` 一个属性。站点启用了 ClientRouter，
+  站内跳转是局部替换 DOM，把类名状态写进脚本容易残留
+- h3 的缩进用 `padding-inline-start` 而不是 `margin` ——
+  竖条是绝对定位的，用 margin 会把竖条一起推右，h2 与 h3 的竖条就不对齐了
 
 ## 怎么改内容
 

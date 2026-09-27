@@ -37,3 +37,18 @@
 :target {
   scroll-margin-block: 1rem;
 }
+
+/*
+ * 文章页右侧大纲目录的当前项。
+ *
+ * 用 CSS 而不是在脚本里逐个切类名：站点启用了 ClientRouter，
+ * 站内跳转后 DOM 会被替换，类名状态容易残留；样式交给选择器
+ * 描述，脚本只负责维护 aria-current 这一个属性。
+ */
+#post-toc a[aria-current] {
+  @apply text-accent font-medium;
+}
+
+#post-toc li:has(> a[aria-current]) > span {
+  @apply bg-accent;
+}

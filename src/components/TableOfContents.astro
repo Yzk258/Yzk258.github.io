@@ -1,0 +1,85 @@
+---
+/**
+ * 文章页右侧的大纲目录。
+ *
+ * 布局：正文列固定 768px（max-w-3xl）居中，两侧留白。
+ * 这个目录用 position: fixed 停在正文右侧那片留白里 ——
+ * 之所以不用 grid 把整页加宽，是为了不改变正文的版心与行宽，
+ * 现有的阅读体验完全不动。
+ *
+ * 代价是它只在 ≥1280px 出现（xl 断点）：768px 正文 + 两侧
+ * 各 16px 内边距 = 800px，1280px 屏扣掉后右侧剩约 240px，
+ * 才放得下这条 13rem 的目录（实测左缘恒在正文右缘右侧 16px，
+ * 任何宽度都不会重叠）。窄屏由正文里的折叠目录负责，两者互补。
+ *
+ * 数据来自 Astro 的 render()，它的 headings 顺序与正文一致，
+ * slug 也是同一个 github-slugger 算法生成的，所以能直接当锚点用。
+ */
+import type { MarkdownHeading } from "astro";
+import { useTranslations } from "@/i18n";
+
+type Props = {
+  headings: MarkdownHeading[];
+};
+
+const { headings } = Astro.props;
+const t = useTranslations();
+
+/*
+ * 正文里的 h1 就是文章标题，已经在页面上方单独渲染了，
+ * 放进大纲只会重复；这里只取 h2 与 h3。
+ */
+const items = headings.filter(h => h.depth === 2 || h.depth === 3);
+
+/*
+ * 少于两条就不渲染 —— 一个只有一个条目的目录没有意义，
+ * 反而占掉右侧留白。
+ */
+const visible = items.length >= 2;
+
+/*
+ * 缩进用 padding 而不是 margin：
+ * 竖条是绝对定位、位置固定的，如果改用 margin 把整行推右，
+ * 竖条会跟着一起右移，h2 与 h3 的竖条就不在一条线上了。
+ */
+const indentClass = (depth: number) => (depth >= 3 ? "ps-3" : "ps-0");
+---
+
+{
+  visible && (
+    <nav
+      id="post-toc"
+      class="border-border fixed top-1/2 z-10 hidden max-h-[70svh] w-52 -translate-y-1/2 overflow-y-auto border-s pb-4 ps-4 xl:block"
+      style="inset-inline-start: calc(50% + 400px);"
+      aria-labelledby="post-toc-heading"
+    >
+      <h2
+        id="post-toc-heading"
+        class="text-muted-foreground mb-3 text-xs font-semibold tracking-wider"
+      >
+        {t.posts.tableOfContents}
+      </h2>
+
+      <ul class="flex flex-col gap-1.5 text-sm">
+        {items.map(heading => (
+          <li class="relative">
+            <span
+              class="absolute inset-y-0 start-0 w-0.5 bg-transparent transition-colors"
+              aria-hidden="true"
+            />
+            <a
+              href={`#${heading.slug}`}
+              data-heading-id={heading.slug}
+              class:list={[
+                "text-muted-foreground hover:text-accent focus-outline block py-0.5 leading-snug no-underline transition-colors",
+                indentClass(heading.depth),
+              ]}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}

@@ -204,6 +204,90 @@ function initBackToTop() {
   document.addEventListener("scroll", update, { passive: true });
 }
 
+/**
+ * 右侧大纲目录：高亮当前阅读到的小节。
+ *
+ * 只在 xl（≥1280px）显示 —— 那是纯 CSS 控制的（见组件里的
+ * `hidden xl:block`）。这里不额外判断视口宽度：目录被隐藏时
+ * 计算依然成立，只是看不见；这样避免了 resize 监听的复杂度。
+ *
+ * 用「最后一条已经越过判定线的标题」作为当前项，而不是
+ * IntersectionObserver：后者在快速滚动和锚点跳转时容易出现
+ * 中间态，且同一时刻可能有多个标题相交，取舍规则反而更绕。
+ */
+function initTableOfContents() {
+  const toc = document.getElementById("post-toc");
+  if (!toc) return;
+
+  /*
+   * 判定线取视口上方 120px 处。
+   * 太靠顶会让标题刚露头就高亮，太靠中则要滚过头才切换。
+   */
+  const OFFSET = 120;
+
+  /* 每次读取都重新查询：站内跳转后 DOM 会换掉，缓存节点会失效 */
+  const links = () =>
+    toc.querySelectorAll<HTMLAnchorElement>("a[data-heading-id]");
+
+  const updateActive = () => {
+    const all = links();
+    if (!all.length) return;
+
+    let currentId: string | null = null;
+    for (const link of all) {
+      const id = link.dataset.headingId;
+      if (!id) continue;
+      const target = document.getElementById(id);
+      if (!target) continue;
+      if (target.getBoundingClientRect().top <= OFFSET) currentId = id;
+      else break; // 标题按文档顺序排列，越过判定线之后无需再看
+    }
+
+    // 还没滚到第一个标题时，把第一条作为当前位置
+    if (currentId === null) currentId = all[0]?.dataset.headingId ?? null;
+
+    let active: HTMLAnchorElement | null = null;
+    for (const link of all) {
+      if (link.dataset.headingId === currentId) {
+        link.setAttribute("aria-current", "location");
+        active = link;
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    }
+
+    /*
+     * 目录比视口高时会自己滚动，当前项可能滚出目录的可视范围，
+     * 读者就看不出自己在哪了。这里把它带回视野。
+     *
+     * 只在「已经跑出去」时才动，避免每次滚动都触发无谓的
+     * scrollIntoView（会造成抖动，也打断读者的手动滚动）。
+     */
+    if (active) {
+      const box = toc.getBoundingClientRect();
+      const item = active.getBoundingClientRect();
+      const margin = 8;
+      if (item.top < box.top + margin || item.bottom > box.bottom - margin) {
+        active.scrollIntoView({ block: "nearest" });
+      }
+    }
+  };
+
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(() => {
+      updateActive();
+      ticking = false;
+    });
+  };
+
+  document.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
+  updateActive();
+}
+
 export function initPost() {
   if (typeof document === "undefined") return;
   if (!document.getElementById("post-body")) return;
@@ -212,4 +296,5 @@ export function initPost() {
   initHeadingAnchors();
   initImageZoom();
   initBackToTop();
+  initTableOfContents();
 }

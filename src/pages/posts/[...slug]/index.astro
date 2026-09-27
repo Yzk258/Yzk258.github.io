@@ -5,6 +5,7 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Datetime from "@/components/Datetime.astro";
 import Comments from "@/components/Comments.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
 import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
 import IconArrowRight from "@/assets/icons/IconArrowNarrowUp.svg";
 import { getSortedPosts } from "@/utils/posts";
@@ -35,7 +36,7 @@ const t = useTranslations();
 const { title, description, ogImage, canonicalURL, pubDatetime, modDatetime } =
   post.data;
 
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 const minutes = getReadingMinutes(post.body ?? "");
 
@@ -128,6 +129,8 @@ const resolvedOgImage = new URL(ogImageUrl, Astro.url.origin).href;
 
     <Comments />
   </main>
+
+  <TableOfContents {headings} />
 
   <button
     id="back-to-top"
