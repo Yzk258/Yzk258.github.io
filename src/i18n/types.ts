@@ -28,6 +28,12 @@ export interface UIStrings {
     linkToHeading: string;
     backToTop: string;
   };
+  comments: {
+    title: string;
+    hint: string;
+    iframeTitle: string;
+    noscript: string;
+  };
   footer: {
     copyright: string;
     allRightsReserved: string;

@@ -30,6 +30,12 @@ export default {
     linkToHeading: "链接到本节",
     backToTop: "回到顶部",
   },
+  comments: {
+    title: "评论",
+    hint: "评论由 GitHub Discussions 提供，需要登录 GitHub 账号。",
+    iframeTitle: "评论区（由 GitHub Discussions 提供）",
+    noscript: "评论需要 JavaScript 才能加载。",
+  },
   footer: {
     copyright: "版权所有",
     allRightsReserved: "保留所有权利。",

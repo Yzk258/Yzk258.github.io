@@ -32,6 +32,12 @@ function reflect(): void {
   document
     .querySelector("meta[name='theme-color']")
     ?.setAttribute("content", bg);
+
+  // 通知需要跟随主题的第三方组件（目前是 giscus 评论区）。
+  // 它们拿不到这里的内部状态，只能靠事件。
+  document.dispatchEvent(
+    new CustomEvent("theme-change", { detail: { theme: themeValue } })
+  );
 }
 
 function setup(): void {
