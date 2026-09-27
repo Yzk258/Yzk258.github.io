@@ -1,3 +1,41 @@
+/*
+ * 设计令牌
+ *
+ * 配色取自 Catppuccin（https://catppuccin.com/）：
+ *   浅色 = Latte，深色 = Mocha。两套同族，切换时观感一致。
+ *   色值为 Latte / Mocha 官方调色板，未做改动。
+ *
+ * 字体：JetBrains Mono 覆盖拉丁字符（终端观感），中文回退系统黑体。
+ *   JetBrains Mono 不含中文字形，这是必然的回退；把中文交给黑体
+ *   既保留拉丁部分的等宽味道，又保证中文可读。
+ */
+
+@font-face {
+  font-family: "JetBrains Mono Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "JetBrains Mono Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-italic.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* Register design tokens for Tailwind v4 */
 @theme inline {
   --color-background: var(--background);
@@ -8,40 +46,38 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --font-app: var(--font-app-stack);
+  --font-mono: var(--font-mono-stack);
 }
 
-/*
- * 主题自带的 Google Sans Code 只覆盖拉丁字符，中文会一路回退到等宽字体。
- * 这里给正文单独定义一套中文字体栈：中文用系统字体（零额外下载），
- * 拉丁字符仍优先用 Google Sans Code，代码块继续用等宽。
- */
 :root {
+  /* 中文回退栈：Windows 用雅黑，macOS 用苹方，Linux 用思源黑体 */
   --font-cjk:
     "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", "Source Han Sans SC",
     "Noto Sans CJK SC", sans-serif;
-  --font-app-stack:
-    var(--font-google-sans-code), var(--font-cjk);
+  --font-mono-stack:
+    "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-app-stack: var(--font-mono-stack), var(--font-cjk);
 }
 
-/* Light theme values */
+/* Latte（浅色） */
 :root,
 [data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
+  --background: #eff1f5;
+  --foreground: #4c4f69;
+  --accent: #8839ef;
   --accent-foreground: #ffffff;
-  --muted: #e6e6e6;
-  --muted-foreground: #64676e;
-  --border: #ece9e9;
+  --muted: #e6e9ef;
+  --muted-foreground: #5c5f75;
+  --border: #bcc0cc;
 }
 
-/* Dark theme values */
+/* Mocha（深色） */
 [data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff8b3d;
-  --accent-foreground: #212737;
-  --muted: #343f60;
-  --muted-foreground: #afb9ca;
-  --border: #8a5220;
+  --background: #1e1e2e;
+  --foreground: #cdd6f4;
+  --accent: #f38ba8;
+  --accent-foreground: #1e1e2e;
+  --muted: #313244;
+  --muted-foreground: #a6adc8;
+  --border: #45475a;
 }

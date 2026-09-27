@@ -28,8 +28,16 @@ export default defineAstroPaperConfig({
     search: false,
   },
   socials: [
-    { name: "github", url: "https://github.com/Yzk258" },
-    { name: "mail", url: "mailto:yzk24@mails.tsinghua.edu.cn" },
+    {
+      name: "github",
+      url: "https://github.com/Yzk258",
+      linkTitle: "在 GitHub 上查看 YZK",
+    },
+    {
+      name: "mail",
+      url: "mailto:yzk24@mails.tsinghua.edu.cn",
+      linkTitle: "给 YZK 发邮件",
+    },
   ],
   shareLinks: [],
 });

@@ -27,20 +27,20 @@ const navLabels: Record<string, string> = {
 
 <nav class="app-layout mt-8 mb-1" aria-label="breadcrumb">
   <ul
-    class="flex flex-wrap items-center gap-x-1 font-light [&>li:not(:last-child)>a]:hover:opacity-100"
+    class="text-muted-foreground flex flex-wrap items-center gap-x-1 font-light [&>li:not(:last-child)>a]:hover:text-foreground"
   >
     <li class="flex items-center gap-x-1">
-      <a href="/" class="opacity-80">
+      <a href="/">
         {t.nav.home}
       </a>
-      <span aria-hidden="true" class="opacity-80">&raquo;</span>
+      <span aria-hidden="true">&raquo;</span>
     </li>
     {
       breadcrumbList.map((breadcrumb, index) =>
         index + 1 === breadcrumbList.length ? (
           <li>
             <span
-              class:list={["capitalize opacity-75", { lowercase: index > 0 }]}
+              class:list={["text-foreground capitalize", { lowercase: index > 0 }]}
               aria-current="page"
             >
               {/* make the last part lowercase in Home > Tags > some-tag */}
@@ -49,15 +49,10 @@ const navLabels: Record<string, string> = {
           </li>
         ) : (
           <li class="flex items-center gap-x-1">
-            <a
-              href={`/${breadcrumb}/`}
-              class="capitalize opacity-70"
-            >
+            <a href={`/${breadcrumb}/`} class="capitalize">
               {navLabels[breadcrumb] ?? decodeSegment(breadcrumb)}
             </a>
-            <span aria-hidden="true" class="opacity-70">
-              &raquo;
-            </span>
+            <span aria-hidden="true">&raquo;</span>
           </li>
         )
       )

@@ -9,9 +9,13 @@
 - [Astro](https://astro.build/) 7，纯静态输出，默认零客户端框架运行时
 - [Tailwind CSS](https://tailwindcss.com/) 4（通过 `@tailwindcss/vite`）
 - TypeScript（`astro/tsconfigs/strict`）
+- 字体 [JetBrains Mono](https://www.jetbrains.com/lp/mono/)（自托管，`@fontsource-variable`）
 
 主题基于 [AstroPaper](https://github.com/satnaing/astro-paper) v6 改造，
 沿用其布局与设计令牌，移除了文章、标签、归档、搜索等博客功能。
+
+配色取自 [Catppuccin](https://catppuccin.com/)：
+浅色用 Latte，深色用 Mocha，两套同族，切换时观感一致。
 
 ## 目录结构
 
@@ -63,7 +67,21 @@ public/
 
 **改配色**：只改 `src/styles/theme.css` 顶部的令牌。
 浅色在 `:root, [data-theme="light"]`，深色在 `[data-theme="dark"]`，两处成对修改。
-令牌的对比度按 WCAG AA（正文 4.5:1）选取，改完建议重新核对。
+
+令牌的对比度已按 WCAG AA 校验过（`.tools/check-contrast.mjs` 可复核）：
+
+| 用途 | Latte（浅） | Mocha（深） |
+| --- | --- | --- |
+| 正文 / 背景 | 7.06:1 | 11.34:1 |
+| 次要文字 / 背景 | 5.55:1 | 7.37:1 |
+| 强调色作文字 | 4.79:1 | 7.08:1 |
+| 主按钮文字 / accent 底 | 5.41:1 | 7.08:1 |
+
+改色后建议重跑校验，正文低于 4.5:1 就不合格。
+
+**关于字体**：JetBrains Mono 只覆盖拉丁字符，中文会回退到 `--font-cjk`
+里的系统黑体。这是必然回退 —— 好处是拉丁部分保持等宽（终端观感），
+中文保证可读；不建议强行给中文套等宽字体，会让字形变挤。
 
 **改界面文案**：编辑 `src/i18n/lang/zh-CN.ts`。
 
