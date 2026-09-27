@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
-import { site } from '../config';
+import ApiCards from '../components/ApiCards.astro';
+import { hubs, site } from '../config';
 import { courseCount, coursesOf, semesters } from '../data/study';
 import { projects } from '../data/projects';
 import { updates } from '../data/updates';
@@ -51,11 +52,11 @@ const stats = [
     <div class="hero-body">
       <p class="hero-eyebrow">你好，欢迎来到</p>
       <h1 class="hero-title">
-        <span class="gradient-text">YZK</span> 的个人主页
+        <span class="gradient-text">YZK</span> 的个人站
       </h1>
       <p class="hero-lead">
-        把大学课程的学习资料、自己折腾过的小项目，以及一些零散记录，<br />
-        收拢到一个地方。内容仍在陆续补充中。
+        这里既是我的个人主页，也是通往各类资源的<strong>中转站</strong>：<br />
+        大学课程的学习资料、折腾过的小项目、建站记录，都收在这里。
       </p>
 
       <div class="btn-row">
@@ -83,6 +84,35 @@ const stats = [
       }
     </dl>
   </section>
+
+  <!-- 资源中转：本站的另一重身份，出口都汇总在这里 -->
+  <Section
+    title="资源中转"
+    description="本站同时作为资源中转站，以下入口可直达各处资源，也可用右上角搜索（Ctrl / ⌘ + K）快速定位任意课程。"
+  >
+    <div class="grid-auto hub-grid">
+      {
+        hubs.map((hub) => (
+          <a
+            class:list={['card', 'card-link', 'hub-card', hub.primary && 'hub-card-primary']}
+            href={hub.href}
+            target={hub.external ? '_blank' : undefined}
+            rel={hub.external ? 'noopener noreferrer' : undefined}
+            data-reveal
+          >
+            <span class="hub-icon" aria-hidden="true">{hub.icon}</span>
+            <span class="hub-body">
+              <span class="hub-title">
+                {hub.title}
+                {hub.external && <span class="hub-arrow" aria-hidden="true">↗</span>}
+              </span>
+              <span class="hub-text">{hub.text}</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </Section>
 
   <!-- 快捷入口 -->
   <Section title="从哪儿开始" description="四个入口，按你现在的目的挑一个就好。">
@@ -145,11 +175,16 @@ const stats = [
     </div>
   </Section>
 
+  <!-- 好玩的 API -->
+  <div class="api-block">
+    <ApiCards />
+  </div>
+
   <div class="notice" data-reveal>
     <span aria-hidden="true">🛠️</span>
     <p>
       <strong>本站刚换了新框架。</strong>
-      旧的页面结构与素材已整理归档，新站目前只有骨架 —— 内容正在逐步搬进来。
+      旧的页面结构与素材已整理归档，新站内容正在逐步搬进来。
       想看以前的版本，可以翻阅仓库的 git 历史。
     </p>
   </div>
@@ -303,5 +338,59 @@ const stats = [
 
   .section-more {
     margin-block-start: 1.75rem;
+  }
+
+  /* ---------- 资源中转 ---------- */
+  .hub-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+  }
+
+  .hub-icon {
+    flex: none;
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .hub-body {
+    display: block;
+    min-width: 0;
+  }
+
+  .hub-title {
+    display: block;
+    margin-block-end: 0.25rem;
+    color: var(--c-text);
+    font-size: 1.0625rem;
+    font-weight: 650;
+  }
+
+  .hub-arrow {
+    margin-inline-start: 0.25rem;
+    color: var(--c-text-dim);
+    font-size: 0.875rem;
+  }
+
+  .hub-text {
+    display: block;
+    color: var(--c-text-soft);
+    font-size: 0.875rem;
+    line-height: 1.65;
+  }
+
+  /* 主站是主要去向，单独高亮 */
+  .hub-card-primary {
+    border-color: var(--c-card-hover-border);
+    background: var(--c-accent-tint);
+  }
+
+  .hub-card-primary .hub-title {
+    color: var(--c-accent-text);
+  }
+
+  /* ---------- API 区块 ---------- */
+  .api-block {
+    margin-block-start: var(--section-gap);
   }
 </style>

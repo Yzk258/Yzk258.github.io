@@ -1,0 +1,392 @@
+---
+/**
+ * 好玩的 API 卡片 —— 从旧站点 index.js 迁移而来。
+ *
+ * 保留的核心逻辑：
+ *   · 6 秒超时（AbortController），失败时显示兜底文案而非空白
+ *   · seq 序号：连点时旧响应不会覆盖新响应
+ *   · 点击与键盘（Enter / 空格）都能触发刷新
+ *
+ * 新增的改进：
+ *   · 延后到卡片接近视口才发首次请求，不为看不见的内容消耗流量
+ *   · 断网时直接显示离线提示，不做注定失败的请求
+ *   · 图片预留宽高，避免加载完成时页面跳动
+ */
+---
+
+<section class="api-section" aria-labelledby="api-heading" data-api-cards data-reveal>
+  <div class="api-head">
+    <h2 id="api-heading" class="api-title">好玩的 API</h2>
+    <p class="api-desc">三个简单的第三方接口，点一下换一换。</p>
+  </div>
+
+  <div class="api-grid">
+    <!-- 一言 -->
+    <div
+      class="api-card"
+      id="api-card-hitokoto"
+      role="button"
+      tabindex="0"
+      data-api="hitokoto"
+      aria-label="一言，点击换一句"
+      title="点我换一句！"
+    >
+      <p class="api-quote" data-api-text>正在召唤一句话…</p>
+      <p class="api-from" data-api-from data-api-from-label>一言 · Hitokoto</p>
+      <span class="api-hint" aria-hidden="true">点击换一句</span>
+    </div>
+
+    <!-- 随机狗狗 -->
+    <div
+      class="api-card api-card-dog"
+      id="api-card-dog"
+      role="button"
+      tabindex="0"
+      data-api="dog"
+      aria-label="随机狗狗照片，点击换一只"
+      title="点我换一只狗狗！"
+    >
+      <div class="api-dog-frame" data-api-frame>
+        <img
+          class="api-dog-img"
+          data-api-img
+          alt=""
+          width="640"
+          height="420"
+          loading="lazy"
+          decoding="async"
+        />
+        <span class="api-dog-placeholder" data-api-placeholder>正在领养一只狗狗…</span>
+      </div>
+      <p class="api-from" data-api-from-dog>Dog CEO · 随机狗狗</p>
+      <span class="api-hint" aria-hidden="true">点击换一只</span>
+    </div>
+
+    <!-- 今日诗词 -->
+    <div
+      class="api-card"
+      id="api-card-poem"
+      role="button"
+      tabindex="0"
+      data-api="poem"
+      aria-label="今日诗词，点击换一句"
+      title="点我换一句诗！"
+    >
+      <p class="api-quote" data-api-text>正在翻书…</p>
+      <p class="api-from" data-api-from-label>今日诗词 · JinRiShiCi</p>
+      <span class="api-hint" aria-hidden="true">点击换一句</span>
+    </div>
+  </div>
+
+  <p class="api-credit">
+    接口来源：<a href="https://hitokoto.cn/" target="_blank" rel="noopener noreferrer">一言</a> ·
+    <a href="https://dog.ceo/dog-api/" target="_blank" rel="noopener noreferrer">Dog CEO</a> ·
+    <a href="https://www.jinrishici.com/" target="_blank" rel="noopener noreferrer">今日诗词</a>
+  </p>
+</section>
+
+<style>
+  .api-head {
+    margin-block-end: 1.5rem;
+  }
+
+  .api-title {
+    font-size: clamp(1.3rem, 2.4vw, 1.6rem);
+  }
+
+  .api-desc {
+    margin-block-start: 0.5rem;
+    color: var(--c-text-soft);
+    font-size: 0.9375rem;
+  }
+
+  .api-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  }
+
+  .api-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 11rem;
+    padding: 1.25rem;
+    border: var(--border-hairline);
+    border-radius: var(--radius-lg);
+    background: var(--c-surface);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+      border-color var(--dur) var(--ease);
+  }
+
+  .api-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--c-card-hover-border);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .api-card:focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 3px;
+  }
+
+  .api-quote {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    color: var(--c-text);
+    font-size: 1rem;
+    line-height: 1.8;
+    text-align: center;
+  }
+
+  .api-from {
+    margin-block-start: 0.75rem;
+    color: var(--c-text-dim);
+    font-size: 0.8125rem;
+    text-align: center;
+  }
+
+  .api-hint {
+    margin-block-start: 0.5rem;
+    color: var(--c-text-dim);
+    font-size: 0.75rem;
+    text-align: center;
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+  }
+
+  .api-card:hover .api-hint,
+  .api-card:focus-visible .api-hint {
+    opacity: 1;
+  }
+
+  /* ---------- 狗狗图片 ---------- */
+  .api-card-dog {
+    padding: 0.75rem;
+  }
+
+  .api-dog-frame {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--c-bg-soft);
+    aspect-ratio: 16 / 10;
+  }
+
+  .api-dog-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+  }
+
+  .api-dog-img[data-loaded='true'] {
+    opacity: 1;
+  }
+
+  .api-dog-placeholder {
+    position: absolute;
+    padding-inline: 1rem;
+    color: var(--c-text-dim);
+    font-size: 0.8125rem;
+    text-align: center;
+  }
+
+  .api-credit {
+    margin-block-start: 1.25rem;
+    color: var(--c-text-dim);
+    font-size: 0.8125rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .api-card,
+    .api-dog-img {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  /** 与旧实现保持一致的 6 秒超时 */
+  const API_TIMEOUT = 6000;
+
+  async function fetchJson(url: string, timeout = API_TIMEOUT): Promise<any> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+    try {
+      const res = await fetch(url, { signal: controller.signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-api-cards]');
+
+  if (root) {
+    const online = () => navigator.onLine !== false;
+
+    /** 每张卡片独立的请求序号，防止连点时旧响应覆盖新响应 */
+    const seqs = new Map<string, number>();
+
+    function seqFor(kind: string): number {
+      const next = (seqs.get(kind) ?? 0) + 1;
+      seqs.set(kind, next);
+      return next;
+    }
+
+    function isCurrent(kind: string, seq: number): boolean {
+      return seqs.get(kind) === seq;
+    }
+
+    const offlineText = '离线状态下这个接口用不了';
+
+    async function loadHitokoto(card: HTMLElement, seq: number) {
+      const textEl = card.querySelector<HTMLElement>('[data-api-text]');
+      const fromEl = card.querySelector<HTMLElement>('[data-api-from-label]');
+      if (!textEl || !fromEl) return;
+
+      if (!online()) {
+        textEl.textContent = offlineText;
+        fromEl.textContent = '联网后点一下试试';
+        return;
+      }
+
+      textEl.textContent = '加载中…';
+      fromEl.textContent = '一言 · Hitokoto';
+      try {
+        const data = await fetchJson('https://v1.hitokoto.cn/?c=a&c=b&c=d&c=i&c=k&max_length=30');
+        if (!isCurrent('hitokoto', seq)) return;
+        textEl.textContent = `「${data.hitokoto}」`;
+        fromEl.textContent = data.from_who
+          ? `—— ${data.from_who}「${data.from}」`
+          : data.from
+            ? `——「${data.from}」`
+            : '—— 一言';
+      } catch {
+        if (!isCurrent('hitokoto', seq)) return;
+        textEl.textContent = '一言 API 开小差了…';
+        fromEl.textContent = '再点一下试试';
+      }
+    }
+
+    async function loadDog(card: HTMLElement, seq: number) {
+      const img = card.querySelector<HTMLImageElement>('[data-api-img]');
+      const placeholder = card.querySelector<HTMLElement>('[data-api-placeholder]');
+      const fromEl = card.querySelector<HTMLElement>('[data-api-from-dog]');
+      if (!img || !placeholder) return;
+
+      if (!online()) {
+        placeholder.textContent = offlineText;
+        return;
+      }
+
+      placeholder.textContent = '正在领养一只狗狗…';
+      placeholder.hidden = false;
+      img.dataset.loaded = 'false';
+      try {
+        const data = await fetchJson('https://dog.ceo/api/breeds/image/random');
+        if (!isCurrent('dog', seq)) return;
+
+        img.onload = () => {
+          if (!isCurrent('dog', seq)) return;
+          img.dataset.loaded = 'true';
+          placeholder.hidden = true;
+          // 从图片地址里取出品种名，显示在下方
+          const breed = String(data.message ?? '')
+            .split('/breeds/')[1]
+            ?.split('/')[0]
+            ?.replace(/-/g, ' ');
+          if (fromEl && breed) fromEl.textContent = `Dog CEO · ${breed}`;
+        };
+        img.onerror = () => {
+          if (!isCurrent('dog', seq)) return;
+          placeholder.textContent = '这张照片加载失败了，再点一下试试';
+        };
+        img.src = data.message;
+      } catch {
+        if (!isCurrent('dog', seq)) return;
+        placeholder.textContent = '狗狗 API 开小差了，再点一下试试';
+      }
+    }
+
+    async function loadPoem(card: HTMLElement, seq: number) {
+      const textEl = card.querySelector<HTMLElement>('[data-api-text]');
+      const fromEl = card.querySelector<HTMLElement>('[data-api-from-label]');
+      if (!textEl || !fromEl) return;
+
+      if (!online()) {
+        textEl.textContent = offlineText;
+        fromEl.textContent = '联网后点一下试试';
+        return;
+      }
+
+      textEl.textContent = '加载中…';
+      fromEl.textContent = '今日诗词 · JinRiShiCi';
+      try {
+        const data = await fetchJson('https://v1.jinrishici.com/all.json');
+        if (!isCurrent('poem', seq)) return;
+        textEl.textContent = `「${data.content}」`;
+        fromEl.textContent = data.author ? `—— ${data.author}《${data.origin}》` : `——《${data.origin}》`;
+      } catch {
+        if (!isCurrent('poem', seq)) return;
+        textEl.textContent = '诗仙暂时不在家…';
+        fromEl.textContent = '再点一下试试';
+      }
+    }
+
+    const loaders: Record<string, (card: HTMLElement, seq: number) => Promise<void>> = {
+      hitokoto: loadHitokoto,
+      dog: loadDog,
+      poem: loadPoem,
+    };
+
+    function refresh(card: HTMLElement) {
+      const kind = card.dataset.api;
+      if (!kind) return;
+      const loader = loaders[kind];
+      if (!loader) return;
+      void loader(card, seqFor(kind));
+    }
+
+    const cards = root.querySelectorAll<HTMLElement>('[data-api]');
+    for (const card of cards) {
+      card.addEventListener('click', () => refresh(card));
+      card.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          refresh(card);
+        }
+      });
+    }
+
+    // 卡片接近视口后才发首次请求
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            refresh(entry.target as HTMLElement);
+            observer.unobserve(entry.target);
+          }
+        },
+        { rootMargin: '200px 0px' },
+      );
+      for (const card of cards) observer.observe(card);
+    } else {
+      for (const card of cards) refresh(card);
+    }
+
+    // 恢复联网后，把之前失败的卡片重新加载一次
+    window.addEventListener('online', () => {
+      for (const card of cards) refresh(card);
+    });
+  }
+</script>

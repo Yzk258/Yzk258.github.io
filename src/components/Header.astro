@@ -4,6 +4,7 @@
  * 导航数据来自 src/config.ts，全站只需维护一处。
  */
 import { nav, site } from '../config';
+import Search from './Search.astro';
 
 const currentPath = Astro.url.pathname;
 
@@ -36,6 +37,7 @@ function isActive(href: string): boolean {
     </nav>
 
     <div class="header-tools">
+      <Search />
       <button
         class="icon-btn"
         type="button"

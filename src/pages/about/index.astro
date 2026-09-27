@@ -98,9 +98,18 @@ const contact = [
       <p>
         内容以学习资料为主，也会放一些个人的项目记录。所有资料仅供学习交流使用。
       </p>
+      <p>
+        本站目前兼有两个角色：既是个人主页，也是<strong>资源中转站</strong>。
+        个人主站与最新动态已经迁往
+        <a href={site.mainSite} target="_blank" rel="noopener noreferrer">{site.mainSite.replace(/^https?:\/\//, '')}</a>，
+        而这里更专注于资料的归档与中转，两者互为补充。
+      </p>
     </div>
 
     <div class="btn-row about-actions">
+      <a class="btn btn-primary" href={site.mainSite} target="_blank" rel="noopener noreferrer">
+        前往个人主站
+      </a>
       <a class="btn" href={site.github} target="_blank" rel="noopener noreferrer">
         看看源码
       </a>
