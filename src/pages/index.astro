@@ -4,6 +4,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
+import Avatar from "@/components/Avatar.astro";
 import ApiCards from "@/components/ApiCards.astro";
 import Card from "@/components/Card.astro";
 import { hubs } from "@/data/hubs";
@@ -27,12 +28,15 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
   <main id="main-content" data-layout="index" class="app-layout my-1">
     <section id="hero" class="border-border border-b pt-8 pb-6">
       <p class="text-accent mb-2 text-sm" aria-hidden="true">~ $ whoami</p>
-      <h1
-        class="terminal-title my-4 inline-block text-3xl font-bold sm:my-6 sm:text-4xl"
-        transition:name="site-title"
-      >
-        {config.site.title}
-      </h1>
+      <div class="my-4 flex items-center gap-4 sm:my-6 sm:gap-5">
+        <Avatar size="sm" href="https://github.com/Yzk258" />
+        <h1
+          class="terminal-title inline-block text-3xl font-bold sm:text-4xl"
+          transition:name="site-title"
+        >
+          {config.site.title}
+        </h1>
+      </div>
       <p>
         这里是 <strong>YZK</strong> 的主页与资源中转站 —— 把散落在各处的入口收在一处。
         最新内容以个人主站为准，GitHub 上是各类代码与本站源码。

@@ -1,0 +1,88 @@
+---
+/**
+ * 头像框。
+ *
+ * 头像是 public/avatar.jpg（由 .tools/fetch-avatar.mjs 从 GitHub 拉取）。
+ * 用 <img> 而不是背景图，这样能带 alt、能被读屏识别。
+ */
+interface Props {
+  size?: "sm" | "lg";
+  /** 传入则整张头像可点击跳转 */
+  href?: string;
+  alt?: string;
+  class?: string;
+}
+
+import { useTranslations } from "@/i18n";
+
+const { size = "lg", href, alt, class: className = "" } = Astro.props;
+const t = useTranslations();
+
+const dimensions = {
+  sm: "size-28",
+  lg: "size-40 sm:size-44",
+}[size];
+
+const label = alt ?? t.avatarAlt;
+const src = "/avatar.jpg";
+---
+
+{
+  href ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      class:list={[
+        "focus-outline group relative inline-block shrink-0 overflow-hidden rounded-full",
+        dimensions,
+        className,
+      ]}
+    >
+      {/* 外圈：accent 细环 + 内侧一条底色间隙，形成“框”的层次 */}
+      <span
+        class="border-accent/60 absolute inset-0 rounded-full border-2"
+        aria-hidden="true"
+      />
+      <span
+        class="border-background absolute inset-[3px] rounded-full border"
+        aria-hidden="true"
+      />
+      <img
+        src={src}
+        alt={label}
+        width="460"
+        height="460"
+        loading="lazy"
+        decoding="async"
+        class="size-full rounded-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+      />
+    </a>
+  ) : (
+    <span
+      class:list={[
+        "relative inline-block shrink-0 overflow-hidden rounded-full",
+        dimensions,
+        className,
+      ]}
+    >
+      <span
+        class="border-accent/60 absolute inset-0 rounded-full border-2"
+        aria-hidden="true"
+      />
+      <span
+        class="border-background absolute inset-[3px] rounded-full border"
+        aria-hidden="true"
+      />
+      <img
+        src={src}
+        alt={label}
+        width="460"
+        height="460"
+        loading="lazy"
+        decoding="async"
+        class="size-full rounded-full object-cover"
+      />
+    </span>
+  )
+}

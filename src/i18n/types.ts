@@ -34,6 +34,29 @@ export interface UIStrings {
     iframeTitle: string;
     noscript: string;
   };
+  activity: {
+    title: string;
+    description: string;
+    totalCommits: string;
+    activeDays: string;
+    maxInADay: string;
+    longestStreak: string;
+    currentStreak: string;
+    unitDay: string;
+    month: string;
+    commits: string;
+    share: string;
+    yearTotal: string;
+    legendLess: string;
+    legendMore: string;
+    rangeNote: string;
+    unavailable: string;
+    /** 逐日格子的可访问名称，{date} / {count} 会被替换 */
+    dayLabel: string;
+    /** 贡献热力图的可访问名称，{total} / {from} / {to} 会被替换 */
+    heatmapLabel: string;
+  };
+  avatarAlt: string;
   footer: {
     copyright: string;
     allRightsReserved: string;
