@@ -1,0 +1,37 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Main from "@/components/Main.astro";
+import Card from "@/components/Card.astro";
+import { getSortedPosts } from "@/utils/posts";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+const posts = getSortedPosts(await getCollection("posts"));
+const t = useTranslations();
+---
+
+<Layout
+  title={`${t.posts.title} | ${config.site.title}`}
+  description={t.posts.description}
+>
+  <Header />
+
+  <Main pageTitle={t.posts.title} pageDesc={t.posts.description}>
+    {
+      posts.length === 0 ? (
+        <p class="text-muted-foreground">{t.posts.empty}</p>
+      ) : (
+        <ul class="mt-2">
+          {posts.map(post => (
+            <Card {...post} showTags />
+          ))}
+        </ul>
+      )
+    }
+  </Main>
+
+  <Footer />
+</Layout>

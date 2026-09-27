@@ -20,7 +20,9 @@ export default defineAstroPaperConfig({
   },
   features: {
     lightAndDarkMode: true,
-    dynamicOgImage: true,
+    // 本主题原有的动态 OG 图路由（satori 渲染）未移植，固定关闭，
+    // 分享图统一使用 public/default-og.jpg
+    dynamicOgImage: false,
     // 本站不使用归档与站内搜索，Header 里对应入口一并关掉
     showArchives: false,
     showBackButton: false,

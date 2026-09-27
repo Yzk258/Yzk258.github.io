@@ -1,6 +1,7 @@
 # YZK 的个人站
 
-个人主页兼资源中转站 —— 把散落在各处的入口（个人主站、GitHub、邮箱）收在一处。
+个人主页兼资源中转站 —— 把散落在各处的入口（个人主站、GitHub、邮箱）收在一处，
+外加一个用来写文章的板块。
 
 线上地址：<https://yzk258.github.io/>
 
@@ -10,9 +11,10 @@
 - [Tailwind CSS](https://tailwindcss.com/) 4（通过 `@tailwindcss/vite`）
 - TypeScript（`astro/tsconfigs/strict`）
 - 字体 [JetBrains Mono](https://www.jetbrains.com/lp/mono/)（自托管，`@fontsource-variable`）
+- 文章：`@astrojs/mdx` + Shiki 代码高亮 + `remark-toc` / `rehype-callouts`
 
 主题基于 [AstroPaper](https://github.com/satnaing/astro-paper) v6 改造，
-沿用其布局与设计令牌，移除了文章、标签、归档、搜索等博客功能。
+沿用其布局与设计令牌，去掉了标签、归档、站内搜索等用不到的博客功能。
 
 配色取自 [Catppuccin](https://catppuccin.com/)：
 浅色用 Latte，深色用 Mocha，两套同族，切换时观感一致。
@@ -21,31 +23,90 @@
 
 ```
 astro-paper.config.ts    站点配置（标题、描述、社交链接、功能开关）
-astro.config.ts          构建配置（集成、字体、环境变量）
+astro.config.ts          构建配置（集成、Markdown 流水线、代码高亮）
 src/
 ├── config.ts            配置解析层：给 astro-paper.config.ts 补默认值
-├── data/hubs.ts         首页「资源中转」的入口列表 ← 最常改的文件
+├── content.config.ts    文章集合的 schema（frontmatter 校验）
+├── content/posts/       ← 文章写在这里
+├── data/hubs.ts         首页「资源中转」的入口列表
 ├── components/
 │   ├── ApiCards.astro   三个第三方接口小卡片
+│   ├── Card.astro       文章列表项
+│   ├── Datetime.astro   日期显示（按站点时区格式化）
 │   ├── Header.astro     页头与导航
 │   ├── Footer.astro     页脚
 │   ├── Socials.astro    社交图标（由 socials 配置驱动）
 │   ├── Breadcrumb.astro 面包屑
 │   ├── Main.astro       内容页容器
 │   └── LinkButton.astro 链接按钮
-├── layouts/Layout.astro 全局 HTML 骨架、meta、主题初始化
+├── layouts/
+│   ├── Layout.astro     全局 HTML 骨架、meta、主题初始化
+│   └── PostLayout.astro 文章页附加的 meta 与 JSON-LD
 ├── i18n/                界面文案（仅中文）
-├── pages/               路由：/、/about/、404、robots.txt
-├── scripts/theme.ts     深浅色切换
+├── pages/
+│   ├── index.astro      /            首页
+│   ├── posts/index.astro            文章列表
+│   ├── posts/[...slug]/             文章详情
+│   ├── about.astro                  关于我
+│   ├── rss.xml.ts                   订阅源
+│   └── robots.txt.ts
+├── scripts/
+│   ├── theme.ts         深浅色切换
+│   └── post.ts          文章页交互（复制、目录锚点、图片放大、进度条）
 ├── styles/
 │   ├── theme.css        设计令牌（颜色、字体）← 改配色看这里
+│   ├── typography.css   文章正文排版
 │   └── global.css       Tailwind 入口与基础样式
 ├── types/config.ts      配置的类型定义
-└── utils/               base 路径与 OG 图处理
+└── utils/
+    ├── posts.ts         文章过滤与排序
+    ├── slug.ts          文件名 → URL
+    ├── date.ts          日期格式化（按站点时区）
+    ├── readingTime.ts   中文友好的阅读时长估算
+    └── transformers/    Shiki 代码块文件名标签插件
 public/
 ├── favicon.svg
 └── default-og.jpg       分享卡片默认图
 ```
+
+## 写文章
+
+在 `src/content/posts/` 下新建 `.md`（或 `.mdx`）文件即可，
+文件名就是 URL —— `hello-world.md` 对应 `/posts/hello-world/`。
+这样改标题不会让链接失效，也避免中文标题被转写成乱码路径。
+
+开头必须有 frontmatter：
+
+```yaml
+---
+title: 文章标题
+description: 一两句话的摘要，显示在列表页和订阅源里
+pubDatetime: 2026-09-27T18:30:00+08:00   # 必须带时区
+tags: ["标签一", "标签二"]
+featured: false      # true 会置顶
+draft: false         # true 则不参与构建
+---
+```
+
+**时间一定要写时区。** 只写 `2026-09-27` 会被当成 UTC 零点，
+在东八区显示出来就是前一天。带 `+08:00` 才准确 ——
+构建服务器跑在 UTC，这个偏移是它换算本地时间的唯一依据。
+
+正文支持的能力：
+
+| 写法 | 效果 |
+| --- | --- |
+| `## 目录` | 自动替换成文章标题目录（可折叠） |
+| ` ```ts title="文件名" ` | 代码高亮 + 文件名标签 |
+| `` ```js `` 里 `// [!code highlight]` | 高亮该行 |
+| `` ```js `` 里 `// [!code word:42]` | 高亮该词 |
+| `> [!NOTE]` 等引用块 | 提示框（NOTE/TIP/IMPORTANT/WARNING/CAUTION） |
+| 图片 | 点击放大，`Esc` 关闭 |
+| `## 标题` / `### 标题` | 自动加锚点，可分享到具体小节 |
+
+更细的示例见 `src/content/posts/writing-guide.md` 本身。
+
+写完后 `npm run build` 会校验 frontmatter，格式不对会直接报错并指出问题。
 
 ## 怎么改内容
 
@@ -82,6 +143,13 @@ public/
 **关于字体**：JetBrains Mono 只覆盖拉丁字符，中文会回退到 `--font-cjk`
 里的系统黑体。这是必然回退 —— 好处是拉丁部分保持等宽（终端观感），
 中文保证可读；不建议强行给中文套等宽字体，会让字形变挤。
+
+**关于代码高亮的配色**：浅色和深色用的不是同一套主题
+（`github-light-default` / `catppuccin-mocha`）。
+因为 Catppuccin Latte 是给界面设计的柔和色板，用在代码上
+10 种 token 色有 8 种对比度低于 4.5:1，最差只有 2.34:1。
+Mocha 没有这个问题，所以深色保留下与站点一致的配色。
+若要更换，用 `.tools/check-code-contrast.mjs` 逐个 token 复核。
 
 **改界面文案**：编辑 `src/i18n/lang/zh-CN.ts`。
 

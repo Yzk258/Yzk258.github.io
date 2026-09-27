@@ -1,0 +1,210 @@
+@plugin "@tailwindcss/typography";
+
+/*
+ * 文章正文排版。
+ *
+ * 在 Tailwind Typography 的基础上做两处调整：
+ * 1. 颜色全部接到本站的设计令牌上，深浅色切换自动跟随
+ * 2. 按中文排版习惯放大行高与段间距 —— Typography 的默认值是为
+ *    英文设计的，中文行高不够会显得挤
+ */
+@layer base {
+  .app-prose {
+    @apply prose;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    th {
+      @apply text-foreground mb-3;
+    }
+
+    h2 {
+      @apply mt-10 mb-4;
+    }
+
+    h3 {
+      @apply mt-8 italic;
+    }
+
+    p,
+    strong,
+    ol,
+    ul,
+    figcaption,
+    table,
+    code {
+      @apply text-foreground;
+    }
+
+    /* 中文排版：行高与段距比英文默认值更大 */
+    p,
+    li {
+      @apply leading-[1.9];
+    }
+
+    p {
+      @apply my-5;
+    }
+
+    a {
+      @apply text-foreground hover:text-accent decoration-dashed underline-offset-4 wrap-break-word focus-visible:no-underline;
+    }
+
+    ul {
+      @apply overflow-x-clip;
+    }
+
+    li {
+      @apply marker:text-accent my-1.5;
+    }
+
+    hr {
+      @apply border-border;
+    }
+
+    img {
+      @apply border-border mx-auto border;
+    }
+
+    img[role="button"] {
+      @apply cursor-zoom-in;
+
+      &:focus-visible {
+        @apply outline-2 outline-offset-2 outline-dashed;
+      }
+    }
+
+    figcaption {
+      @apply text-muted-foreground;
+    }
+
+    table {
+      th,
+      td {
+        @apply border-border border p-2;
+      }
+
+      th {
+        @apply py-1.5;
+      }
+
+      th[align="center"],
+      td[align="center"] {
+        text-align: center;
+      }
+
+      th[align="right"],
+      td[align="right"] {
+        text-align: right;
+      }
+
+      th[align="left"],
+      td[align="left"] {
+        text-align: left;
+      }
+    }
+
+    /* 行内代码 */
+    code {
+      @apply bg-muted text-foreground rounded p-1 wrap-break-word before:content-none after:content-none;
+    }
+
+    .astro-code code {
+      @apply flex-[1_0_100%] bg-inherit p-0;
+    }
+
+    blockquote {
+      @apply border-s-accent/80 wrap-break-word;
+    }
+
+    /* 只作用于普通引用块；提示框（.callout）的正文用正常前景色，
+       避免整块被灰化而不像「提示」 */
+    blockquote:not(.callout) p {
+      @apply text-muted-foreground;
+    }
+
+    details:not(.callout) {
+      @apply text-foreground inline-block cursor-pointer [&_p]:hidden [&_ul]:my-0! select-none;
+    }
+
+    summary {
+      @apply focus-visible:outline-accent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:no-underline focus-visible:outline-dashed;
+    }
+
+    pre {
+      @apply focus-visible:outline-accent focus-visible:border-transparent focus-visible:outline-2 focus-visible:outline-dashed;
+    }
+  }
+
+  /* ===== 代码块与语法高亮 ===== */
+  .astro-code {
+    @apply outline-border flex border bg-(--shiki-light-bg) text-(--shiki-light) [&_span]:text-(--shiki-light);
+  }
+
+  html[data-theme="dark"] .astro-code {
+    @apply bg-(--shiki-dark-bg) text-(--shiki-dark) [&_span]:text-(--shiki-dark);
+  }
+
+  /* Shiki 标记类插件（行高亮、逐词高亮、diff） */
+  .astro-code {
+    .line.diff.add {
+      @apply relative inline-block w-full bg-green-400/20 before:absolute before:-left-3 before:text-green-500 before:content-['+'];
+    }
+    .line.diff.remove {
+      @apply relative inline-block w-full bg-red-500/20 before:absolute before:-left-3 before:text-red-500 before:content-['-'];
+    }
+    .line.highlighted {
+      @apply inline-block w-full bg-slate-400/20;
+    }
+    .highlighted-word {
+      @apply border-border rounded-sm border px-0.5 py-px;
+    }
+  }
+}
+
+/*
+ * ===== 提示框配色修正 =====
+ *
+ * rehype-callouts 的 obsidian 主题有两个问题：
+ *
+ * 1. 标题文字被染成该类型的强调色，但那套色没考虑对比度：
+ *    浅色下 caution 橙只有 2.37:1、深色下 note 蓝 3.66:1，
+ *    都低于 WCAG AA 要求的 4.5:1。
+ * 2. 底色用 mix-blend-mode: darken/lighten 与页面混色，
+ *    叠加结果依赖底下是什么，不可预测 —— 这也是它为什么
+ *    在某些位置能达标、换个位置就不达标的原因。
+ *
+ * 处理办法：文字统一用本站前景色令牌，底色用中性令牌，
+ * 类型区分只交给左边框与图标（它们不承载文字信息，
+ * 不受 4.5:1 约束）。
+ *
+ * 必须写在 @layer 之外：obsidian 主题是无层级样式，
+ * 而 CSS 中「无层级」永远优先于「有层级」，
+ * 放 @layer base 里无论怎么加特异性都不会生效。
+ */
+.callout {
+  background-color: var(--color-muted);
+  mix-blend-mode: normal;
+}
+
+/* 左侧色条仍用类型色，保留「一眼看出是哪种提示」的能力 */
+.callout {
+  border-inline-start: 3px solid var(--rc-color-light, var(--color-accent));
+}
+
+html[data-theme="dark"] .callout {
+  border-inline-start-color: var(--rc-color-dark, var(--color-accent));
+}
+
+.callout .callout-title,
+.callout .callout-title-text,
+.callout .callout-title-icon,
+.callout .callout-fold-icon {
+  color: var(--color-foreground);
+}
+
+.callout .callout-title-text {
+  font-weight: 600;
+}

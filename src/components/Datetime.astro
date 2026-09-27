@@ -1,0 +1,52 @@
+---
+import IconCalendar from "@/assets/icons/IconCalendar.svg";
+import { formatDate, toDateTimeAttr } from "@/utils/date";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+type Props = {
+  class?: string;
+  size?: "sm" | "lg";
+  pubDatetime: Date;
+  modDatetime?: Date | null;
+  timezone?: string;
+};
+
+const {
+  pubDatetime,
+  modDatetime,
+  size = "sm",
+  class: className = "",
+  timezone = config.site.timezone,
+} = Astro.props;
+
+const t = useTranslations();
+
+// 只有确实改动过（晚于发布时间）才显示「更新于」
+const isModified =
+  modDatetime != null &&
+  new Date(modDatetime).getTime() > new Date(pubDatetime).getTime();
+
+const shown = isModified ? new Date(modDatetime) : new Date(pubDatetime);
+---
+
+<div
+  class:list={["text-muted-foreground flex items-center gap-x-2", className]}
+>
+  <IconCalendar
+    class:list={["inline-block size-5 min-w-5", { "size-4.5": size === "sm" }]}
+  />
+  {
+    isModified && (
+      <span class:list={["text-sm", { "sm:text-base": size === "lg" }]}>
+        {t.posts.updatedOn}
+      </span>
+    )
+  }
+  <time
+    class:list={["text-sm", { "sm:text-base": size === "lg" }]}
+    datetime={toDateTimeAttr(shown, timezone)}
+  >
+    {formatDate(shown, timezone)}
+  </time>
+</div>
