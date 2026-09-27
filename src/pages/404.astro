@@ -1,48 +1,33 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import LinkButton from "@/components/LinkButton.astro";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+const t = useTranslations();
 ---
 
-<BaseLayout title="页面不存在" description="这个地址没有对应的页面。">
-  <div class="notfound">
-    <p class="code gradient-text">404</p>
-    <h1 class="title">这个页面不存在</h1>
-    <p class="desc">
-      链接可能已经失效，或者地址输错了。旧版站点的一些地址在重构后不再使用。
-    </p>
-    <div class="btn-row actions">
-      <a class="btn btn-primary" href="/">回到首页</a>
-      <a class="btn" href="/study/">学习资料库</a>
+<Layout title={`${t.notFound.title} | ${config.site.title}`}>
+  <Header />
+
+  <main
+    id="main-content"
+    class="app-layout my-1 flex flex-1 items-center justify-center"
+  >
+    <div class="mb-14 flex flex-col items-center justify-center">
+      <h1 class="text-accent text-9xl font-bold">404</h1>
+      <span aria-hidden="true"> ¯\_(ツ)_/¯ </span>
+      <p class="mt-4 text-2xl sm:text-3xl">{t.notFound.message}</p>
+      <LinkButton
+        href="/"
+        class="my-6 text-lg underline decoration-dashed underline-offset-8"
+      >
+        {t.notFound.goHome}
+      </LinkButton>
     </div>
-  </div>
-</BaseLayout>
+  </main>
 
-<style>
-  .notfound {
-    display: grid;
-    justify-items: center;
-    gap: 0.75rem;
-    padding-block: clamp(2rem, 10vw, 6rem);
-    text-align: center;
-  }
-
-  .code {
-    font-size: clamp(4rem, 18vw, 8rem);
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.05em;
-  }
-
-  .title {
-    font-size: clamp(1.4rem, 3.5vw, 2rem);
-  }
-
-  .desc {
-    max-width: 44ch;
-    color: var(--c-text-soft);
-  }
-
-  .actions {
-    justify-content: center;
-    margin-block-start: 1rem;
-  }
-</style>
+  <Footer />
+</Layout>

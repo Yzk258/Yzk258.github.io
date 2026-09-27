@@ -1,0 +1,47 @@
+/* Register design tokens for Tailwind v4 */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --font-app: var(--font-app-stack);
+}
+
+/*
+ * 主题自带的 Google Sans Code 只覆盖拉丁字符，中文会一路回退到等宽字体。
+ * 这里给正文单独定义一套中文字体栈：中文用系统字体（零额外下载），
+ * 拉丁字符仍优先用 Google Sans Code，代码块继续用等宽。
+ */
+:root {
+  --font-cjk:
+    "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", "Source Han Sans SC",
+    "Noto Sans CJK SC", sans-serif;
+  --font-app-stack:
+    var(--font-google-sans-code), var(--font-cjk);
+}
+
+/* Light theme values */
+:root,
+[data-theme="light"] {
+  --background: #fdfdfd;
+  --foreground: #282728;
+  --accent: #006cac;
+  --accent-foreground: #ffffff;
+  --muted: #e6e6e6;
+  --muted-foreground: #64676e;
+  --border: #ece9e9;
+}
+
+/* Dark theme values */
+[data-theme="dark"] {
+  --background: #212737;
+  --foreground: #eaedf3;
+  --accent: #ff8b3d;
+  --accent-foreground: #212737;
+  --muted: #343f60;
+  --muted-foreground: #afb9ca;
+  --border: #8a5220;
+}

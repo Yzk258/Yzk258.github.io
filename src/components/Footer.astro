@@ -1,23 +1,30 @@
 ---
-import { site } from '../config';
+import type { HTMLAttributes } from "astro/types";
+import Socials from "./Socials.astro";
+import { useTranslations } from "@/i18n";
 
-const year = new Date().getFullYear();
-const yearText = year > site.since ? `${site.since}–${year}` : String(site.since);
+type Props = {
+  noMarginTop?: boolean;
+} & HTMLAttributes<"footer">;
+
+const { noMarginTop = false, class: className, ...attrs } = Astro.props;
+
+const t = useTranslations();
+const currentYear = new Date().getFullYear();
 ---
 
-<footer class="site-footer">
-  <div class="wrap footer-inner">
-    <div class="footer-meta">
-      <span>© {yearText} {site.author} · {site.tagline}</span>
-      <span>
-        联系我：<a href={`mailto:${site.email}`}>{site.email}</a>
-      </span>
-    </div>
-
-    <div class="footer-links">
-      <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
-      <a href="/notes/">更新日志</a>
-      <a href="#top">回到顶部 ↑</a>
+<footer
+  class:list={["app-layout", { "mt-auto": !noMarginTop }, className]}
+  {...attrs}
+>
+  <div
+    class="border-border flex flex-col items-center justify-between border-t py-6 sm:flex-row-reverse sm:py-4"
+  >
+    <Socials />
+    <div class="my-2 flex flex-col items-center whitespace-nowrap sm:flex-row">
+      <span>{t.footer.copyright} &#169; {currentYear}</span>
+      <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
+      <span>{t.footer.allRightsReserved}</span>
     </div>
   </div>
 </footer>

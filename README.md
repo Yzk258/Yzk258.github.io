@@ -1,110 +1,111 @@
-# YZK's Homepage
+# YZK 的个人站
 
-个人主页与学习资料归档站，基于 [Astro](https://astro.build/) 构建，部署在 GitHub Pages。
+个人主页兼资源中转站 —— 把散落在各处的入口（个人主站、GitHub、邮箱）收在一处。
 
-线上地址：[https://yzk258.github.io](https://yzk258.github.io)
+线上地址：<https://yzk258.github.io/>
 
-## 技术选型
+## 技术栈
 
-| 项目 | 选择                    | 原因                                                                        |
-| ---- | ----------------------- | --------------------------------------------------------------------------- |
-| 框架 | Astro 7                 | 构建产物是纯静态 HTML，零框架运行时；组件可复用，默认不向浏览器发送多余 JS  |
-| 样式 | 原生 CSS + 设计令牌     | 站点规模不需要 CSS 框架，`src/styles/global.css` 里统一管理颜色/间距/圆角 |
-| 内容 | 类型化 TS 数据文件      | 内容量还小，先不上 Content Collections，等笔记正文多起来再迁移              |
-| 部署 | GitHub Actions → Pages | 每次推送 main 自动构建发布，无需手动上传`dist/`                           |
+- [Astro](https://astro.build/) 7，纯静态输出，默认零客户端框架运行时
+- [Tailwind CSS](https://tailwindcss.com/) 4（通过 `@tailwindcss/vite`）
+- TypeScript（`astro/tsconfigs/strict`）
 
-## 本地开发
-
-```bash
-npm install     # 安装依赖
-npm run dev     # 本地开发，默认 http://localhost:4321
-npm run build   # 构建到 dist/
-npm run preview # 本地预览构建产物
-```
+主题基于 [AstroPaper](https://github.com/satnaing/astro-paper) v6 改造，
+沿用其布局与设计令牌，移除了文章、标签、归档、搜索等博客功能。
 
 ## 目录结构
 
 ```
+astro-paper.config.ts    站点配置（标题、描述、社交链接、功能开关）
+astro.config.ts          构建配置（集成、字体、环境变量）
 src/
-├── config.ts              # 站点信息与导航 —— 改站名、邮箱、导航项来这里
-├── data/                  # 内容数据
-│   ├── study.ts           # 学期与课程
-│   ├── projects.ts        # 项目列表
-│   └── updates.ts         # 更新日志
-├── layouts/
-│   └── BaseLayout.astro   # 全站布局：head / 头部 / 页脚
-├── components/            # Header、Footer、PageHeader、Section、CourseCard 等
-├── scripts/               # 主题切换、滚动揭示等前端脚本
+├── config.ts            配置解析层：给 astro-paper.config.ts 补默认值
+├── data/hubs.ts         首页「资源中转」的入口列表 ← 最常改的文件
+├── components/
+│   ├── ApiCards.astro   三个第三方接口小卡片
+│   ├── Header.astro     页头与导航
+│   ├── Footer.astro     页脚
+│   ├── Socials.astro    社交图标（由 socials 配置驱动）
+│   ├── Breadcrumb.astro 面包屑
+│   ├── Main.astro       内容页容器
+│   └── LinkButton.astro 链接按钮
+├── layouts/Layout.astro 全局 HTML 骨架、meta、主题初始化
+├── i18n/                界面文案（仅中文）
+├── pages/               路由：/、/about/、404、robots.txt
+├── scripts/theme.ts     深浅色切换
 ├── styles/
-│   └── global.css         # 设计令牌 + 基础样式 + 通用组件类
-└── pages/                 # 路由（文件路径即 URL）
-    ├── index.astro        # /
-    ├── about/index.astro  # /about/
-    ├── study/             # /study/ 与 /study/<学期>/
-    ├── projects/          # /projects/
-    ├── notes/             # /notes/
-    └── 404.astro          # 404 页面
+│   ├── theme.css        设计令牌（颜色、字体）← 改配色看这里
+│   └── global.css       Tailwind 入口与基础样式
+├── types/config.ts      配置的类型定义
+└── utils/               base 路径与 OG 图处理
 public/
 ├── favicon.svg
-└── files/                 # 学习资料等静态文件放这里（当前为空）
+└── default-og.jpg       分享卡片默认图
 ```
 
-## 站点定位
+## 怎么改内容
 
-本站兼有两个角色，配置集中在 `src/config.ts`：
+**改站点标题 / 描述 / 社交链接**：编辑 `astro-paper.config.ts`。
+`socials` 里的 `name` 必须对应 `src/assets/icons/socials/` 下的图标文件名。
 
-- **个人主页** —— 首页介绍、关于我、学习资料库、项目库、更新日志
-- **资源中转站** —— 首页的「资源中转」区块汇总所有出口
-  （个人主站 <https://yinzachary24.top/>、GitHub、邮箱等）
+**改首页中转入口**：编辑 `src/data/hubs.ts`。数组里每一项：
 
-改 `config.ts` 里的 `hubs` 数组即可增删中转入口；`primary: true` 的那一项会高亮显示。
+```ts
+{
+  title: "个人主站",
+  description: "一句话说明",
+  href: "https://example.com/",  // 站内用 "/xxx/"
+  icon: "🏠",                     // emoji，避免额外引入图标
+  external: true,                // 是否新标签页打开
+  primary: true,                 // 是否作为首页大按钮，最多一个
+}
+```
 
-## 站内搜索
+**改配色**：只改 `src/styles/theme.css` 顶部的令牌。
+浅色在 `:root, [data-theme="light"]`，深色在 `[data-theme="dark"]`，两处成对修改。
+令牌的对比度按 WCAG AA（正文 4.5:1）选取，改完建议重新核对。
 
-- 数据来源：`src/data/search.ts` 由课程、项目与中转入口**自动派生**，
-  新增课程后搜索自动覆盖，不需要另维护一份清单
-- 匹配策略：标题精确命中 > 关键词命中 > 模糊（按字符顺序）匹配，
-  评分规则见 `src/scripts/search.ts`
-- 交互：`Ctrl / ⌘ + K` 或 `/` 聚焦，`↑ ↓` 选择，`↵` 打开，`Esc` 关闭
-- 中文输入法：监听 `compositionend`，拼音阶段不会触发搜索
-- 课程缩写：给 `Course.keywords` 填英文名或拼音缩写（如 `dsa`、`gltj`），
-  搜缩写即可命中
+**改界面文案**：编辑 `src/i18n/lang/zh-CN.ts`。
 
-## 好玩的 API
+**改关于我页面**：编辑 `src/pages/about.astro`。
 
-首页底部有三张调用第三方接口的卡片，实现在 `src/components/ApiCards.astro`：
+## 第三方接口
+
+首页底部三张卡片分别调用：
 
 | 卡片 | 接口 |
 | --- | --- |
-| 一言 | `v1.hitokoto.cn` |
-| 随机狗狗 | `dog.ceo` |
-| 今日诗词 | `v1.jinrishici.com` |
+| 一言 | <https://v1.hitokoto.cn/> |
+| 随机狗狗 | <https://dog.ceo/api/breeds/image/random> |
+| 今日诗词 | <https://v1.jinrishici.com/all.json> |
 
-每张卡片有 6 秒超时、连点时的响应序号保护、失败兜底文案与离线提示；
-首次请求会等到卡片接近视口才发出。
+实现见 `src/components/ApiCards.astro`，具备：
 
-## 怎么加内容
+- 卡片进入视口才发首次请求（`IntersectionObserver`）
+- 6 秒超时（`AbortController`），失败显示兜底文案
+- 连点用自增序号保护，只采用最后一次结果
+- 断网时直接提示，不发无效请求
+- 整卡可键盘操作（Enter / Space），带 `aria-label`
+- 内容一律用 `textContent` 写入，无 HTML 注入风险
 
-**加课程资料**：在 `src/data/study.ts` 的 `courses` 数组里加一条记录，
-把文件放进 `public/files/`，然后给该课程补上链接即可。
-建议同时填 `keywords`，方便用缩写搜索。
+## 本地开发
 
-**加项目**：在 `src/data/projects.ts` 的 `projects` 数组里追加，填 `title`、`summary`、
-`year`，可选 `tags`、`repo`、`demo`、`status`。
-
-**加更新日志**：在 `src/data/updates.ts` 的数组最前面插入一条。
-
-**改配色**：只改 `src/styles/global.css` 顶部的令牌。
-浅色在 `:root`，深色在 `html[data-theme='dark']`，两处成对修改。
-
-## 主题
-
-支持浅色 / 深色切换，默认跟随系统。用户手动切换后写入 `localStorage`，
-由 `src/scripts/theme-init.ts` 在 `<head>` 中同步执行以避免深色模式闪白。
-
-配色令牌的对比度按 WCAG AA（正文 4.5:1）选取，改动颜色后建议重新核对。
+```bash
+npm install
+npm run dev       # 开发服务器
+npm run build     # 类型检查 + 构建到 dist/
+npm run preview   # 预览构建产物
+```
 
 ## 部署
 
-推送到 `main` 分支后，`.github/workflows/deploy.yml` 会自动构建并发布。
-首次使用需在仓库 **Settings → Pages → Source** 中选择 **GitHub Actions**。
+推送到 `main` 分支后，`.github/workflows/deploy.yml` 自动构建并发布到 GitHub Pages。
+
+首次使用需在仓库 **Settings → Pages → Source** 选择 **GitHub Actions**。
+
+## 许可
+
+站点内容版权归作者所有。
+
+界面主题来自 [AstroPaper](https://github.com/satnaing/astro-paper)，
+以 MIT 许可发布，原始许可见 [LICENSE](./LICENSE)。
