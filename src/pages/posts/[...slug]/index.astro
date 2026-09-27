@@ -1,0 +1,146 @@
+---
+import { getCollection, render } from "astro:content";
+import PostLayout from "@/layouts/PostLayout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Datetime from "@/components/Datetime.astro";
+import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
+import IconArrowRight from "@/assets/icons/IconArrowNarrowUp.svg";
+import { getSortedPosts } from "@/utils/posts";
+import { getReadingMinutes } from "@/utils/readingTime";
+import { slugify } from "@/utils/slug";
+import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+export async function getStaticPaths() {
+  const posts = getSortedPosts(await getCollection("posts"));
+
+  return posts.map((post, index) => ({
+    // 用文件名当 URL，中文标题不影响链接稳定性
+    params: { slug: slugify(post.id) },
+    props: {
+      post,
+      // 已按时间倒序，所以「上一篇」是更新的那篇（索引更小）
+      newer: index > 0 ? posts[index - 1] : null,
+      older: index < posts.length - 1 ? posts[index + 1] : null,
+    },
+  }));
+}
+
+const { post, newer, older } = Astro.props;
+const t = useTranslations();
+
+const { title, description, ogImage, canonicalURL, pubDatetime, modDatetime } =
+  post.data;
+
+const { Content } = await render(post);
+
+const minutes = getReadingMinutes(post.body ?? "");
+
+// 文章没配图片就用站点默认分享图
+const ogImageUrl =
+  typeof ogImage === "string"
+    ? ogImage
+    : (ogImage?.src ?? resolveDefaultOgImagePath(config));
+const resolvedOgImage = new URL(ogImageUrl, Astro.url.origin).href;
+---
+
+<PostLayout
+  title={`${title} | ${config.site.title}`}
+  {description}
+  ogImage={resolvedOgImage}
+  {canonicalURL}
+  {pubDatetime}
+  {modDatetime}
+>
+  <Header />
+
+  <main id="main-content" class="app-layout mt-8">
+    <a
+      href="/posts/"
+      class="text-muted-foreground hover:text-accent focus-outline mb-6 inline-flex items-center gap-1 text-sm no-underline"
+    >
+      <IconArrowLeft class="inline-block size-4" />
+      {t.posts.backToPosts}
+    </a>
+
+    <article>
+      <h1 class="text-accent text-2xl font-bold sm:text-3xl">{title}</h1>
+
+      <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1">
+        <Datetime {pubDatetime} {modDatetime} size="lg" />
+        <span class="text-muted-foreground text-sm">
+          {t.posts.readingTime} {minutes} {t.posts.minutes}
+        </span>
+      </div>
+
+      <div
+        id="post-body"
+        class="app-prose mt-8 max-w-app"
+        data-copy-label={t.posts.copyCode}
+        data-copied-label={t.posts.copied}
+        data-copy-failed-label={t.posts.copyFailed}
+        data-link-to-heading-label={t.posts.linkToHeading}
+      >
+        <Content />
+      </div>
+    </article>
+
+    <hr class="border-border my-10 border-dashed" />
+
+    <nav
+      class="flex flex-col gap-3 sm:flex-row sm:justify-between"
+      aria-label={t.posts.adjacentPosts}
+    >
+      {
+        older ? (
+          <a
+            href={`/posts/${slugify(older.id)}/`}
+            class="focus-outline group flex-1 no-underline"
+          >
+            <span class="text-muted-foreground block text-sm">
+              ← {t.posts.previousPost}
+            </span>
+            <span class="text-accent group-hover:underline">{older.data.title}</span>
+          </a>
+        ) : (
+          <span class="flex-1"></span>
+        )
+      }
+      {
+        newer ? (
+          <a
+            href={`/posts/${slugify(newer.id)}/`}
+            class="focus-outline group flex-1 no-underline sm:text-end"
+          >
+            <span class="text-muted-foreground block text-sm">
+              {t.posts.nextPost} →
+            </span>
+            <span class="text-accent group-hover:underline">{newer.data.title}</span>
+          </a>
+        ) : (
+          <span class="flex-1"></span>
+        )
+      }
+    </nav>
+  </main>
+
+  <button
+    id="back-to-top"
+    class="focus-outline border-border bg-background text-foreground fixed end-4 bottom-4 hidden rounded border p-2 shadow-sm"
+    aria-label={t.posts.backToTop}
+  >
+    <IconArrowRight class="inline-block size-5 -rotate-90" />
+  </button>
+
+  <Footer />
+</PostLayout>
+<script>
+  import { initPost } from "@/scripts/post";
+
+  // 这个模块只在浏览器执行；initPost 内部有 data-* 标记做幂等保护，
+  // 所以站内跳转后重复触发不会重复绑定。
+  initPost();
+  document.addEventListener("astro:page-load", initPost);
+</script>

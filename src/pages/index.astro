@@ -1,10 +1,13 @@
 ---
+import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
 import ApiCards from "@/components/ApiCards.astro";
+import Card from "@/components/Card.astro";
 import { hubs } from "@/data/hubs";
+import { getSortedPosts } from "@/utils/posts";
 import { useTranslations } from "@/i18n";
 import config from "@/config";
 
@@ -14,6 +17,9 @@ const t = useTranslations();
 
 const primaryHub = hubs.find(hub => hub.primary);
 const secondaryHubs = hubs.filter(hub => !hub.primary);
+
+// 首页只放最近几篇；全部文章在 /posts/
+const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
 ---
 
 <Layout>
@@ -58,14 +64,40 @@ const secondaryHubs = hubs.filter(hub => !hub.primary);
       }
     </section>
 
-    <section id="hubs" class="pt-12 pb-6">
+    {
+      latestPosts.length > 0 && (
+        <section id="latest" class="pt-12 pb-6">
+          <div class="flex items-baseline justify-between gap-2">
+            <div class="flex items-baseline gap-2">
+              <span class="text-accent" aria-hidden="true">##</span>
+              <h2 class="text-xl font-semibold tracking-wide">
+                {t.home.latestPosts}
+              </h2>
+            </div>
+            <a
+              href="/posts/"
+              class="text-muted-foreground hover:text-accent focus-outline text-sm no-underline"
+            >
+              {t.home.allPosts} →
+            </a>
+          </div>
+          <ul class="mt-4">
+            {latestPosts.map(post => (
+              <Card {...post} variant="h3" />
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <section id="hubs" class="border-border border-t pt-12 pb-6">
       <!-- 井号是对齐终端注释的装饰，放在 h2 之外，避免进入无障碍名称 -->
       <div class="flex items-baseline gap-2">
         <span class="text-accent" aria-hidden="true">##</span>
         <h2 class="text-xl font-semibold tracking-wide">资源中转</h2>
       </div>
       <p class="text-muted-foreground mt-2">
-        下面每个入口都通向站外或独立板块，点开即可。
+        每个入口都通向站外，点开即可。
       </p>
       <ul class="mt-6 grid gap-4 sm:grid-cols-2">
         {
