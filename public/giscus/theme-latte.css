@@ -1,0 +1,188 @@
+/*
+ * giscus 评论区主题（浅色 / Catppuccin Latte）
+ *
+ * 为什么不用 giscus 内置的 catppuccin_latte：
+ *   1. 内置主题的「登录并评论」按钮是绿色（--color-btn-primary-bg: #40a02b），
+ *      与本站紫色强调色不一致
+ *   2. 内置主题的加载动画指向第三方 CDN（giscus.catppuccin.com）
+ *   3. 字体被写死为 system-ui，与本站的等宽风格脱节
+ *
+ * 取值全部对应 src/styles/theme.css 里的 Latte 令牌：
+ *   background #eff1f5 / foreground #4c4f69 / muted #e6e9ef
+ *   muted-foreground #5c5f75 / border #bcc0cc / accent #8839ef
+ *
+ * 注意：这个文件在 giscus.app 的 iframe 里加载，拿不到本站自托管的
+ * 字体文件（跨域），所以字体栈退到系统等宽字体。详见文件末尾说明。
+ */
+
+main {
+  /* ---- 代码高亮（GitHub 语法着色变量）---- */
+  --color-prettylights-syntax-comment: #8c8fa1;
+  --color-prettylights-syntax-constant: #1e66f5;
+  --color-prettylights-syntax-entity: #1e66f5;
+  --color-prettylights-syntax-storage-modifier-import: #fe640b;
+  --color-prettylights-syntax-entity-tag: #179299;
+  --color-prettylights-syntax-keyword: #ea76cb;
+  --color-prettylights-syntax-string: #40a02b;
+  --color-prettylights-syntax-variable: #fe640b;
+  --color-prettylights-syntax-invalid-illegal-text: #d20f39;
+  --color-prettylights-syntax-invalid-illegal-bg: rgb(210 15 57 / 15%);
+  --color-prettylights-syntax-markup-heading: #179299;
+  --color-prettylights-syntax-markup-italic: #df8e1d;
+  --color-prettylights-syntax-markup-bold: #df8e1d;
+  --color-prettylights-syntax-markup-deleted-text: #4c4f69;
+  --color-prettylights-syntax-markup-deleted-bg: rgb(210 15 57 / 40%);
+  --color-prettylights-syntax-markup-inserted-text: #4c4f69;
+  --color-prettylights-syntax-markup-inserted-bg: rgb(64 160 43 / 40%);
+  --color-prettylights-syntax-markup-changed-text: #4c4f69;
+  --color-prettylights-syntax-markup-changed-bg: rgb(223 142 29 / 40%);
+  --color-prettylights-syntax-markup-ignored-text: #4c4f69;
+
+  /* ---- 按钮 ---- */
+  --color-btn-text: #4c4f69;
+  --color-btn-bg: #e6e9ef;
+  --color-btn-border: #bcc0cc;
+  --color-btn-hover-bg: #dce0e8;
+  --color-btn-hover-border: #acb0be;
+  --color-btn-active-bg: #bcc0cc;
+  --color-btn-selected-bg: #bcc0cc;
+  --color-btn-counter-bg: #bcc0cc;
+  --color-btn-outline-text: #8839ef;
+  --color-btn-shadow: 0 0 transparent;
+  --color-btn-inset-shadow: 0 0 transparent;
+
+  /* 主按钮用站点强调色紫，而不是内置主题的绿 */
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-bg: #8839ef;
+  --color-btn-primary-border: transparent;
+  --color-btn-primary-shadow: 0 0 transparent;
+  --color-btn-primary-inset-shadow: 0 0 transparent;
+  --color-btn-primary-hover-bg: #7a2ce0;
+  --color-btn-primary-hover-border: transparent;
+  --color-btn-primary-selected-bg: #6c22d4;
+  --color-btn-primary-selected-shadow: 0 0 transparent;
+  --color-btn-primary-disabled-text: #e6e9ef;
+  --color-btn-primary-disabled-bg: rgb(136 57 239 / 45%);
+  --color-btn-primary-disabled-border: transparent;
+
+  --color-action-list-item-default-hover-bg: #dce0e8;
+  --color-segmented-control-bg: #bcc0cc;
+  --color-segmented-control-button-bg: #eff1f5;
+  --color-segmented-control-button-selected-border: #9ca0b0;
+
+  /* ---- 文字 ---- */
+  --color-fg-default: #4c4f69;
+  --color-fg-muted: #5c5f75;
+  --color-fg-subtle: #5c5f75;
+
+  /* ---- 面板 ---- */
+  --color-canvas-default: #eff1f5;
+  --color-canvas-overlay: #eff1f5;
+  --color-canvas-inset: #e6e9ef;
+  --color-canvas-subtle: #e6e9ef;
+  --color-border-default: #bcc0cc;
+  --color-border-muted: #ccd0da;
+  --color-neutral-muted: rgb(156 160 176 / 20%);
+
+  /* ---- 强调色 ---- */
+  --color-accent-fg: #8839ef;
+  --color-accent-emphasis: #8839ef;
+  --color-accent-muted: rgb(136 57 239 / 40%);
+  --color-accent-subtle: rgb(136 57 239 / 12%);
+
+  --color-success-fg: #40a02b;
+  --color-attention-fg: #df8e1d;
+  --color-attention-muted: #df8e1d;
+  --color-attention-subtle: rgb(223 142 29 / 15%);
+  --color-danger-fg: #d20f39;
+  --color-danger-muted: rgb(210 15 57 / 40%);
+  --color-danger-subtle: rgb(210 15 57 / 12%);
+
+  --color-primer-shadow-inset: 0 0 transparent;
+  --color-scale-gray-7: #bcc0cc;
+  --color-scale-blue-8: #1e66f5;
+  --color-social-reaction-bg-hover: var(--color-scale-gray-7);
+  --color-social-reaction-bg-reacted-hover: var(--color-scale-blue-8);
+}
+
+/*
+ * 字体
+ *
+ * giscus 在 giscus.app 的 iframe 里渲染，跨域拿不到本站自托管的
+ * JetBrains Mono，所以退到系统等宽字体 —— 保留「等宽」这个设计意图，
+ * 代价是不引入第三方字体请求（Google Fonts 实测可用，但那会给
+ * 每个访客多一次外部请求，且与「资源尽量自持」的取舍冲突）。
+ *
+ * 中文照旧走系统字体：等宽字体本身不含汉字。
+ */
+main,
+main button,
+main input,
+main textarea,
+main select {
+  --font-family-default: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", monospace;
+  --font-family-sans: var(--font-family-default);
+  --font-family-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
+}
+
+main .gsc-comment-box-textarea::placeholder {
+  color: #5c5f75;
+}
+
+/*
+ * 圆角：跟本站的 rounded（0.25rem）对齐。
+ * giscus 内置主题不给圆角变量，只能按类名覆盖。
+ */
+main .gsc-comment-box,
+main .gsc-comment-box-textarea,
+main .gsc-comment,
+main .gsc-reply-box,
+main .gsc-reply,
+main .gsc-timeline > *,
+main .gsc-comment-box-tabs,
+main .gsc-comment-box-tab,
+main .gsc-reactions,
+main .gsc-reactions-button,
+main .gsc-social-reaction-summary-item,
+main .gsc-direct-reaction-button {
+  border-radius: 0.25rem;
+}
+
+/*
+ * 加载动画。
+ * 内置主题指向 giscus.catppuccin.com 的 gif —— 一处第三方依赖。
+ * 这里改成纯 CSS 省略号动画，不再请求外部资源。
+ */
+main .gsc-loading-image {
+  background-image: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.5em;
+}
+
+main .gsc-loading-image::after {
+  content: "加载中";
+  color: #5c5f75;
+  font-size: 0.875rem;
+  animation: gsc-loading-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes gsc-loading-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main .gsc-loading-image::after {
+    animation: none;
+    opacity: 0.7;
+  }
+}

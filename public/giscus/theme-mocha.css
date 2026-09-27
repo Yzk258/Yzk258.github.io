@@ -1,0 +1,167 @@
+/*
+ * giscus 评论区主题（深色 / Catppuccin Mocha）
+ *
+ * 与浅色版成对，取值对应 src/styles/theme.css 里的 Mocha 令牌：
+ *   background #1e1e2e / foreground #cdd6f4 / muted #313244
+ *   muted-foreground #a6adc8 / border #45475a / accent #f38ba8
+ *
+ * 注意深色的主按钮文字用深色（#1e1e2e）而不是白色 ——
+ * 本站深色强调色是粉色，白字压在粉色上对比度不足
+ * （与 theme.css 里 --accent-foreground: #1e1e2e 保持一致）。
+ */
+
+main {
+  /* ---- 代码高亮 ---- */
+  --color-prettylights-syntax-comment: #7f849c;
+  --color-prettylights-syntax-constant: #89b4fa;
+  --color-prettylights-syntax-entity: #89b4fa;
+  --color-prettylights-syntax-storage-modifier-import: #fab387;
+  --color-prettylights-syntax-entity-tag: #94e2d5;
+  --color-prettylights-syntax-keyword: #f5c2e7;
+  --color-prettylights-syntax-string: #a6e3a1;
+  --color-prettylights-syntax-variable: #fab387;
+  --color-prettylights-syntax-invalid-illegal-text: #f38ba8;
+  --color-prettylights-syntax-invalid-illegal-bg: rgb(243 139 168 / 15%);
+  --color-prettylights-syntax-markup-heading: #94e2d5;
+  --color-prettylights-syntax-markup-italic: #f9e2af;
+  --color-prettylights-syntax-markup-bold: #f9e2af;
+  --color-prettylights-syntax-markup-deleted-text: #cdd6f4;
+  --color-prettylights-syntax-markup-deleted-bg: rgb(243 139 168 / 40%);
+  --color-prettylights-syntax-markup-inserted-text: #cdd6f4;
+  --color-prettylights-syntax-markup-inserted-bg: rgb(166 227 161 / 40%);
+  --color-prettylights-syntax-markup-changed-text: #cdd6f4;
+  --color-prettylights-syntax-markup-changed-bg: rgb(249 226 175 / 40%);
+  --color-prettylights-syntax-markup-ignored-text: #cdd6f4;
+
+  /* ---- 按钮 ---- */
+  --color-btn-text: #cdd6f4;
+  --color-btn-bg: #313244;
+  --color-btn-border: #45475a;
+  --color-btn-hover-bg: #45475a;
+  --color-btn-hover-border: #585b70;
+  --color-btn-active-bg: #585b70;
+  --color-btn-selected-bg: #585b70;
+  --color-btn-counter-bg: #45475a;
+  --color-btn-outline-text: #f38ba8;
+  --color-btn-shadow: 0 0 transparent;
+  --color-btn-inset-shadow: 0 0 transparent;
+
+  /* 主按钮：粉色底 + 深色字（对比度足够）*/
+  --color-btn-primary-text: #1e1e2e;
+  --color-btn-primary-bg: #f38ba8;
+  --color-btn-primary-border: transparent;
+  --color-btn-primary-shadow: 0 0 transparent;
+  --color-btn-primary-inset-shadow: 0 0 transparent;
+  --color-btn-primary-hover-bg: #f5a3ba;
+  --color-btn-primary-hover-border: transparent;
+  --color-btn-primary-selected-bg: #eb7a9a;
+  --color-btn-primary-selected-shadow: 0 0 transparent;
+  --color-btn-primary-disabled-text: #1e1e2e;
+  --color-btn-primary-disabled-bg: rgb(243 139 168 / 45%);
+  --color-btn-primary-disabled-border: transparent;
+
+  --color-action-list-item-default-hover-bg: #45475a;
+  --color-segmented-control-bg: #45475a;
+  --color-segmented-control-button-bg: #1e1e2e;
+  --color-segmented-control-button-selected-border: #585b70;
+
+  /* ---- 文字 ---- */
+  --color-fg-default: #cdd6f4;
+  --color-fg-muted: #a6adc8;
+  --color-fg-subtle: #a6adc8;
+
+  /* ---- 面板 ---- */
+  --color-canvas-default: #1e1e2e;
+  --color-canvas-overlay: #1e1e2e;
+  --color-canvas-inset: #313244;
+  --color-canvas-subtle: #181825;
+  --color-border-default: #45475a;
+  --color-border-muted: #313244;
+  --color-neutral-muted: rgb(88 91 112 / 30%);
+
+  /* ---- 强调色 ---- */
+  --color-accent-fg: #f38ba8;
+  --color-accent-emphasis: #f38ba8;
+  --color-accent-muted: rgb(243 139 168 / 40%);
+  --color-accent-subtle: rgb(243 139 168 / 12%);
+
+  --color-success-fg: #a6e3a1;
+  --color-attention-fg: #f9e2af;
+  --color-attention-muted: #f9e2af;
+  --color-attention-subtle: rgb(249 226 175 / 15%);
+  --color-danger-fg: #f38ba8;
+  --color-danger-muted: rgb(243 139 168 / 40%);
+  --color-danger-subtle: rgb(243 139 168 / 12%);
+
+  --color-primer-shadow-inset: 0 0 transparent;
+  --color-scale-gray-7: #45475a;
+  --color-scale-blue-8: #89b4fa;
+  --color-social-reaction-bg-hover: var(--color-scale-gray-7);
+  --color-social-reaction-bg-reacted-hover: var(--color-scale-blue-8);
+}
+
+/* 字体：与浅色版同理，用系统等宽字体 */
+main,
+main button,
+main input,
+main textarea,
+main select {
+  --font-family-default: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", monospace;
+  --font-family-sans: var(--font-family-default);
+  --font-family-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
+}
+
+main .gsc-comment-box-textarea::placeholder {
+  color: #a6adc8;
+}
+
+/* 圆角：与本站 rounded（0.25rem）对齐 */
+main .gsc-comment-box,
+main .gsc-comment-box-textarea,
+main .gsc-comment,
+main .gsc-reply-box,
+main .gsc-reply,
+main .gsc-timeline > *,
+main .gsc-comment-box-tabs,
+main .gsc-comment-box-tab,
+main .gsc-reactions,
+main .gsc-reactions-button,
+main .gsc-social-reaction-summary-item,
+main .gsc-direct-reaction-button {
+  border-radius: 0.25rem;
+}
+
+/* 加载动画：改为纯 CSS，不再请求 giscus.catppuccin.com 的 gif */
+main .gsc-loading-image {
+  background-image: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.5em;
+}
+
+main .gsc-loading-image::after {
+  content: "加载中";
+  color: #a6adc8;
+  font-size: 0.875rem;
+  animation: gsc-loading-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes gsc-loading-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main .gsc-loading-image::after {
+    animation: none;
+    opacity: 0.7;
+  }
+}

@@ -22,6 +22,22 @@ const term = Astro.url.pathname
   .replace(/^\/+/, "")
   .replace(/\/+$/, "")
   .replace(/\.\w+$/, "");
+
+/*
+ * 自定义主题的文件名（见 public/giscus/）。
+ *
+ * 为什么不用 giscus 内置的 light / dark：那是 GitHub 原生配色
+ * （正文 #1f2328、面板 #fff、强调色蓝 #0969da），与本站的 Catppuccin
+ * 完全脱节。内置的 catppuccin_latte / catppuccin_mocha 配色对了，但
+ * 「登录并评论」按钮是绿色、字体写死 system-ui，且加载动画指向第三方
+ * CDN（giscus.catppuccin.com），所以还是自己写一份。
+ *
+ * 完整地址在浏览器里用「当前 origin」拼，原因见下面 themeValue 的注释。
+ */
+const themeFiles = {
+  light: "theme-latte.css",
+  dark: "theme-mocha.css",
+};
 ---
 
 <!--
@@ -55,6 +71,8 @@ const term = Astro.url.pathname
     data-giscus-mapping="specific"
     data-giscus-term={term}
     data-giscus-lang="zh-CN"
+    data-giscus-theme-light={themeFiles.light}
+    data-giscus-theme-dark={themeFiles.dark}
     data-iframe-title={t.comments.iframeTitle}
   >
     <noscript>
@@ -88,10 +106,24 @@ const term = Astro.url.pathname
     document.querySelector<HTMLElement>(".giscus");
 
   if (container) {
+    /*
+     * 主题是本站自己的 CSS 文件地址。
+     *
+     * 必须是绝对地址：giscus 会把这个值放进 iframe 里的
+     * <link href>，而 iframe 的源是 giscus.app —— 相对的
+     * /giscus/theme-latte.css 会被解析成 giscus.app/giscus/... 从而 404。
+     *
+     * origin 取运行时的 location.origin 而不是构建时的 Astro.site：
+     * 后者会把地址写死成线上域名，本地预览时那个文件还不存在。
+     * 用 location.origin 则线上、本地、将来换域名三种情况都对。
+     */
+    const themeUrl = (file: string) =>
+      new URL(`/giscus/${file}`, window.location.origin).href;
+
     const currentTheme = () =>
       document.documentElement.getAttribute("data-theme") === "dark"
-        ? "dark"
-        : "light";
+        ? themeUrl(container.dataset.giscusThemeDark ?? "theme-mocha.css")
+        : themeUrl(container.dataset.giscusThemeLight ?? "theme-latte.css");
 
     /** 注入 giscus 客户端；它会在 .giscus 容器内创建 iframe */
     const injectClient = () => {
@@ -169,8 +201,8 @@ const term = Astro.url.pathname
 
     // 站点主题变化时同步评论区（含手动点击与系统偏好变化）。
     // 不判断是否已加载 —— 没加载时 applyTheme 会因为找不到 iframe 直接返回。
-    document.addEventListener("theme-change", event => {
-      applyTheme((event as CustomEvent<{ theme: string }>).detail.theme);
+    document.addEventListener("theme-change", () => {
+      applyTheme(currentTheme());
     });
 
     // 首次注入用的 theme 取自站点当前状态，个别情况下客户端可能
@@ -183,6 +215,10 @@ const term = Astro.url.pathname
      * 给 giscus 创建的 iframe 补两件事：
      * - 中文的可访问名称（它硬编码英文 "Comments"，读屏会念出来）
      * - 与站点一致的边框和背景，避免它在正文里显得突兀
+     *
+     * 注意这里只改 iframe「元素本身」的样式。iframe 内部是跨域隔离的
+     * （实测 contentDocument 为 null），内部样式只能靠 giscus 官方的
+     * data-theme 机制 —— 也就是上面那两个主题文件。
      */
     const decorateIframe = () => {
       const frame = document.querySelector<HTMLIFrameElement>(

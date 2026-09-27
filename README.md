@@ -86,7 +86,10 @@ src/
     └── transformers/    Shiki 代码块文件名标签插件
 public/
 ├── favicon.svg
-└── default-og.jpg       分享卡片默认图
+├── default-og.jpg       分享卡片默认图
+└── giscus/
+    ├── theme-latte.css  giscus 评论区主题（浅色）
+    └── theme-mocha.css  giscus 评论区主题（深色）
 ```
 
 ## 写文章
@@ -225,6 +228,37 @@ GitHub 没有公开的贡献数据 REST 接口，那个 GraphQL 需要 token，�
   （后者只认系统偏好，读者手动点过切换按钮后会不一致）
 - 语言固定 `zh-CN`（必须通过 `data-lang` 传，见 `Comments.astro` 里的注释）
 - iframe 的 `title` 覆盖成了中文，否则读屏会念英文 "Comments"
+
+### 评论区外观
+
+评论区的配色由 `public/giscus/theme-latte.css`（浅色）和
+`public/giscus/theme-mocha.css`（深色）提供，通过 giscus 官方的
+`data-theme` 机制加载 —— 它支持把内置主题名换成**一个 CSS 文件的地址**。
+
+为什么不用现成的：
+
+| 方案 | 问题 |
+| --- | --- |
+| 内置的 `light` / `dark` | 是 GitHub 原生配色：正文 `#1f2328`、面板 `#fff`、强调色蓝 `#0969da`，与本站的 Catppuccin 完全脱节 |
+| 内置的 `catppuccin_latte` / `catppuccin_mocha` | 主色调对了，但「登录并评论」按钮是绿色（`#40a02b`）、字体写死 system-ui，且加载动画指向第三方 CDN（`giscus.catppuccin.com`） |
+
+自己写的两份主题与 `src/styles/theme.css` 的令牌逐项对应，
+主按钮用站点强调色（浅色紫 / 深色粉），加载动画换成纯 CSS。
+
+两个实测得出的约束：
+
+- **主题地址必须是绝对地址**。giscus 会把这个值放进 iframe 里的
+  `<link href>`，而 iframe 的源是 `giscus.app`，相对的
+  `/giscus/theme-latte.css` 会被解析成 `giscus.app/giscus/...` 从而 404。
+  代码里用运行时的 `location.origin` 拼，而不是构建时的 `Astro.site`
+  —— 后者会把地址写死成线上域名，本地预览时那个文件还不存在。
+- **iframe 内部是跨域隔离的**（实测 `contentDocument` 为 `null`），
+  所以没法用脚本注入样式，只能走 `data-theme` 这条官方路径。
+  这也是为什么换主题必须重设 iframe 的 URL、而不是改 CSS 变量。
+
+字体在 iframe 里拿不到本站自托管的 JetBrains Mono（跨域），
+所以主题里退到系统等宽字体栈 —— 保留「等宽」这个设计意图，
+不为此引入第三方字体请求。
 
 **管理评论**：直接在仓库的 Discussions 里回复、删除或锁定。
 giscus 的回复和 GitHub 上是同一份数据，两边同步。
