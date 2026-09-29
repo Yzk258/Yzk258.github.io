@@ -64,6 +64,26 @@
       @apply border-border;
     }
 
+    /*
+     * KaTeX 不支持自动换行：公式渲染成 white-space: nowrap 的一整块。
+     * 块级公式一旦比正文列还宽，就会把整页撑出横向滚动条。
+     * 这里把溢出收进公式自己身上，让它单独横向滚动，
+     * 而不是破坏整个页面的宽度。
+     */
+    .katex-display {
+      @apply overflow-x-auto overflow-y-hidden py-1;
+    }
+
+    /*
+     * 行内公式同理不换行，但它没法自己滚动（会破坏行内文字流）。
+     * 这里只保证它不会撑破容器：容器已有 overflow-x-clip 兜底，
+     * 显示上超出的部分被裁掉而不是溢出到页面外。
+     * 真正的解法是别把长公式写成行内 —— 见 README「公式与换行」。
+     */
+    .katex {
+      @apply max-w-full;
+    }
+
     img {
       @apply border-border mx-auto border;
     }
