@@ -8,6 +8,8 @@ import remarkCollapse from "remark-collapse";
 // 提示框用 GitHub 的引用块语法（> [!NOTE]），rehype-callouts 直接解析
 // blockquote 节点，因此不需要 remark-directive 这类指令解析插件。
 import rehypeCallouts from "rehype-callouts";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -22,6 +24,7 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [
+        remarkMath,
         // 这两个必须配成一对：
         // remark-toc 默认只认标题为 "Contents"/"toc" 的标题，
         // 所以要把中文标题显式传进去，否则它找不到插入位置、目录会是空的。
@@ -35,7 +38,7 @@ export default defineConfig({
           },
         ],
       ],
-      rehypePlugins: [rehypeCallouts],
+      rehypePlugins: [rehypeCallouts, rehypeKatex],
     }),
     shikiConfig: {
       /*
