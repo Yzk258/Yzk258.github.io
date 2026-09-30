@@ -2,7 +2,7 @@
 title: 有关VScode powershell配置虚拟环境时遇到的小问题
 description: 有关VScode powershell配置虚拟环境时遇到的小问题
 pubDatetime: 2026-09-29T00:30:00+08:00   # 必须带时区
-tags: ["学习笔记", "debug", "powershell"]
+tags: ["技术笔记", "debug", "powershell"]
 featured: false      # true 会置顶
 draft: false         # true 则不参与构建
 ---
@@ -30,7 +30,6 @@ draft: false         # true 则不参与构建
 所以屁颠屁颠跑去win官网上下了份最新（7.6.6）的msi安装包，配置在VScode中，再次启动发现成了！绿色的(.venv)酱浮现在我的终端。
 
 而且值得一提的是，如果使用的是command prompt，就不会有这个权限相关问题，直接输入`.\.venv\Scripts\Activate.bat`即可正常启动虚拟环境，可能这就是为什么前后两次启动差异如此之大，为什么上次使用时没有因为版本过久无法使用的原因。
-
 
 ---
 
