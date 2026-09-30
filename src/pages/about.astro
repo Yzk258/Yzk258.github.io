@@ -12,10 +12,9 @@ const { site } = config;
 const title = "关于我";
 
 const facts = [
-  { label: "座右铭", value: site.motto ?? "" },
   { label: "身份", value: "清华大学 计算机系 本科生" },
   { label: "邮箱", value: "yzk24@mails.tsinghua.edu.cn" },
-  { label: "个人主站", value: site.profile ?? "" },
+  { label: "座右铭", value: site.motto ?? "" },
 ].filter(fact => fact.value);
 ---
 
@@ -29,21 +28,16 @@ const facts = [
       <Avatar size="lg" href={`https://github.com/${site.github}`} class="mx-auto sm:mx-0" />
       <div class="space-y-4 leading-7">
         <p>
-          我是 <strong>YZK</strong>，目前在清华大学计算机系读本科。这个站点是我的主页兼资源中转站
-          —— 把散落在各处的入口收在一处，方便自己也方便同学。
+          我是 <strong>YZK</strong>，目前在清华大学计算机系读本科。这个站点是我的主页，
+          学习笔记、项目记录与资料归档都放在这里，日常更新也以本站为准。
         </p>
         <p>
-          日常更新的内容、更完整的介绍都在
-          <a
-            href="https://yinzachary24.top/"
-            target="_blank"
-            rel="noopener noreferrer">个人主站</a
-          >；各类代码、课程作业和本站源码放在
+          各类代码、课程作业和本站源码放在
           <a
             href={`https://github.com/${site.github}`}
             target="_blank"
             rel="noopener noreferrer">GitHub</a
-          >。
+          >；有资料要补充或者想交流，发邮件给我就行。
         </p>
       </div>
     </section>

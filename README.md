@@ -1,7 +1,7 @@
 # YZK 的个人站
 
-个人主页兼资源中转站 —— 把散落在各处的入口（个人主站、GitHub、邮箱）收在一处，
-外加一个用来写文章的板块。
+个人主页 —— 学习笔记、项目记录与资料归档都放在这里，日常更新以本站为准。
+站外只留 GitHub 与邮箱两个入口。
 
 线上地址：<https://yzk258.github.io/>
 
@@ -37,7 +37,7 @@ src/
 ├── config.ts            配置解析层：给 astro-paper.config.ts 补默认值
 ├── content.config.ts    文章集合的 schema（frontmatter 校验）
 ├── content/posts/       ← 文章写在这里
-├── data/hubs.ts         首页「资源中转」的入口列表
+├── data/hubs.ts         首页「站外入口」的卡片列表（GitHub、邮箱）
 ├── components/
 │   ├── ApiCards.astro   三个第三方接口小卡片
 │   ├── Activity.astro   GitHub 活跃度（按月表格 + 逐日热力图）
@@ -60,7 +60,7 @@ src/
 │   └── PostLayout.astro 文章页附加的 meta 与 JSON-LD
 ├── i18n/                界面文案（仅中文）
 ├── pages/
-│   ├── index.astro      /            首页
+│   ├── index.astro      /            首页（hero + 站内导航 + 最新文章 + 站外入口）
 │   ├── posts/[...page].astro        文章列表（分页，页大小 = posts.perPage）
 │   ├── posts/[...slug]/             文章详情
 │   ├── tags/index.astro             标签总览
@@ -360,19 +360,21 @@ giscus 的回复和 GitHub 上是同一份数据，两边同步。
 | `lightAndDarkMode` | `true` | 隐藏深浅色切换按钮 |
 | `dynamicOgImage` | `false` | 未接回，见文末说明 |
 
-**改首页中转入口**：编辑 `src/data/hubs.ts`。数组里每一项：
+**改首页站外入口**：编辑 `src/data/hubs.ts`。数组里每一项：
 
 ```ts
 {
-  title: "个人主站",
+  title: "GitHub",
   description: "一句话说明",
   href: "https://example.com/",  // 站内用 "/xxx/"
   icon: "📚",                     // emoji，避免额外引入图标
-                                  // 注意：primary 入口的图标不会渲染，只显示文字
   external: true,                // 是否新标签页打开
-  primary: true,                 // 是否作为首页大按钮，最多一个
 }
 ```
+
+**改首页站内导航**：编辑 `src/pages/index.astro` 顶部的 `siteNav` 数组
+（`title` / `description` / `href` / `icon`）。它与 `Header.astro` 里的主导航
+是两份，增删页面时两边都要看一眼。
 
 **改配色**：只改 `src/styles/theme.css` 顶部的令牌。
 浅色在 `:root, [data-theme="light"]`，深色在 `[data-theme="dark"]`，两处成对修改。

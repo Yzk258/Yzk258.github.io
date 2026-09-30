@@ -17,8 +17,29 @@ const { socials } = config;
 
 const t = useTranslations();
 
-const primaryHub = hubs.find(hub => hub.primary);
-const secondaryHubs = hubs.filter(hub => !hub.primary);
+// 站内入口统一列在这里：首页索引区块与主导航（Header.astro）各有一份，
+// 增删页面时两边都要看一眼。
+const siteNav = [
+  {
+    href: "/posts/",
+    title: "文章",
+    description: "学习笔记、踩过的坑和一些想法。",
+    icon: "📝",
+  },
+  { href: "/tags/", title: "标签", description: "按主题浏览全部文章。", icon: "🏷️" },
+  {
+    href: "/archives/",
+    title: "归档",
+    description: "按时间倒序浏览。",
+    icon: "🗂️",
+  },
+  {
+    href: "/about/",
+    title: "关于我",
+    description: "身份、联系方式与这个站点的由来。",
+    icon: "👤",
+  },
+];
 
 // 首页只放最近几篇；全部文章在 /posts/
 const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
@@ -39,8 +60,8 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
         </h1>
       </div>
       <p>
-        这里是 <strong>YZK</strong> 的主页与资源中转站 —— 把散落在各处的入口收在一处。
-        最新内容以个人主站为准，GitHub 上是各类代码与本站源码。
+        这里是 <strong>YZK</strong> 的主页 —— 学习笔记、项目记录与资料归档都放在这里，
+        日常更新也以本站为准。
       </p>
       {
         /* 座右铭：沿用 hero 顶部 `~ $ whoami` 的「提示符 + 说明」写法。
@@ -56,21 +77,6 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
         )
       }
       {
-        primaryHub && (
-          <p class="mt-4">
-            <a
-              href={primaryHub.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="bg-accent text-accent-foreground focus-outline inline-block rounded px-4 py-2 font-medium no-underline"
-            >
-              前往{primaryHub.title}
-              <span aria-hidden="true"> ↗</span>
-            </a>
-          </p>
-        )
-      }
-      {
         socials.length > 0 && (
           <div class="mt-4 flex max-sm:flex-col sm:items-center">
             <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">
@@ -80,6 +86,35 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
           </div>
         )
       }
+    </section>
+
+    <section id="site-nav" class="border-border border-b pt-12 pb-6">
+      <div class="flex items-baseline gap-2">
+        <span class="text-accent" aria-hidden="true">##</span>
+        <h2 class="text-xl font-semibold tracking-wide">站内导航</h2>
+      </div>
+      <p class="text-muted-foreground mt-2">本站的几块内容，按目录点进去即可。</p>
+      <nav aria-label="站内导航">
+        <ul class="mt-6 grid gap-4 sm:grid-cols-2">
+          {
+            siteNav.map(item => (
+              <li>
+                <a
+                  href={item.href}
+                  class="focus-outline border-border hover:border-accent flex h-full flex-col rounded border p-4 no-underline transition-colors"
+                >
+                  <span class="text-accent text-lg font-medium">
+                    <span aria-hidden="true">{item.icon}</span> {item.title}
+                  </span>
+                  <span class="text-muted-foreground mt-1 text-sm">
+                    {item.description}
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
     </section>
 
     {
@@ -112,23 +147,20 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
       <!-- 井号是对齐终端注释的装饰，放在 h2 之外，避免进入无障碍名称 -->
       <div class="flex items-baseline gap-2">
         <span class="text-accent" aria-hidden="true">##</span>
-        <h2 class="text-xl font-semibold tracking-wide">资源中转</h2>
+        <h2 class="text-xl font-semibold tracking-wide">站外入口</h2>
       </div>
       <p class="text-muted-foreground mt-2">
-        每个入口都通向站外，点开即可。
+        这两个通向站外：代码与本站源码在 GitHub，想交流直接发邮件。
       </p>
       <ul class="mt-6 grid gap-4 sm:grid-cols-2">
         {
-          secondaryHubs.map(hub => (
+          hubs.map(hub => (
             <li>
               <a
                 href={hub.href}
                 target={hub.external ? "_blank" : undefined}
                 rel={hub.external ? "noopener noreferrer" : undefined}
-                class:list={[
-                  "focus-outline border-border hover:border-accent block h-full rounded border p-4 no-underline transition-colors",
-                  { "bg-muted/40": hub.primary },
-                ]}
+                class="focus-outline border-border hover:border-accent block h-full rounded border p-4 no-underline transition-colors"
               >
                 <span class="text-accent text-lg font-medium">
                   <span aria-hidden="true">{hub.icon}</span> {hub.title}
