@@ -12,6 +12,7 @@ const { site } = config;
 const title = "关于我";
 
 const facts = [
+  { label: "座右铭", value: site.motto ?? "" },
   { label: "身份", value: "清华大学 计算机系 本科生" },
   { label: "邮箱", value: "yzk24@mails.tsinghua.edu.cn" },
   { label: "个人主站", value: site.profile ?? "" },
@@ -54,7 +55,7 @@ const facts = [
           facts.map(fact => (
             <div class="border-border rounded-lg border p-3">
               <dt class="text-muted-foreground text-xs">{fact.label}</dt>
-              <dd class="mt-1 break-all text-sm">{fact.value}</dd>
+              <dd class="mt-1 text-sm">{fact.value}</dd>
             </div>
           ))
         }

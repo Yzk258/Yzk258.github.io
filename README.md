@@ -31,7 +31,7 @@
 ## 目录结构
 
 ```
-astro-paper.config.ts    站点配置（标题、描述、社交链接、功能开关）
+astro-paper.config.ts    站点配置（标题、描述、座右铭、社交链接、功能开关）
 astro.config.ts          构建配置（集成、Markdown 流水线、代码高亮）
 src/
 ├── config.ts            配置解析层：给 astro-paper.config.ts 补默认值
@@ -346,6 +346,10 @@ giscus 的回复和 GitHub 上是同一份数据，两边同步。
 **改 GitHub 用户名**：只改 `astro-paper.config.ts` 里的 `site.github`
 （该字段必填）。头像链接、活跃度抓取、GitHub 入口都由它派生。
 只有 `.tools/fetch-avatar.mjs` 单独留着一份，因为它是不读站点配置的独立脚本。
+
+**改座右铭**：只改 `astro-paper.config.ts` 里的 `site.motto`，两处会同时变 ——
+首页 hero 简介下方一行（终端注释样式），以及「关于我」基本信息的第一张卡片。
+这一项可选：删掉或留空，两处都会自动隐藏，不会留下空位。
 
 **开关功能**：`astro-paper.config.ts` 的 `features`：
 

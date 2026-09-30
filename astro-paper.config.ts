@@ -8,6 +8,9 @@ export default defineAstroPaperConfig({
       "YZK 的个人主页与资源中转站：学习资料、项目归档与个人主站的统一入口。",
     author: "YZK",
     profile: "https://yinzachary24.top/",
+    // 座右铭：首页 hero 与「关于我」的基本信息各显示一次。
+    // 换成自己的句子即可；清空这一行，两处都会自动隐藏。
+    motto: "TODO：换成你的座右铭",
     // 头像链接、活跃度统计、GitHub 入口都由这一处派生
     github: "Yzk258",
     ogImage: "default-og.jpg",

@@ -43,6 +43,19 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
         最新内容以个人主站为准，GitHub 上是各类代码与本站源码。
       </p>
       {
+        /* 座右铭：沿用 hero 顶部 `~ $ whoami` 的「提示符 + 说明」写法。
+           `# 座右铭` 是对齐终端注释的装饰，放在 em 之外并标 aria-hidden，
+           读屏只会念座右铭本身 */
+        config.site.motto && (
+          <p class="border-accent mt-5 border-s-2 ps-3 leading-7">
+            <span class="text-muted-foreground" aria-hidden="true">
+              # 座右铭{" "}
+            </span>
+            <em>{config.site.motto}</em>
+          </p>
+        )
+      }
+      {
         primaryHub && (
           <p class="mt-4">
             <a

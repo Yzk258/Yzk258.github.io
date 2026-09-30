@@ -10,6 +10,11 @@ interface SiteConfig {
   /** Author profile URL (used in structured data) */
   profile?: string;
   /**
+   * 座右铭。首页 hero 与「关于我」的基本信息各显示一次。
+   * 留空或删掉这一行，两处都会自动隐藏，不留空位。
+   */
+  motto?: string;
+  /**
    * GitHub 用户名。用于头像链接、活跃度数据抓取，以及拼出 GitHub 主页地址。
    * 改这一处即可，不必去各处组件里找。
    */
@@ -119,7 +124,7 @@ type ResolvedSiteConfig = Required<
     | "ogImage"
   >
 > &
-  Pick<SiteConfig, "profile" | "googleVerification"> &
+  Pick<SiteConfig, "profile" | "motto" | "googleVerification"> &
   Required<Pick<SiteConfig, "github">>;
 
 export interface ResolvedAstroPaperConfig {
