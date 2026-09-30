@@ -367,14 +367,18 @@ giscus 的回复和 GitHub 上是同一份数据，两边同步。
   title: "GitHub",
   description: "一句话说明",
   href: "https://example.com/",  // 站内用 "/xxx/"
-  icon: "📚",                     // emoji，避免额外引入图标
   external: true,                // 是否新标签页打开
 }
 ```
 
 **改首页站内导航**：编辑 `src/pages/index.astro` 顶部的 `siteNav` 数组
-（`title` / `description` / `href` / `icon`）。它与 `Header.astro` 里的主导航
+（`title` / `description` / `href`）。它与 `Header.astro` 里的主导航
 是两份，增删页面时两边都要看一眼。
+
+**卡片不放 emoji**：首页各类卡片、区块标题都不配 emoji 图标 ——
+观感上和站点不搭，加新卡片时也别加。区分度交给排版本身
+（区块标题的 `##`、卡片标题的强调色、站外链接的 ↗）。
+站点自带的图标一律走 `src/assets/icons/` 下的 SVG（见 `socials`）。
 
 **改配色**：只改 `src/styles/theme.css` 顶部的令牌。
 浅色在 `:root, [data-theme="light"]`，深色在 `[data-theme="dark"]`，两处成对修改。

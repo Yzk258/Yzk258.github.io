@@ -18,26 +18,19 @@ const { socials } = config;
 const t = useTranslations();
 
 // 站内入口统一列在这里：首页索引区块与主导航（Header.astro）各有一份，
-// 增删页面时两边都要看一眼。
+// 增删页面时两边都要看一眼。卡片不带图标。
 const siteNav = [
   {
     href: "/posts/",
     title: "文章",
     description: "学习笔记、踩过的坑和一些想法。",
-    icon: "📝",
   },
-  { href: "/tags/", title: "标签", description: "按主题浏览全部文章。", icon: "🏷️" },
-  {
-    href: "/archives/",
-    title: "归档",
-    description: "按时间倒序浏览。",
-    icon: "🗂️",
-  },
+  { href: "/tags/", title: "标签", description: "按主题浏览全部文章。" },
+  { href: "/archives/", title: "归档", description: "按时间倒序浏览。" },
   {
     href: "/about/",
     title: "关于我",
     description: "身份、联系方式与这个站点的由来。",
-    icon: "👤",
   },
 ];
 
@@ -104,7 +97,7 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
                   class="focus-outline border-border hover:border-accent flex h-full flex-col rounded border p-4 no-underline transition-colors"
                 >
                   <span class="text-accent text-lg font-medium">
-                    <span aria-hidden="true">{item.icon}</span> {item.title}
+                    {item.title}
                   </span>
                   <span class="text-muted-foreground mt-1 text-sm">
                     {item.description}
@@ -163,7 +156,7 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
                 class="focus-outline border-border hover:border-accent block h-full rounded border p-4 no-underline transition-colors"
               >
                 <span class="text-accent text-lg font-medium">
-                  <span aria-hidden="true">{hub.icon}</span> {hub.title}
+                  {hub.title}
                   {hub.external && <span aria-hidden="true"> ↗</span>}
                 </span>
                 <span class="text-muted-foreground mt-1 block text-sm">
