@@ -1,12 +1,11 @@
 ---
 title: 运行项目时遇到的 Integrity level 错误问题
 description: 记录了在运行某个项目时遇到的 Integrity level 错误问题及其解决方法
-pubDatetime: 2026-10-01T18:30:00+08:00   # 必须带时区
+pubDatetime: 2026-10-01T00:30:00+08:00   # 必须带时区
 tags: ["技术笔记", "操作系统", "operating system", "integrity level", "debug"]
 featured: false      # true 会置顶
 draft: false         # true 则不参与构建
 ---
-
 # 运行项目时遇到的 Integrity level 错误问题
 
 > “龙生龙，凤生凤，老鼠生儿会打洞。”——《三字经》
