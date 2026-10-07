@@ -32,8 +32,6 @@
       pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = width * pixelRatio;
       canvas.height = height * pixelRatio;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 
       const count = Math.min(width < 640 ? 40 : 100, Math.max(22, Math.floor((width * height) / 10000)));
@@ -147,6 +145,8 @@
   .particle-background {
     position: fixed;
     inset: 0;
+    width: 100%;
+    height: 100%;
     z-index: 0;
     pointer-events: none;
     opacity: 0.68;

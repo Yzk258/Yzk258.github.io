@@ -14,6 +14,8 @@ interface SiteConfig {
    * 留空或删掉这一行，两处都会自动隐藏，不留空位。
    */
   motto?: string;
+  /** 出生时间，使用带时区的 ISO 8601 格式，精确到秒。 */
+  birthDatetime?: string;
   /**
    * GitHub 用户名。用于头像链接、活跃度数据抓取，以及拼出 GitHub 主页地址。
    * 改这一处即可，不必去各处组件里找。
@@ -124,7 +126,7 @@ type ResolvedSiteConfig = Required<
     | "ogImage"
   >
 > &
-  Pick<SiteConfig, "profile" | "motto" | "googleVerification"> &
+  Pick<SiteConfig, "profile" | "motto" | "birthDatetime" | "googleVerification"> &
   Required<Pick<SiteConfig, "github">>;
 
 export interface ResolvedAstroPaperConfig {

@@ -42,7 +42,10 @@ const summaryItems = stats
 {
   stats && (
     <section class="mt-10">
-      <h2 class="text-xl font-semibold tracking-wide">{t.activity.title}</h2>
+      <div class="flex items-baseline gap-2">
+        <span class="text-accent" aria-hidden="true">##</span>
+        <h2 class="text-xl font-semibold tracking-wide">{t.activity.title}</h2>
+      </div>
       <p class="text-muted-foreground mt-2 text-sm">
         {t.activity.description}
       </p>

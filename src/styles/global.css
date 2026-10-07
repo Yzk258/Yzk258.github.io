@@ -6,6 +6,11 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+html,
+body {
+  overflow-x: clip;
+}
+
 @layer base {
   * {
     @apply border-border outline-accent/75;

@@ -1,7 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
-import Breadcrumb from "@/components/Breadcrumb.astro";
 import Main from "@/components/Main.astro";
 import Footer from "@/components/Footer.astro";
 import Avatar from "@/components/Avatar.astro";
@@ -21,29 +20,36 @@ const facts = [
 <Layout title={`${title} | ${site.title}`} description={site.description}>
   <Header />
 
-  <Breadcrumb />
-
   <Main pageTitle={title}>
-    <section class="flex flex-col items-start gap-6 sm:flex-row sm:gap-8">
-      <Avatar size="lg" href={`https://github.com/${site.github}`} class="mx-auto sm:mx-0" />
-      <div class="space-y-4 leading-7">
-        <p>
+    <section class="border-border border-b pb-8">
+      <div class="flex items-baseline gap-2">
+        <span class="text-accent" aria-hidden="true">~ $</span>
+        <h2 class="text-xl font-semibold tracking-wide">whoami</h2>
+      </div>
+      <div class="mt-6 flex flex-col items-start gap-6 sm:flex-row sm:gap-8">
+        <Avatar size="lg" href={`https://github.com/${site.github}`} class="mx-auto sm:mx-0" />
+        <div class="space-y-4 leading-7">
+          <p>
           我是 <strong>YZK</strong>，目前在清华大学计算机系读本科。这个站点是我的主页，
           学习笔记、项目记录与资料归档都放在这里，日常更新也以本站为准。
-        </p>
-        <p>
+          </p>
+          <p>
           各类代码、课程作业和本站源码放在
           <a
             href={`https://github.com/${site.github}`}
             target="_blank"
             rel="noopener noreferrer">GitHub</a
           >；有资料要补充或者想交流，发邮件给我就行。
-        </p>
+          </p>
+        </div>
       </div>
     </section>
 
-    <section class="mt-10">
-      <h2 class="text-xl font-semibold tracking-wide">基本信息</h2>
+    <section class="border-border border-b py-10">
+      <div class="flex items-baseline gap-2">
+        <span class="text-accent" aria-hidden="true">##</span>
+        <h2 class="text-xl font-semibold tracking-wide">基本信息</h2>
+      </div>
       <dl class="mt-4 grid gap-3 sm:grid-cols-2">
         {
           facts.map(fact => (
@@ -53,11 +59,28 @@ const facts = [
             </div>
           ))
         }
+        {
+          site.birthDatetime && (
+            <div class="border-border rounded-lg border p-3 sm:col-span-2">
+              <dt class="text-muted-foreground text-xs">已生存</dt>
+              <dd
+                class="mt-1 text-sm tabular-nums"
+                data-lived-time
+                data-birth-datetime={site.birthDatetime}
+              >
+                正在计算…
+              </dd>
+            </div>
+          )
+        }
       </dl>
     </section>
 
-    <section class="mt-10">
-      <h2 class="text-xl font-semibold tracking-wide">这个站点</h2>
+    <section class="border-border border-b py-10">
+      <div class="flex items-baseline gap-2">
+        <span class="text-accent" aria-hidden="true">##</span>
+        <h2 class="text-xl font-semibold tracking-wide">这个站点</h2>
+      </div>
       <p class="mt-3 leading-7">
         用 <a href="https://astro.build/" target="_blank" rel="noopener noreferrer">Astro</a> 构建，
         主题基于
@@ -66,13 +89,13 @@ const facts = [
           target="_blank"
           rel="noopener noreferrer">AstroPaper</a
         >（MIT 许可）改造。首页的三个接口卡片分别调用
-        <a href="https://hitokoto.cn/" target="_blank" rel="noopener noreferrer">一言</a>、<a
-          href="https://dog.ceo/"
+        <a href="https://api.github.com/zen" target="_blank" rel="noopener noreferrer">GitHub Zen</a>、<a
+          href="https://picsum.photos/"
           target="_blank"
-          rel="noopener noreferrer">Dog CEO</a
+          rel="noopener noreferrer">Picsum</a
         > 和
-        <a href="https://www.jinrishici.com/" target="_blank" rel="noopener noreferrer"
-          >今日诗词</a
+        <a href="https://randomuser.me/" target="_blank" rel="noopener noreferrer"
+          >Random User</a
         >，内容来自第三方，与本站无关。
       </p>
       <p class="text-muted-foreground mt-3 text-sm leading-7">
@@ -86,3 +109,39 @@ const facts = [
 
   <Footer />
 </Layout>
+
+<script>
+  const updateLivedTime = () => {
+    const element = document.querySelector<HTMLElement>("[data-lived-time]");
+    const birthValue = element?.dataset.birthDatetime;
+    if (!element || !birthValue) return;
+    if (element.dataset.livedReady === "true") return;
+    element.dataset.livedReady = "true";
+
+    const birth = new Date(birthValue);
+    if (Number.isNaN(birth.getTime()) || birth.getTime() > Date.now()) {
+      element.textContent = "出生时间配置无效";
+      return;
+    }
+
+    const render = () => {
+      let seconds = Math.floor((Date.now() - birth.getTime()) / 1000);
+      const years = Math.floor(seconds / 31_556_952);
+      seconds -= years * 31_556_952;
+      const days = Math.floor(seconds / 86_400);
+      seconds -= days * 86_400;
+      const hours = Math.floor(seconds / 3_600);
+      seconds -= hours * 3_600;
+      const minutes = Math.floor(seconds / 60);
+      seconds %= 60;
+      element.textContent = `${years} 年 ${days} 天 ${String(hours).padStart(2, "0")} 小时 ${String(minutes).padStart(2, "0")} 分 ${String(seconds).padStart(2, "0")} 秒`;
+    };
+
+    render();
+    const timer = setInterval(render, 1000);
+    document.addEventListener("astro:before-swap", () => clearInterval(timer), { once: true });
+  };
+
+  updateLivedTime();
+  document.addEventListener("astro:page-load", updateLivedTime);
+</script>

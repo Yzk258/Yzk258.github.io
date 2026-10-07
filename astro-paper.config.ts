@@ -10,6 +10,8 @@ export default defineAstroPaperConfig({
     // 座右铭：首页 hero 与「关于我」的基本信息各显示一次。
     // 换成自己的句子即可；清空这一行，两处都会自动隐藏。
     motto: "We must know, we will know.",
+    // 出生时间：日期未提供具体时刻时，按北京时间当天 00:00:00 计算。
+    birthDatetime: "2006-04-16T00:00:00+08:00",
     // 头像链接、活跃度统计、GitHub 入口都由这一处派生
     github: "Yzk258",
     ogImage: "default-og.jpg",
