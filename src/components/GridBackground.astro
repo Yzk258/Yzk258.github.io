@@ -1,0 +1,161 @@
+<canvas class="particle-background" aria-hidden="true"></canvas>
+
+<script>
+  let cleanup: (() => void) | undefined;
+  const initializeParticleBackground = () => {
+  cleanup?.();
+  const canvas = document.querySelector<HTMLCanvasElement>(".particle-background");
+
+  if (canvas && !canvas.dataset.bound) {
+    canvas.dataset.bound = "true";
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Canvas 2D context is unavailable");
+
+    type Particle = { x: number; y: number; vx: number; vy: number; radius: number };
+    const particles: Particle[] = [];
+    const pointer = { x: 0, y: 0, active: false };
+    const ripples: { x: number; y: number; age: number }[] = [];
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let width = 0;
+    let height = 0;
+    let pixelRatio = 1;
+    let animationFrame = 0;
+
+    const colorFromToken = (token: string, fallback: string) => {
+      const value = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+      return value || fallback;
+    };
+
+    const resize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = width * pixelRatio;
+      canvas.height = height * pixelRatio;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
+      const count = Math.min(width < 640 ? 40 : 100, Math.max(22, Math.floor((width * height) / 10000)));
+      particles.length = 0;
+      for (let index = 0; index < count; index += 1) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 0.08 + Math.random() * 0.2;
+        particles.push({ x: Math.random() * width, y: Math.random() * height, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, radius: 1 + Math.random() * 1.25 });
+      }
+    };
+
+    const draw = () => {
+      context.clearRect(0, 0, width, height);
+      const foreground = colorFromToken("--foreground", "#cdd6f4");
+      const linkDistance = width < 640 ? 108 : 142;
+
+      for (const particle of particles) {
+        if (!reducedMotion.matches) {
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+          if (pointer.active) {
+            const dx = pointer.x - particle.x;
+            const dy = pointer.y - particle.y;
+            const distance = Math.hypot(dx, dy);
+            if (distance > 12 && distance < 180) {
+              const pull = (1 - distance / 180) * 0.65;
+              particle.x += (dx / distance) * pull;
+              particle.y += (dy / distance) * pull;
+            }
+          }
+          if (particle.x < -20) particle.x = width + 20;
+          if (particle.x > width + 20) particle.x = -20;
+          if (particle.y < -20) particle.y = height + 20;
+          if (particle.y > height + 20) particle.y = -20;
+        }
+
+        context.beginPath();
+        context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        context.fillStyle = `${foreground}99`;
+        context.fill();
+      }
+
+      for (let first = 0; first < particles.length; first += 1) {
+        for (let second = first + 1; second < particles.length; second += 1) {
+          const a = particles[first];
+          const b = particles[second];
+          const distance = Math.hypot(a.x - b.x, a.y - b.y);
+          if (distance > linkDistance) continue;
+          const alpha = (1 - distance / linkDistance) * 0.22;
+          context.beginPath();
+          context.moveTo(a.x, a.y);
+          context.lineTo(b.x, b.y);
+          context.strokeStyle = `${foreground}${Math.round(alpha * 255).toString(16).padStart(2, "0")}`;
+          context.lineWidth = 0.7;
+          context.stroke();
+        }
+      }
+
+      const accent = colorFromToken("--accent", "#f38ba8");
+      for (let index = ripples.length - 1; index >= 0; index -= 1) {
+        const ripple = ripples[index];
+        ripple.age += 0.035;
+        if (ripple.age >= 1) {
+          ripples.splice(index, 1);
+          continue;
+        }
+        context.beginPath();
+        context.arc(ripple.x, ripple.y, 8 + ripple.age * 34, 0, Math.PI * 2);
+        context.strokeStyle = `${accent}${Math.round((1 - ripple.age) * 45).toString(16).padStart(2, "0")}`;
+        context.lineWidth = 1;
+        context.stroke();
+      }
+      animationFrame = requestAnimationFrame(draw);
+    };
+
+    resize();
+    const controller = new AbortController();
+    const options = { passive: true, signal: controller.signal };
+    window.addEventListener("resize", resize, options);
+    window.addEventListener("pointermove", (event) => {
+      if (event.pointerType !== "mouse") return;
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      pointer.active = true;
+    }, options);
+    const resetPointer = () => { pointer.active = false; };
+    document.addEventListener("pointerleave", resetPointer, options);
+    window.addEventListener("blur", resetPointer, options);
+    window.addEventListener("click", (event) => {
+      if (event.detail === 0 || reducedMotion.matches) return;
+      if (ripples.length >= 8) ripples.shift();
+      ripples.push({ x: event.clientX, y: event.clientY, age: 0 });
+    }, options);
+    reducedMotion.addEventListener("change", resize, options);
+    cleanup = () => {
+      controller.abort();
+      cancelAnimationFrame(animationFrame);
+      delete canvas.dataset.bound;
+      cleanup = undefined;
+    };
+    draw();
+  }
+  };
+
+  initializeParticleBackground();
+  document.addEventListener("astro:page-load", initializeParticleBackground);
+  document.addEventListener("astro:before-swap", () => cleanup?.());
+</script>
+
+<style>
+  .particle-background {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.68;
+    mask-image: linear-gradient(to bottom, black 0%, black 72%, transparent 100%);
+  }
+
+  @media (max-width: 640px), (prefers-reduced-motion: reduce) {
+    .particle-background {
+      opacity: 0.46;
+    }
+  }
+</style>

@@ -3,6 +3,7 @@ import { ClientRouter } from "astro:transitions";
 import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 import { getAssetPath } from "@/utils/withBase";
 import config from "@/config";
+import GridBackground from "@/components/GridBackground.astro";
 import "@/styles/global.css";
 
 type Props = {
@@ -96,8 +97,9 @@ const socialImageURL = new URL(ogImage, Astro.site ?? Astro.url);
     <ClientRouter />
   </head>
   <body
-    class="bg-background font-app text-foreground selection:bg-accent/75 selection:text-accent-foreground flex min-h-svh flex-col"
+    class="relative bg-background font-app text-foreground selection:bg-accent/75 selection:text-accent-foreground flex min-h-svh flex-col"
   >
+    <GridBackground />
     <slot />
     <script>
       import "@/scripts/theme";

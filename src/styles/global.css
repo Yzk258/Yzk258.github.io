@@ -35,6 +35,12 @@
   @apply underline decoration-wavy decoration-2 underline-offset-8;
 }
 
+/* Keep the interactive background behind every page surface and control. */
+body > :not(.particle-background) {
+  position: relative;
+  z-index: 1;
+}
+
 :target {
   scroll-margin-block: 1rem;
 }
