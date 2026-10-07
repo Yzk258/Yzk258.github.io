@@ -265,12 +265,19 @@
     card.dataset.state = 'loading';
       setText(placeholder, '正在找一张图片…');
     try {
-      const imageUrl = `https://picsum.photos/640/420?random=${Date.now()}`;
+      const imageUrl = `https://picsum.photos/seed/${Date.now()}/640/420`;
 
       // 等图片真正解码完再显示，避免出现半张图
       await new Promise<void>((resolve, reject) => {
-        img.onload = () => resolve();
-        img.onerror = () => reject(new Error('image failed'));
+        const timeout = window.setTimeout(() => reject(new Error('image timeout')), TIMEOUT_MS);
+        img.onload = () => {
+          window.clearTimeout(timeout);
+          resolve();
+        };
+        img.onerror = () => {
+          window.clearTimeout(timeout);
+          reject(new Error('image failed'));
+        };
         img.src = imageUrl;
       });
       if (!isCurrent('photo', seq)) return;
@@ -281,8 +288,11 @@
     } catch {
       if (!isCurrent('photo', seq)) return;
       card.dataset.state = 'error';
-      img.dataset.loaded = 'false';
-      setText(placeholder, '图片暂时加载失败，点一下再试。');
+      // 外部图片服务不可用时，至少显示站点自己的本地备用图。
+      img.onerror = null;
+      img.src = '/default-og.jpg';
+      img.dataset.loaded = 'true';
+      setText(fromEl, '本站备用图');
     }
   }
 
