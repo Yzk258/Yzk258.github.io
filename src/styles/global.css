@@ -36,7 +36,7 @@
 }
 
 /* Keep the interactive background behind every page surface and control. */
-body > :not(.particle-background) {
+body > :not(.particle-background):not(.fixed) {
   position: relative;
   z-index: 1;
 }
