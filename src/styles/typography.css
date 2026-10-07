@@ -21,11 +21,25 @@
     }
 
     h2 {
-      @apply mt-10 mb-4;
+      @apply relative mt-12 mb-5 border-s-2 border-accent ps-3 text-[1.35em] font-bold tracking-tight;
+      text-wrap: balance;
     }
 
     h3 {
-      @apply mt-8 italic;
+      @apply mt-9 mb-3 border-b border-dashed border-border pb-1 font-bold tracking-wide;
+      color: var(--accent);
+      text-wrap: balance;
+    }
+
+    h4 {
+      @apply mt-7 mb-2 font-semibold tracking-wide;
+      color: var(--muted-foreground);
+    }
+
+    h2 + p,
+    h3 + p,
+    h4 + p {
+      @apply mt-3;
     }
 
     p,
