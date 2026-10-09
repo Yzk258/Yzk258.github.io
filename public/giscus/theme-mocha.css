@@ -9,7 +9,7 @@
  * 本站深色强调色是粉色，白字压在粉色上对比度不足
  * （与 theme.css 里 --accent-foreground: #1e1e2e 保持一致）。
  */
-
+guan
 main {
   /* ---- 代码高亮 ---- */
   --color-prettylights-syntax-comment: #7f849c;
