@@ -32,6 +32,11 @@ const siteNav = [
     title: "关于我",
     description: "身份、联系方式与这个站点的由来。",
   },
+  {
+    href: "/resume.pdf",
+    title: "简历",
+    description: "查看或下载我的 PDF 简历。",
+  },
 ];
 
 // 首页只放最近几篇；全部文章在 /posts/
@@ -65,7 +70,20 @@ const latestPosts = getSortedPosts(await getCollection("posts")).slice(0, 3);
             <span class="text-muted-foreground" aria-hidden="true">
               # {" "}
             </span>
-            <em>{config.site.motto}</em>
+            <em>
+              {config.site.mottoUrl ? (
+                <a
+                  href={config.site.mottoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="hover:text-accent underline decoration-dashed underline-offset-4"
+                >
+                  {config.site.motto}
+                </a>
+              ) : (
+                config.site.motto
+              )}
+            </em>
           </p>
         )
       }

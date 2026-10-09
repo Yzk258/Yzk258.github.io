@@ -14,6 +14,8 @@ interface SiteConfig {
    * 留空或删掉这一行，两处都会自动隐藏，不留空位。
    */
   motto?: string;
+  /** 座右铭出处链接。 */
+  mottoUrl?: string;
   /** 出生时间，使用带时区的 ISO 8601 格式，精确到秒。 */
   birthDatetime?: string;
   /**
@@ -126,7 +128,7 @@ type ResolvedSiteConfig = Required<
     | "ogImage"
   >
 > &
-  Pick<SiteConfig, "profile" | "motto" | "birthDatetime" | "googleVerification"> &
+  Pick<SiteConfig, "profile" | "motto" | "mottoUrl" | "birthDatetime" | "googleVerification"> &
   Required<Pick<SiteConfig, "github">>;
 
 export interface ResolvedAstroPaperConfig {

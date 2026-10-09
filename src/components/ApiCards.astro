@@ -181,6 +181,7 @@
   type Kind = 'zen' | 'photo' | 'user';
 
   const TIMEOUT_MS = 6000;
+  const IMAGE_TIMEOUT_MS = 3500;
 
   /** 请求序号：连点时只采用最后一次的结果 */
   const seqMap = new Map<Kind, number>();
@@ -265,21 +266,35 @@
     card.dataset.state = 'loading';
       setText(placeholder, '正在找一张图片…');
     try {
-      const imageUrl = `https://picsum.photos/seed/${Date.now()}/640/420`;
+      const imageId = 200 + Math.floor(Math.random() * 80);
+      const imageUrls = [
+        `https://picsum.photos/id/${imageId}/640/420`,
+        `https://picsum.photos/seed/${imageId}-${Date.now()}/640/420`,
+      ];
 
-      // 等图片真正解码完再显示，避免出现半张图
-      await new Promise<void>((resolve, reject) => {
-        const timeout = window.setTimeout(() => reject(new Error('image timeout')), TIMEOUT_MS);
-        img.onload = () => {
-          window.clearTimeout(timeout);
-          resolve();
-        };
-        img.onerror = () => {
-          window.clearTimeout(timeout);
-          reject(new Error('image failed'));
-        };
-        img.src = imageUrl;
-      });
+      // 首次连接较慢时自动换一种 Picsum 地址重试，不要求用户再次点击。
+      let loaded = false;
+      for (const imageUrl of imageUrls) {
+        try {
+          await new Promise<void>((resolve, reject) => {
+            const timeout = window.setTimeout(() => reject(new Error('image timeout')), IMAGE_TIMEOUT_MS);
+            img.onload = () => {
+              window.clearTimeout(timeout);
+              resolve();
+            };
+            img.onerror = () => {
+              window.clearTimeout(timeout);
+              reject(new Error('image failed'));
+            };
+            img.src = imageUrl;
+          });
+          loaded = true;
+          break;
+        } catch {
+          // 尝试下一个地址
+        }
+      }
+      if (!loaded) throw new Error('image unavailable');
       if (!isCurrent('photo', seq)) return;
 
       card.dataset.state = 'ready';
