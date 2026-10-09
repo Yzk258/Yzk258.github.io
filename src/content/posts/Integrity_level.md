@@ -6,7 +6,6 @@ tags: ["技术笔记", "操作系统", "operating system", "integrity level", "d
 featured: false
 draft: false
 ---
-
 # 运行 modsmith 时遇到的完整性级别问题
 
 ## 问题是怎么出现的
@@ -29,7 +28,7 @@ Microsoft Edge 未响应，因为现有实例正在以提升的权限运行。�
 
 ## 这次真正需要检查什么
 
-如果以后再遇到类似现象，我会先分别看**正在运行的进程**和**项目路径**，而不是只盯着报错窗口。下面是可用于排查的命令示例，路径要换成自己的项目位置：
+以后再遇到类似现象，一个可行的办法或许是先分别看**正在运行的进程**和**项目路径**，而不是只盯着报错窗口。下面是可用于排查的命令示例，路径要换成自己的项目位置：
 
 ```powershell
 # 查看当前终端进程的完整性级别；在输出中找 Mandatory Label
@@ -46,9 +45,8 @@ icacls "D:\path\to"
 icacls "D:\path\to\modsmith" /setintegritylevel "(OI)(CI)M"
 ```
 
-这只是命令示例，并不是我当时逐条执行过的命令记录。修改前应先确认目标路径和现有标签；如果上层目录仍为 Low，或已有子项带着单独设置的 Low 标签，还需要继续检查。不要为了省事，把无关目录或整个磁盘的完整性级别一起改掉。
+这只是命令示例，并不是我当时逐条执行过的命令记录。修改前应先确认目标路径和现有标签；如果上层目录仍为 Low，或已有子项带着单独设置的 Low 标签，还需要继续检查。但千万不要为了省事，把无关目录或整个磁盘的完整性级别一起改掉。毕竟，对权限的放行总会伴随很多不必要的风险。
 
-回头看，Edge 的提示给了我“权限上下文不一致”的线索，却不能仅凭这一条提示断定根因。真正让我换方向的是：Git 回退、PowerShell 降级和代码调整都无效，而项目目录及其父目录确实存在 Low 标签。这次问题也提醒我，遇到运行环境里的权限异常时，要把目录继承和进程完整性级别一起纳入排查。
+回头看，Edge 的提示给了我“权限上下文不一致”的线索，却不能仅凭这一条提示断定根因。真正让我换方向的是：Git 回退、PowerShell 降级和代码调整都无效，而项目目录及其父目录确实存在 Low 标签。这次问题也提醒我，遇到运行环境里的权限异常时，确实要把目录继承和进程完整性级别一起纳入排查。
 
 参考资料：[Microsoft：Mandatory Integrity Control](https://learn.microsoft.com/en-us/windows/win32/secauthz/mandatory-integrity-control)、[Microsoft：icacls 命令](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/icacls)。
-
