@@ -2,142 +2,235 @@
 
 <script>
   let cleanup: (() => void) | undefined;
-  const initializeParticleBackground = () => {
-  cleanup?.();
-  const canvas = document.querySelector<HTMLCanvasElement>(".particle-background");
+  const initializeGridBackground = () => {
+    cleanup?.();
+    const canvas = document.querySelector<HTMLCanvasElement>(".particle-background");
 
-  if (canvas && !canvas.dataset.bound) {
-    canvas.dataset.bound = "true";
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("Canvas 2D context is unavailable");
+    if (canvas && !canvas.dataset.bound) {
+      canvas.dataset.bound = "true";
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Canvas 2D context is unavailable");
 
-    type Particle = { x: number; y: number; vx: number; vy: number; radius: number };
-    const particles: Particle[] = [];
-    const pointer = { x: 0, y: 0, active: false };
-    const ripples: { x: number; y: number; age: number }[] = [];
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let width = 0;
-    let height = 0;
-    let pixelRatio = 1;
-    let animationFrame = 0;
+      type GridNode = {
+        ox: number;
+        oy: number;
+        x: number;
+        y: number;
+        vx: number;
+        vy: number;
+        glow: number;
+      };
 
-    const colorFromToken = (token: string, fallback: string) => {
-      const value = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
-      return value || fallback;
-    };
+      const nodes: GridNode[] = [];
+      const pointer = { x: 0, y: 0, active: false };
+      const impulse = { x: 0, y: 0, strength: 0 };
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const resize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = width * pixelRatio;
-      canvas.height = height * pixelRatio;
-      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      const INFLUENCE = 200;
+      const MAX_PULL = 20;
+      const STIFFNESS = 0.0018;
+      const DAMPING = 0.92;
+      const BREATH_AMPLITUDE = 0.9;
+      const BREATH_SPEED = 0.0025;
+      const IMPULSE_RADIUS = 300;
+      const IMPULSE_STRENGTH = 120;
+      const IMPULSE_DECAY = 0.968;
 
-      const count = Math.min(width < 640 ? 40 : 100, Math.max(22, Math.floor((width * height) / 10000)));
-      particles.length = 0;
-      for (let index = 0; index < count; index += 1) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = 0.08 + Math.random() * 0.2;
-        particles.push({ x: Math.random() * width, y: Math.random() * height, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, radius: 1 + Math.random() * 1.25 });
-      }
-    };
+      let width = 0;
+      let height = 0;
+      let pixelRatio = 1;
+      let cols = 0;
+      let rows = 0;
+      let spacing = 54;
+      let time = 0;
+      let animationFrame = 0;
 
-    const draw = () => {
-      context.clearRect(0, 0, width, height);
-      const foreground = colorFromToken("--foreground", "#cdd6f4");
-      const linkDistance = width < 640 ? 108 : 142;
+      const colorFromToken = (token: string, fallback: string) => {
+        const value = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+        return value || fallback;
+      };
 
-      for (const particle of particles) {
-        if (!reducedMotion.matches) {
-          particle.x += particle.vx;
-          particle.y += particle.vy;
+      const buildNodes = () => {
+        spacing = width < 640 ? 58 : 74;
+        cols = Math.ceil(width / spacing) + 1;
+        rows = Math.ceil(height / spacing) + 1;
+        nodes.length = 0;
+        for (let row = 0; row < rows; row += 1) {
+          for (let col = 0; col < cols; col += 1) {
+            const ox = col * spacing;
+            const oy = row * spacing;
+            nodes.push({ ox, oy, x: ox, y: oy, vx: 0, vy: 0, glow: 0 });
+          }
+        }
+      };
+
+      const resize = () => {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = width * pixelRatio;
+        canvas.height = height * pixelRatio;
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        buildNodes();
+        start();
+      };
+
+      const update = () => {
+        time += BREATH_SPEED;
+        for (const node of nodes) {
+          const breathX =
+            Math.sin(time + node.ox * 0.014 + node.oy * 0.007) * BREATH_AMPLITUDE;
+          const breathY =
+            Math.cos(time * 0.9 + node.oy * 0.014 - node.ox * 0.006) * BREATH_AMPLITUDE;
+          let targetX = node.ox + breathX;
+          let targetY = node.oy + breathY;
+          let glow = 0;
+
           if (pointer.active) {
-            const dx = pointer.x - particle.x;
-            const dy = pointer.y - particle.y;
+            const dx = node.ox - pointer.x;
+            const dy = node.oy - pointer.y;
             const distance = Math.hypot(dx, dy);
-            if (distance > 12 && distance < 180) {
-              const pull = (1 - distance / 180) * 0.65;
-              particle.x += (dx / distance) * pull;
-              particle.y += (dy / distance) * pull;
+            if (distance < INFLUENCE) {
+              const strength = 1 - distance / INFLUENCE;
+              const amount = MAX_PULL * strength;
+              if (distance > 0.001) {
+                targetX += (dx / distance) * amount;
+                targetY += (dy / distance) * amount;
+              }
+              glow = strength;
             }
           }
-          if (particle.x < -20) particle.x = width + 20;
-          if (particle.x > width + 20) particle.x = -20;
-          if (particle.y < -20) particle.y = height + 20;
-          if (particle.y > height + 20) particle.y = -20;
+
+          if (impulse.strength > 0.2) {
+            const dx = node.ox - impulse.x;
+            const dy = node.oy - impulse.y;
+            const distance = Math.hypot(dx, dy);
+            if (distance < IMPULSE_RADIUS && distance > 0.001) {
+              const strength = (1 - distance / IMPULSE_RADIUS) * impulse.strength;
+              targetX += (dx / distance) * strength;
+              targetY += (dy / distance) * strength;
+            }
+          }
+
+          node.vx = (node.vx + (targetX - node.x) * STIFFNESS) * DAMPING;
+          node.vy = (node.vy + (targetY - node.y) * STIFFNESS) * DAMPING;
+          node.x += node.vx;
+          node.y += node.vy;
+          node.glow += (glow - node.glow) * 0.16;
         }
 
-        context.beginPath();
-        context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        context.fillStyle = `${foreground}99`;
-        context.fill();
-      }
+        impulse.strength = impulse.strength > 0.2 ? impulse.strength * IMPULSE_DECAY : 0;
+      };
 
-      for (let first = 0; first < particles.length; first += 1) {
-        for (let second = first + 1; second < particles.length; second += 1) {
-          const a = particles[first];
-          const b = particles[second];
-          const distance = Math.hypot(a.x - b.x, a.y - b.y);
-          if (distance > linkDistance) continue;
-          const alpha = (1 - distance / linkDistance) * 0.22;
+      const draw = () => {
+        context.clearRect(0, 0, width, height);
+        const foreground = colorFromToken("--foreground", "#cdd6f4");
+
+        const baseAlpha = 0.07;
+        const highlightAlpha = 0.36;
+        const LEVELS = 10;
+        const paths: Path2D[] = [];
+        for (let level = 0; level <= LEVELS; level += 1) paths.push(new Path2D());
+
+        const addSegment = (a: GridNode, b: GridNode) => {
+          let proximity = 0;
+          if (pointer.active) {
+            const midX = (a.x + b.x) / 2;
+            const midY = (a.y + b.y) / 2;
+            const distance = Math.hypot(pointer.x - midX, pointer.y - midY);
+            if (distance < INFLUENCE) proximity = 1 - distance / INFLUENCE;
+          }
+          const bucket = Math.max(0, Math.min(LEVELS, Math.round(proximity * LEVELS)));
+          paths[bucket].moveTo(a.x, a.y);
+          paths[bucket].lineTo(b.x, b.y);
+        };
+
+        for (let row = 0; row < rows; row += 1) {
+          const base = row * cols;
+          for (let col = 0; col < cols; col += 1) {
+            const node = nodes[base + col];
+            if (col < cols - 1) addSegment(node, nodes[base + col + 1]);
+            if (row < rows - 1) addSegment(node, nodes[base + cols + col]);
+          }
+        }
+
+        context.lineWidth = 1.6;
+        for (let bucket = 0; bucket <= LEVELS; bucket += 1) {
+          const alphaValue = baseAlpha + (highlightAlpha - baseAlpha) * (bucket / LEVELS);
+          const alpha = Math.round(alphaValue * 255)
+            .toString(16)
+            .padStart(2, "0");
+          context.strokeStyle = `${foreground}${alpha}`;
+          context.stroke(paths[bucket]);
+        }
+
+        for (const node of nodes) {
+          const radius = 1.8 + node.glow * 3;
+          const alpha = Math.round((0.13 + node.glow * 0.72) * 255)
+            .toString(16)
+            .padStart(2, "0");
           context.beginPath();
-          context.moveTo(a.x, a.y);
-          context.lineTo(b.x, b.y);
-          context.strokeStyle = `${foreground}${Math.round(alpha * 255).toString(16).padStart(2, "0")}`;
-          context.lineWidth = 0.7;
-          context.stroke();
+          context.arc(node.x, node.y, radius, 0, Math.PI * 2);
+          context.fillStyle = `${foreground}${alpha}`;
+          context.fill();
         }
-      }
+      };
 
-      const accent = colorFromToken("--accent", "#f38ba8");
-      for (let index = ripples.length - 1; index >= 0; index -= 1) {
-        const ripple = ripples[index];
-        ripple.age += 0.035;
-        if (ripple.age >= 1) {
-          ripples.splice(index, 1);
-          continue;
+      const loop = () => {
+        update();
+        draw();
+        animationFrame = requestAnimationFrame(loop);
+      };
+
+      const start = () => {
+        cancelAnimationFrame(animationFrame);
+        if (reducedMotion.matches) {
+          for (const node of nodes) {
+            node.x = node.ox;
+            node.y = node.oy;
+            node.vx = 0;
+            node.vy = 0;
+            node.glow = 0;
+          }
+          draw();
+        } else {
+          loop();
         }
-        context.beginPath();
-        context.arc(ripple.x, ripple.y, 8 + ripple.age * 34, 0, Math.PI * 2);
-        context.strokeStyle = `${accent}${Math.round((1 - ripple.age) * 45).toString(16).padStart(2, "0")}`;
-        context.lineWidth = 1;
-        context.stroke();
-      }
-      animationFrame = requestAnimationFrame(draw);
-    };
+      };
 
-    resize();
-    const controller = new AbortController();
-    const options = { passive: true, signal: controller.signal };
-    window.addEventListener("resize", resize, options);
-    window.addEventListener("pointermove", (event) => {
-      if (event.pointerType !== "mouse") return;
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
-      pointer.active = true;
-    }, options);
-    const resetPointer = () => { pointer.active = false; };
-    document.addEventListener("pointerleave", resetPointer, options);
-    window.addEventListener("blur", resetPointer, options);
-    window.addEventListener("click", (event) => {
-      if (event.detail === 0 || reducedMotion.matches) return;
-      if (ripples.length >= 8) ripples.shift();
-      ripples.push({ x: event.clientX, y: event.clientY, age: 0 });
-    }, options);
-    reducedMotion.addEventListener("change", resize, options);
-    cleanup = () => {
-      controller.abort();
-      cancelAnimationFrame(animationFrame);
-      delete canvas.dataset.bound;
-      cleanup = undefined;
-    };
-    draw();
-  }
+      const controller = new AbortController();
+      const options = { passive: true, signal: controller.signal };
+      window.addEventListener("resize", resize, options);
+      window.addEventListener("pointermove", (event) => {
+        if (event.pointerType !== "mouse") return;
+        pointer.x = event.clientX;
+        pointer.y = event.clientY;
+        pointer.active = true;
+      }, options);
+      const resetPointer = () => { pointer.active = false; };
+      document.addEventListener("pointerleave", resetPointer, options);
+      window.addEventListener("blur", resetPointer, options);
+      window.addEventListener("click", (event) => {
+        if (event.detail === 0 || reducedMotion.matches) return;
+        impulse.x = event.clientX;
+        impulse.y = event.clientY;
+        impulse.strength = IMPULSE_STRENGTH;
+      }, options);
+      reducedMotion.addEventListener("change", start, options);
+
+      cleanup = () => {
+        controller.abort();
+        cancelAnimationFrame(animationFrame);
+        delete canvas.dataset.bound;
+        cleanup = undefined;
+      };
+
+      resize();
+    }
   };
 
-  initializeParticleBackground();
-  document.addEventListener("astro:page-load", initializeParticleBackground);
+  initializeGridBackground();
+  document.addEventListener("astro:page-load", initializeGridBackground);
   document.addEventListener("astro:before-swap", () => cleanup?.());
 </script>
 

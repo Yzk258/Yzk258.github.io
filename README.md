@@ -3,7 +3,7 @@
 个人主页 —— 学习笔记、项目记录与资料归档都放在这里，日常更新以本站为准。
 站外只留 GitHub 与邮箱两个入口。
 
-线上地址：<https://yzk258.github.io/>
+线上地址：[https://yzk258.github.io/](https://yzk258.github.io/)
 
 ## 技术栈
 
@@ -118,15 +118,15 @@ draft: false         # true 则不参与构建
 
 正文支持的能力：
 
-| 写法 | 效果 |
-| --- | --- |
-| `## 目录` | 自动替换成文章标题目录（可折叠） |
-| ` ```ts title="文件名" ` | 代码高亮 + 文件名标签 |
-| `` ```js `` 里 `// [!code highlight]` | 高亮该行 |
-| `` ```js `` 里 `// [!code word:42]` | 高亮该词 |
-| `> [!NOTE]` 等引用块 | 提示框（NOTE/TIP/IMPORTANT/WARNING/CAUTION） |
-| 图片 | 点击放大，`Esc` 关闭 |
-| `## 标题` / `### 标题` | 自动加锚点，可分享到具体小节 |
+| 写法                                    | 效果                                         |
+| --------------------------------------- | -------------------------------------------- |
+| `## 目录`                             | 自动替换成文章标题目录（可折叠）             |
+| ` ```ts title="文件名" `              | 代码高亮 + 文件名标签                        |
+| `` ```js `` 里 `// [!code highlight]` | 高亮该行                                     |
+| `` ```js `` 里 `// [!code word:42]`   | 高亮该词                                     |
+| `> [!NOTE]` 等引用块                  | 提示框（NOTE/TIP/IMPORTANT/WARNING/CAUTION） |
+| 图片                                    | 点击放大，`Esc` 关闭                       |
+| `## 标题` / `### 标题`              | 自动加锚点，可分享到具体小节                 |
 
 更细的示例见 `src/content/posts/writing-guide.md` 本身。
 
@@ -148,12 +148,12 @@ draft: false         # true 则不参与构建
 
 所以写公式时：
 
-| 情况 | 做法 |
-| --- | --- |
-| 独立的长公式 | 一律用 `$$...$$`，不要留在句子中间 |
-| 多行结构（`cases` / `array` / 长推导） | **必须**放块级，行内放不下 |
-| 块级里需要换行 | 用 `aligned` + `\\`，`&` 标对齐点（放在等号前） |
-| 行内的长公式 | 拆句，或把 `\text{中文}` 挪到正文里 |
+| 情况                                       | 做法                                                 |
+| ------------------------------------------ | ---------------------------------------------------- |
+| 独立的长公式                               | 一律用`$$...$$`，不要留在句子中间                  |
+| 多行结构（`cases` / `array` / 长推导） | **必须**放块级，行内放不下                     |
+| 块级里需要换行                             | 用`aligned` + `\\`，`&` 标对齐点（放在等号前） |
+| 行内的长公式                               | 拆句，或把`\text{中文}` 挪到正文里                 |
 
 ```latex
 $$
@@ -176,13 +176,13 @@ $$
 
 ## 标签、归档、分页与搜索
 
-| 功能 | 地址 | 说明 |
-|---|---|---|
-| 标签总览 | `/tags/` | 汇总全站标签，点进去看该标签下的文章 |
-| 单个标签 | `/tags/<tag>/` | 标签 slug 由 `utils/slug.ts` 生成，**中文原样保留**，如 `/tags/建站/` |
-| 归档 | `/archives/` | 按「年 → 月」倒序列出全部文章 |
-| 分页 | `/posts/page/2/` … | 页大小取 `posts.perPage`，只有一页时不显示分页控件 |
-| 搜索 | `/search/` | pagefind 索引，支持 `?q=关键词` 直接进入 |
+| 功能     | 地址                  | 说明                                                                           |
+| -------- | --------------------- | ------------------------------------------------------------------------------ |
+| 标签总览 | `/tags/`            | 汇总全站标签，点进去看该标签下的文章                                           |
+| 单个标签 | `/tags/<tag>/`      | 标签 slug 由`utils/slug.ts` 生成，**中文原样保留**，如 `/tags/建站/` |
+| 归档     | `/archives/`        | 按「年 → 月」倒序列出全部文章                                                 |
+| 分页     | `/posts/page/2/` … | 页大小取`posts.perPage`，只有一页时不显示分页控件                            |
+| 搜索     | `/search/`          | pagefind 索引，支持`?q=关键词` 直接进入                                      |
 
 标签来自文章 frontmatter 的 `tags` 字段。文章卡片上的标签可以直接点。
 
@@ -201,13 +201,13 @@ $$
 
 ## 头像与 GitHub 活跃度
 
-| 位置 | 内容 |
-| --- | --- |
-| `public/avatar.jpg` | 头像图片（460×460），用 `.tools/fetch-avatar.mjs` 重新拉取 |
-| `src/components/Avatar.astro` | 头像框，`size="sm"` 用于首页，`size="lg"` 用于关于页 |
-| `src/components/Activity.astro` | 汇总数字 + 按月表格，只在关于页 |
-| `src/components/ContributionHeatmap.astro` | 逐日热力图，首页与关于页共用 |
-| `src/utils/github-activity.ts` | 抓取与解析，见下 |
+| 位置                                         | 内容                                                         |
+| -------------------------------------------- | ------------------------------------------------------------ |
+| `public/avatar.jpg`                        | 头像图片（460×460），用`.tools/fetch-avatar.mjs` 重新拉取 |
+| `src/components/Avatar.astro`              | 头像框，`size="sm"` 用于首页，`size="lg"` 用于关于页     |
+| `src/components/Activity.astro`            | 汇总数字 + 按月表格，只在关于页                              |
+| `src/components/ContributionHeatmap.astro` | 逐日热力图，首页与关于页共用                                 |
+| `src/utils/github-activity.ts`             | 抓取与解析，见下                                             |
 
 **头像**是本地文件而不是直接引用 GitHub 的地址，这样不依赖外站可用性。
 想换头像就改 GitHub 上的头像，再跑一次 `.tools/fetch-avatar.mjs`。
@@ -246,11 +246,11 @@ GitHub 没有公开的贡献数据 REST 接口，那个 GraphQL 需要 token，�
 
 相关设置（要改的话都得动）：
 
-| 位置 | 内容 |
-| --- | --- |
+| 位置                              | 内容                                 |
+| --------------------------------- | ------------------------------------ |
 | `src/components/Comments.astro` | 仓库名、repoId、category、categoryId |
-| 仓库 Settings → Features | 必须开启 **Discussions** |
-| GitHub 上的 giscus App | 必须授权给本仓库，否则读取评论会 403 |
+| 仓库 Settings → Features         | 必须开启**Discussions**        |
+| GitHub 上的 giscus App            | 必须授权给本仓库，否则读取评论会 403 |
 
 **每篇文章对应一个 discussion**，标识（term）由页面路径算出：
 `/posts/site-setup/` → `posts/site-setup`。
@@ -280,10 +280,10 @@ GitHub 没有公开的贡献数据 REST 接口，那个 GraphQL 需要 token，�
 
 为什么不用现成的：
 
-| 方案 | 问题 |
-| --- | --- |
-| 内置的 `light` / `dark` | 是 GitHub 原生配色：正文 `#1f2328`、面板 `#fff`、强调色蓝 `#0969da`，与本站的 Catppuccin 完全脱节 |
-| 内置的 `catppuccin_latte` / `catppuccin_mocha` | 主色调对了，但「登录并评论」按钮是绿色（`#40a02b`）、字体写死 system-ui，且加载动画指向第三方 CDN（`giscus.catppuccin.com`） |
+| 方案                                              | 问题                                                                                                                             |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 内置的`light` / `dark`                        | 是 GitHub 原生配色：正文`#1f2328`、面板 `#fff`、强调色蓝 `#0969da`，与本站的 Catppuccin 完全脱节                           |
+| 内置的`catppuccin_latte` / `catppuccin_mocha` | 主色调对了，但「登录并评论」按钮是绿色（`#40a02b`）、字体写死 system-ui，且加载动画指向第三方 CDN（`giscus.catppuccin.com`） |
 
 自己写的两份主题与 `src/styles/theme.css` 的令牌逐项对应，
 主按钮用站点强调色（浅色紫 / 深色粉），加载动画换成纯 CSS。
@@ -353,12 +353,12 @@ giscus 的回复和 GitHub 上是同一份数据，两边同步。
 
 **开关功能**：`astro-paper.config.ts` 的 `features`：
 
-| 字段 | 当前值 | 关掉会怎样 |
-|---|---|---|
-| `showArchives` | `true` | `/archives/` 返回 404，导航入口消失 |
-| `search` | `"pagefind"` | `/search/` 返回 404，导航入口消失 |
-| `lightAndDarkMode` | `true` | 隐藏深浅色切换按钮 |
-| `dynamicOgImage` | `false` | 未接回，见文末说明 |
+| 字段                 | 当前值         | 关掉会怎样                            |
+| -------------------- | -------------- | ------------------------------------- |
+| `showArchives`     | `true`       | `/archives/` 返回 404，导航入口消失 |
+| `search`           | `"pagefind"` | `/search/` 返回 404，导航入口消失   |
+| `lightAndDarkMode` | `true`       | 隐藏深浅色切换按钮                    |
+| `dynamicOgImage`   | `false`      | 未接回，见文末说明                    |
 
 **改首页站外入口**：编辑 `src/data/hubs.ts`。数组里每一项：
 
@@ -375,22 +375,17 @@ giscus 的回复和 GitHub 上是同一份数据，两边同步。
 （`title` / `description` / `href`）。它与 `Header.astro` 里的主导航
 是两份，增删页面时两边都要看一眼。
 
-**卡片不放 emoji**：首页各类卡片、区块标题都不配 emoji 图标 ——
-观感上和站点不搭，加新卡片时也别加。区分度交给排版本身
-（区块标题的 `##`、卡片标题的强调色、站外链接的 ↗）。
-站点自带的图标一律走 `src/assets/icons/` 下的 SVG（见 `socials`）。
-
 **改配色**：只改 `src/styles/theme.css` 顶部的令牌。
 浅色在 `:root, [data-theme="light"]`，深色在 `[data-theme="dark"]`，两处成对修改。
 
 令牌的对比度已按 WCAG AA 校验过（`.tools/check-contrast.mjs` 可复核）：
 
-| 用途 | Latte（浅） | Mocha（深） |
-| --- | --- | --- |
-| 正文 / 背景 | 7.06:1 | 11.34:1 |
-| 次要文字 / 背景 | 5.55:1 | 7.37:1 |
-| 强调色作文字 | 4.79:1 | 7.08:1 |
-| 主按钮文字 / accent 底 | 5.41:1 | 7.08:1 |
+| 用途                   | Latte（浅） | Mocha（深） |
+| ---------------------- | ----------- | ----------- |
+| 正文 / 背景            | 7.06:1      | 11.34:1     |
+| 次要文字 / 背景        | 5.55:1      | 7.37:1      |
+| 强调色作文字           | 4.79:1      | 7.08:1      |
+| 主按钮文字 / accent 底 | 5.41:1      | 7.08:1      |
 
 改色后建议重跑校验，正文低于 4.5:1 就不合格。
 
@@ -413,11 +408,11 @@ Mocha 没有这个问题，所以深色保留下与站点一致的配色。
 
 首页底部三张卡片分别调用：
 
-| 卡片 | 接口 |
-| --- | --- |
-| 一言 | <https://v1.hitokoto.cn/> |
-| 随机狗狗 | <https://dog.ceo/api/breeds/image/random> |
-| 今日诗词 | <https://v1.jinrishici.com/all.json> |
+| 卡片     | 接口                                                                              |
+| -------- | --------------------------------------------------------------------------------- |
+| 一言     | [https://v1.hitokoto.cn/](https://v1.hitokoto.cn/)                                 |
+| 随机狗狗 | [https://dog.ceo/api/breeds/image/random](https://dog.ceo/api/breeds/image/random) |
+| 今日诗词 | [https://v1.jinrishici.com/all.json](https://v1.jinrishici.com/all.json)           |
 
 实现见 `src/components/ApiCards.astro`，具备：
 
@@ -444,11 +439,11 @@ npm run preview   # 预览构建产物
 
 AstroPaper 自带但本站**刻意没有**启用的功能，以及理由：
 
-| 功能 | 上游实现 | 为什么不接 |
-|---|---|---|
-| 动态 OG 图 | `og.png.ts` + satori + sharp | satori 需要的字体在 `@fontsource-variable` 里只有 woff2（无 TTF），且**无法渲染中文标题** —— 本站标题基本是中文，接回来也只会缺字。分享图统一用 `public/default-og.jpg` |
-| 编辑链接 | `EditPost.astro` | 单人站点，没有「去 GitHub 编辑」的需求 |
-| 分享链接 | `ShareLinks.astro` | `shareLinks: []` 是当初特意清空的 |
+| 功能       | 上游实现                       | 为什么不接                                                                                                                                                                         |
+| ---------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 动态 OG 图 | `og.png.ts` + satori + sharp | satori 需要的字体在`@fontsource-variable` 里只有 woff2（无 TTF），且**无法渲染中文标题** —— 本站标题基本是中文，接回来也只会缺字。分享图统一用 `public/default-og.jpg` |
+| 编辑链接   | `EditPost.astro`             | 单人站点，没有「去 GitHub 编辑」的需求                                                                                                                                             |
+| 分享链接   | `ShareLinks.astro`           | `shareLinks: []` 是当初特意清空的                                                                                                                                                |
 
 ## 部署
 
