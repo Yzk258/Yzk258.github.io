@@ -86,6 +86,7 @@
      */
     .katex-display {
       @apply overflow-x-auto overflow-y-hidden py-1;
+      color: var(--math-foreground);
     }
 
     /*

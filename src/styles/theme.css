@@ -69,6 +69,7 @@
   --muted: #e6e9ef;
   --muted-foreground: #5c5f75;
   --border: #bcc0cc;
+  --math-foreground: #8839ef;
 }
 
 /* Mocha（深色） */
@@ -80,4 +81,5 @@
   --muted: #313244;
   --muted-foreground: #a6adc8;
   --border: #45475a;
+  --math-foreground: #f38ba8;
 }
