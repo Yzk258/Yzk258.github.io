@@ -52,4 +52,6 @@ icacls "D:\path\to\modsmith" /setintegritylevel "(OI)(CI)M"
 
 回头看，Edge 的提示给了我“权限上下文不一致”的线索，却不能仅凭这一条提示断定根因。真正让我换方向的是：Git 回退、PowerShell 降级和代码调整都无效，而项目目录及其父目录确实存在 Low 标签。这次问题也提醒我，遇到运行环境里的权限异常时，确实要把目录继承和进程完整性级别一起纳入排查。
 
+---
+
 参考资料：[Microsoft：Mandatory Integrity Control](https://learn.microsoft.com/en-us/windows/win32/secauthz/mandatory-integrity-control)、[Microsoft：icacls 命令](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/icacls)。
