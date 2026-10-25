@@ -2,10 +2,9 @@
 title: 这个站点是怎么搭起来的
 description: 从零开始记录本站的搭建过程：为什么选 Astro、怎么定配色、以及中文排版踩过的坑。
 pubDatetime: 2026-09-27T18:30:00+08:00
-tags: ["Astro", "建站"]
+tags: ["Astro", "建站", "技术笔记"]
 featured: true
 ---
-
 这篇文章说明本站的技术选型与搭建过程，顺便当作写作格式的参考 ——
 下面是各类内容的实际渲染效果。
 
@@ -32,7 +31,7 @@ Astro 的取舍很合这个场景：
 
 配色定义集中在 `src/styles/theme.css`，只改色值不动结构：
 
-```css title="src/styles/theme.css"
+```css
 :root,
 [data-theme="light"] {
   --background: #eff1f5;

@@ -27,12 +27,17 @@ draft: false         # true 则不参与构建
 
 后来发现原来是电脑Windows系统自带的pwsh版本过于老旧，导致在启动虚拟环境的bat以及ps1脚本时因权限问题无法正常运行。然后用`$PSVersionTable.PSVersion`查了查，发现果不其然版本高达5.1😅。
 
-所以屁颠屁颠跑去win官网上下了份最新（7.6.6）的msi安装包，配置在VScode中，再次启动发现成了！绿色的(.venv)酱浮现在我的终端。
+> [!NOTE]
+> 事实上，Windows系统默认安装的pwsh版本本就是5.1，其基于 `NET Framework`。由于Windows系统过于庞大的软件应用生态，导致很多十分老旧的脚本或是工具仍然在使用5.1甚至更古早版本的pwsh，因此出于对兼容性的考虑，微软官方并没有在Windows系统中自带更新的pwsh版本，而是需要用户自行下载最新版本的pwsh7。    
+
+所以跑去win官网上下了份最新（7.6.6）的msi安装包，配置在VScode中，再次启动发现成了！绿色的(.venv)字样成功出现。
 
 而且值得一提的是，如果使用的是command prompt，就不会有这个权限相关问题，直接输入`.\.venv\Scripts\Activate.bat`即可正常启动虚拟环境，可能这就是为什么前后两次启动差异如此之大，为什么上次使用时没有因为版本过久无法使用的原因。
 
 ---
 
-未完待续
 
-To be continued。。。
+
+> [!NOTE]
+> 未完待续
+> To be continued...

@@ -2,16 +2,15 @@
 title: 代码块与提示框的写法
 description: frontmatter 怎么写、代码块如何加文件名和高亮行、提示框有哪几种。留着当速查。
 pubDatetime: 2026-09-26T14:00:00+08:00
-tags: ["写作", "格式"]
+tags: ["写作", "格式", "学习笔记"]
 ---
-
 这篇是格式速查，写文章时对照着看。
 
 ## frontmatter
 
 每篇文章开头的字段，只有 `title`、`description`、`pubDatetime` 是必填：
 
-```yaml title="src/content/posts/example.md"
+```yaml
 ---
 title: 文章标题
 description: 一两句话的摘要，会显示在列表页和搜索结果里
@@ -42,7 +41,7 @@ export function getReadingMinutes(markdown: string): number {
 
 加 `title="文件名"` 会显示文件名标签：
 
-```js title="src/utils/format.js"
+```js
 export const formatDate = date =>
   new Intl.DateTimeFormat("zh-CN", { dateStyle: "long" }).format(date);
 ```
@@ -104,7 +103,7 @@ const answer = 42; // [!code word:42]
 > 正文内容。
 ```
 
-> [!NOTE] 自定义标题
+> [!NOTE] ✏️ 自定义标题
 > 正文内容。
 
 在类型后加 `-` 可以让提示框默认折叠，加 `+` 则默认展开：

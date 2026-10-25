@@ -51,14 +51,6 @@ const navItems = [
 ];
 ---
 
-<a
-  id="skip-to-content"
-  href="#main-content"
-  class="bg-background text-accent absolute inset-s-16 -top-full z-50 px-3 py-2 backdrop-blur-lg transition-all focus:top-4"
->
-  {t.a11y.skipToContent}
-</a>
-
 <header
   class="app-layout flex flex-col items-center justify-between sm:flex-row"
 >
@@ -151,38 +143,6 @@ const navItems = [
     });
   }
 
-  function handleSkipToContent() {
-    const skipLink = document.getElementById("skip-to-content");
-    if (!skipLink) return;
-    skipLink.addEventListener("click", e => {
-      if (
-        e.defaultPrevented ||
-        e.metaKey ||
-        e.ctrlKey ||
-        e.shiftKey ||
-        e.button !== 0
-      )
-        return;
-      e.preventDefault();
-      const target = document.getElementById("main-content");
-      if (target) {
-        target.setAttribute("tabindex", "-1");
-        target.addEventListener(
-          "blur",
-          () => target.removeAttribute("tabindex"),
-          {
-            once: true,
-          }
-        );
-        target.focus();
-        target.scrollIntoView({ behavior: "smooth" });
-      }
-    });
-  }
-
   toggleNav();
   document.addEventListener("astro:after-swap", toggleNav);
-
-  handleSkipToContent();
-  document.addEventListener("astro:after-swap", handleSkipToContent);
 </script>
