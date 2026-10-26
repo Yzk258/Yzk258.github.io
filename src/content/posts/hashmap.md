@@ -8,7 +8,7 @@ draft: false
 ---
 # 论Hashmap与蜜雪冰城
 
-![论Hashmap与蜜雪冰城](.\images\hashmap.jpg)
+![论Hashmap与蜜雪冰城](./images/hashmap.jpg)
 
 > 面试官：你了解 hashMap 吗，能具体讲讲吗？
 > 我：那我可太了解了！
