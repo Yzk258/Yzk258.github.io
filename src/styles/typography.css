@@ -200,44 +200,66 @@
 }
 
 /*
- * ===== 提示框配色修正 =====
- *
- * rehype-callouts 的 obsidian 主题有两个问题：
- *
- * 1. 标题文字被染成该类型的强调色，但那套色没考虑对比度：
- *    浅色下 caution 橙只有 2.37:1、深色下 note 蓝 3.66:1，
- *    都低于 WCAG AA 要求的 4.5:1。
- * 2. 底色用 mix-blend-mode: darken/lighten 与页面混色，
- *    叠加结果依赖底下是什么，不可预测 —— 这也是它为什么
- *    在某些位置能达标、换个位置就不达标的原因。
- *
- * 处理办法：文字统一用本站前景色令牌，底色用中性令牌，
- * 类型区分只交给左边框与图标（它们不承载文字信息，
- * 不受 4.5:1 约束）。
- *
- * 必须写在 @layer 之外：obsidian 主题是无层级样式，
- * 而 CSS 中「无层级」永远优先于「有层级」，
- * 放 @layer base 里无论怎么加特异性都不会生效。
+ * 提示框：同色系浅底、左侧色条和彩色标题。
+ * 放在 @layer 外覆盖 rehype-callouts 的无层级 Obsidian 样式。
  */
 .callout {
-  background-color: var(--color-muted);
+  --callout-accent: var(--rc-color-light, var(--color-accent));
+
+  border-inline-start: 4px solid var(--callout-accent);
+  background-color: color-mix(in srgb, var(--callout-accent) 14%, transparent);
   mix-blend-mode: normal;
 }
 
-/* 左侧色条仍用类型色，保留「一眼看出是哪种提示」的能力 */
-.callout {
-  border-inline-start: 3px solid var(--rc-color-light, var(--color-accent));
+.callout[data-callout="note"] {
+  --callout-accent: #216fc3;
+}
+
+.callout[data-callout="tip"] {
+  --callout-accent: #267b42;
+}
+
+.callout[data-callout="important"] {
+  --callout-accent: #8146b4;
+}
+
+.callout[data-callout="warning"] {
+  --callout-accent: #885d0e;
+}
+
+.callout[data-callout="caution"] {
+  --callout-accent: #b5364d;
 }
 
 html[data-theme="dark"] .callout {
-  border-inline-start-color: var(--rc-color-dark, var(--color-accent));
+  --callout-accent: var(--rc-color-dark, var(--color-accent));
+}
+
+html[data-theme="dark"] .callout[data-callout="note"] {
+  --callout-accent: #64adff;
+}
+
+html[data-theme="dark"] .callout[data-callout="tip"] {
+  --callout-accent: #89df95;
+}
+
+html[data-theme="dark"] .callout[data-callout="important"] {
+  --callout-accent: #bd91ed;
+}
+
+html[data-theme="dark"] .callout[data-callout="warning"] {
+  --callout-accent: #f2c66e;
+}
+
+html[data-theme="dark"] .callout[data-callout="caution"] {
+  --callout-accent: #ff758b;
 }
 
 .callout .callout-title,
 .callout .callout-title-text,
 .callout .callout-title-icon,
 .callout .callout-fold-icon {
-  color: var(--color-foreground);
+  color: var(--callout-accent);
 }
 
 .callout .callout-title-text {
